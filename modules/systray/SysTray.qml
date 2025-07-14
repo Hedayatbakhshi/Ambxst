@@ -10,6 +10,7 @@ Item {
 
     height: parent.height
     implicitWidth: rowLayout.implicitWidth
+    implicitHeight: 36
 
     RowLayout {
         id: rowLayout

@@ -16,6 +16,7 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     Layout.fillHeight: true
     implicitWidth: trayItemWidth
+    implicitHeight: 20
     onClicked: event => {
         switch (event.button) {
         case Qt.LeftButton:
