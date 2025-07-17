@@ -4,6 +4,8 @@ import Quickshell
 import "./modules/bar/"
 import "./modules/launcher/"
 import "./modules/workspaces/"
+import "./modules/notifications/"
+import "./services/"
 
 ShellRoot {
     id: root
@@ -31,5 +33,10 @@ ShellRoot {
     Loader {
         active: true
         sourceComponent: LauncherWindow {}
+    }
+
+    Loader {
+        active: true
+        sourceComponent: NotificationPopup {}
     }
 }

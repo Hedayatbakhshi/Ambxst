@@ -1,0 +1,8 @@
+module notifications
+NotificationPopup 1.0 NotificationPopup.qml
+NotificationListView 1.0 NotificationListView.qml
+NotificationGroup 1.0 NotificationGroup.qml
+NotificationItem 1.0 NotificationItem.qml
+NotificationAppIcon 1.0 NotificationAppIcon.qml
+NotificationActionButton 1.0 NotificationActionButton.qml
+NotificationGroupExpandButton 1.0 NotificationGroupExpandButton.qml

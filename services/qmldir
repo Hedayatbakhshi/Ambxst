@@ -1,2 +1,3 @@
 module services
 singleton AppSearch 1.0 AppSearch.qml
+singleton Notifications 1.0 Notifications.qml
