@@ -200,7 +200,7 @@ Rectangle {
                 visible: root.selectedIndex >= 0
             }
 
-            highlightMoveDuration: 200
+            highlightMoveDuration: 50
             highlightMoveVelocity: -1
         }
     }
