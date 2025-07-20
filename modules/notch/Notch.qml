@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import "../theme"
 import "../launcher"
@@ -19,8 +20,18 @@ Rectangle {
     color: Colors.surface
     topLeftRadius: 0
     topRightRadius: 0
-    bottomLeftRadius: 20
-    bottomRightRadius: 20
+    bottomLeftRadius: 36
+    bottomRightRadius: 36
+
+    layer.enabled: true
+    layer.effect: DropShadow {
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 8
+        samples: 16
+        color: Qt.rgba(Colors.shadow.r, Colors.shadow.g, Colors.shadow.b, 1)
+        transparentBorder: true
+    }
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -59,7 +70,7 @@ Rectangle {
                 }
                 PropertyAnimation {
                     property: "scale"
-                    from: 0.95
+                    from: 0.8
                     to: 1
                     duration: 250
                     easing.type: Easing.OutBack
@@ -72,14 +83,14 @@ Rectangle {
                     property: "opacity"
                     from: 1
                     to: 0
-                    duration: 200
+                    duration: 250
                     easing.type: Easing.OutQuart
                 }
                 PropertyAnimation {
                     property: "scale"
                     from: 1
                     to: 1.05
-                    duration: 200
+                    duration: 250
                     easing.type: Easing.OutQuart
                 }
             }

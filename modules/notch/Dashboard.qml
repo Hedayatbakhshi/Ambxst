@@ -132,7 +132,7 @@ Item {
 
                 const x = contentX - (currentItem ? currentItem.x : 0);
                 const threshold = (currentItem ? currentItem.implicitWidth : 400) / 2;
-                
+
                 if (x > threshold)
                     root.state.currentTab = Math.min(root.state.currentTab + 1, 2);
                 else if (x < -threshold)
@@ -142,7 +142,7 @@ Item {
             onDragEnded: {
                 const x = contentX - (currentItem ? currentItem.x : 0);
                 const threshold = (currentItem ? currentItem.implicitWidth : 400) / 10;
-                
+
                 if (x > threshold)
                     root.state.currentTab = Math.min(root.state.currentTab + 1, 2);
                 else if (x < -threshold)
@@ -219,20 +219,21 @@ Item {
 
         // Performance optimization: only load when visible or about to be visible
         Component.onCompleted: active = Qt.binding(() => {
-            if (!view.visibleArea || !view.contentWidth) return false;
-            
+            if (!view.visibleArea || !view.contentWidth)
+                return false;
+
             const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
             const vex = Math.floor(vx + view.visibleArea.widthRatio * view.contentWidth);
             const margin = 50; // Pre-load margin for smoother transitions
-            
-            return (vx >= x - margin && vx <= x + width + margin) || 
-                   (vex >= x - margin && vex <= x + width + margin);
+
+            return (vx >= x - margin && vx <= x + width + margin) || (vex >= x - margin && vex <= x + width + margin);
         })
 
         // Cache loaded items for better performance
         property bool wasLoaded: false
         onActiveChanged: {
-            if (active) wasLoaded = true;
+            if (active)
+                wasLoaded = true;
         }
     }
 
@@ -286,7 +287,7 @@ Item {
                     height: 48
                     radius: 24
                     color: Colors.primary
-                    
+
                     Text {
                         anchors.centerIn: parent
                         text: Quickshell.env("USER").charAt(0).toUpperCase()
