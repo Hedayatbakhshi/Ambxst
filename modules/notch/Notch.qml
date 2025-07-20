@@ -6,16 +6,16 @@ import "../launcher"
 
 Rectangle {
     id: notchContainer
-    
+
     property Component defaultViewComponent
     property Component launcherViewComponent
     property var stackView: stackViewInternal
-    
-    implicitWidth: Math.max(stackContainer.width + 32, 140)
-    implicitHeight: Math.max(stackContainer.height + 8, 40)
+
+    implicitWidth: Math.max(stackContainer.width, 140)
+    implicitHeight: Math.max(stackContainer.height, 40)
 
     color: Colors.surface
-    radius: Math.min(width / 8, height / 2)
+    radius: 20
 
     Behavior on width {
         NumberAnimation {
