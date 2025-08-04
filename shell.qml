@@ -86,4 +86,9 @@ ShellRoot {
         active: true
         sourceComponent: NotificationPopup {}
     }
+
+    // Global shortcuts service
+    GlobalShortcuts {
+        id: globalShortcuts
+    }
 }
