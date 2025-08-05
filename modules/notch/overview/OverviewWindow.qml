@@ -4,9 +4,9 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import "../../globals"
-import "../../theme"
-import "../../services"
+import qs.modules.globals
+import qs.modules.theme
+import qs.modules.services
 import qs.config
 
 Item {
@@ -169,7 +169,7 @@ Item {
         onReleased: mouse => {
             const overviewRoot = parent.parent.parent.parent;
             const targetWorkspace = overviewRoot.draggingTargetWorkspace;
-            
+
             root.pressed = false;
             root.Drag.active = false;
 
