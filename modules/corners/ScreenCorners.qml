@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-import "."
+import qs.modules.corners
 import qs.config
 
 PanelWindow {

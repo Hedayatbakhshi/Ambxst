@@ -143,18 +143,13 @@ Item {
         property real activeWorkspaceMargin: 4
         implicitHeight: parent.workspaceButtonWidth - activeWorkspaceMargin * 2
         radius: {
-            const currentWorkspaceHasWindows = Hyprland.workspaces.values.some(ws => 
-                ws.id === (monitor?.activeWorkspace?.id || 1) && 
-                HyprlandData.windowList.some(w => w.workspace.id === ws.id)
-            );
+            const currentWorkspaceHasWindows = Hyprland.workspaces.values.some(ws => ws.id === (monitor?.activeWorkspace?.id || 1) && HyprlandData.windowList.some(w => w.workspace.id === ws.id));
             if (Config.roundness === 0) {
                 return 0;
             }
-            return currentWorkspaceHasWindows 
-                ? Math.max(0, Config.roundness - parent.widgetPadding - activeWorkspaceMargin)
-                : implicitHeight / 2;
+            return currentWorkspaceHasWindows ? Math.max(0, Config.roundness - parent.widgetPadding - activeWorkspaceMargin) : implicitHeight / 2;
         }
-        
+
         Behavior on radius {
             NumberAnimation {
                 duration: Config.animDuration - 100
@@ -230,7 +225,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.family: Styling.defaultFont
-                        font.pixelSize: Styling.fontSize.small - ((text.length - 1) * (text !== "10") * 2)
+                        font.pixelSize: Styling.fontSize - ((text.length - 1) * (text !== "10") * 2)
                         text: `${button.workspaceValue}`
                         elide: Text.ElideRight
                         color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Colors.background : (workspaceOccupied[index] ? Colors.adapter.overBackground : Colors.adapter.overSecondaryFixedVariant)

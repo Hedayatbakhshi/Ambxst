@@ -8,8 +8,8 @@ import qs.modules.globals
 import qs.modules.theme
 import qs.modules.launcher
 import qs.modules.services
+import qs.modules.notch.overview
 import qs.config
-import "./overview"
 
 PanelWindow {
     id: notchPanel

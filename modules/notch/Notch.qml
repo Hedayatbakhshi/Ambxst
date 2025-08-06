@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
-import "../globals"
-import "../theme"
+import qs.modules.globals
+import qs.modules.theme
 import qs.modules.corners
 import qs.config
 
@@ -16,7 +16,7 @@ Item {
     property Component overviewViewComponent
     property var stackView: stackViewInternal
     property bool isExpanded: stackViewInternal.currentItem !== stackViewInternal.initialItem
-    
+
     // Screen-specific visibility properties passed from parent
     property var visibilities
     readonly property bool screenNotchOpen: visibilities ? (visibilities.launcher || visibilities.dashboard || visibilities.overview) : false
