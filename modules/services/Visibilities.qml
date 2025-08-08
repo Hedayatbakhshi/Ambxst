@@ -41,6 +41,10 @@ Singleton {
         
         let focusedScreenName = Hyprland.focusedMonitor.name;
         
+        // Check if we're closing a module (going from something to nothing)
+        let wasModuleActive = currentActiveModule !== "";
+        let isClosingModule = wasModuleActive && (!moduleName || moduleName === "");
+        
         // Clear all modules on all screens first
         clearAll();
         
@@ -57,6 +61,13 @@ Singleton {
             currentActiveModule = moduleName;
         } else {
             currentActiveModule = "";
+            
+            // Restore focus when closing any module
+            if (isClosingModule) {
+                Qt.callLater(() => {
+                    Hyprland.dispatch("focuswindow", "");
+                });
+            }
         }
         
         lastFocusedScreen = focusedScreenName;
