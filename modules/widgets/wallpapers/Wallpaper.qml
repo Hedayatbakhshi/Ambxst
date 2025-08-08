@@ -26,10 +26,12 @@ PanelWindow {
     property int currentIndex: 0
     property string currentWallpaper: wallpaperPaths.length > 0 ? wallpaperPaths[currentIndex] : ""
     property bool initialLoadCompleted: false
+    property bool usingFallback: false
 
     // Update directory watcher when wallpaperDir changes
     onWallpaperDirChanged: {
         console.log("Wallpaper directory changed to:", wallpaperDir);
+        usingFallback = false;
         directoryWatcher.path = wallpaperDir;
         scanWallpapers.running = true;
     }
@@ -45,12 +47,13 @@ PanelWindow {
     function setWallpaper(path) {
         console.log("setWallpaper called with:", path);
         initialLoadCompleted = true;
-        currentWallpaper = path;
         const pathIndex = wallpaperPaths.indexOf(path);
         if (pathIndex !== -1) {
             currentIndex = pathIndex;
+            wallpaperConfig.adapter.currentWall = path;
+        } else {
+            console.warn("Wallpaper path not found in current list:", path);
         }
-        wallpaperConfig.adapter.currentWall = path;
     }
 
     function nextWallpaper() {
@@ -102,13 +105,14 @@ PanelWindow {
             property string wallPath: ""
 
             onCurrentWallChanged: {
-                // Solo actualizar si el cambio viene del archivo JSON (no de nuestras funciones)
-                if (currentWall && currentWall !== wallpaper.currentWallpaper) {
+                // Solo actualizar si el cambio viene del archivo JSON y es diferente al actual
+                if (currentWall && currentWall !== wallpaper.currentWallpaper && wallpaper.initialLoadCompleted) {
                     console.log("Loading wallpaper from JSON:", currentWall);
-                    wallpaper.currentWallpaper = currentWall;
                     const pathIndex = wallpaper.wallpaperPaths.indexOf(currentWall);
                     if (pathIndex !== -1) {
                         wallpaper.currentIndex = pathIndex;
+                    } else {
+                        console.warn("Saved wallpaper not found in current list:", currentWall);
                     }
                 }
             }
@@ -166,27 +170,20 @@ PanelWindow {
         
         onFileChanged: {
             console.log("Wallpaper directory changed, rescanning...");
-            wallpaperWatcher.stop();
             scanWallpapers.running = true;
         }
         
         onLoadFailed: {
             // Directory doesn't exist or can't be read, use fallback
-            scanFallback.running = true;
+            if (!usingFallback) {
+                console.log("Main wallpaper directory not accessible, using fallback");
+                usingFallback = true;
+                scanFallback.running = true;
+            }
         }
     }
 
-    // Auto-updating wallpaper scanner using FileView and Timer
-    Timer {
-        id: wallpaperWatcher
-        interval: 5000 // Check every 5 seconds (reduced frequency since we have FileView watching)
-        running: true
-        repeat: true
-        
-        onTriggered: {
-            scanWallpapers.running = true;
-        }
-    }
+
 
     Process {
         id: scanWallpapers
@@ -197,14 +194,21 @@ PanelWindow {
             onStreamFinished: {
                 let files = text.trim().split("\n").filter(f => f.length > 0);
                 if (files.length === 0) {
-                    scanFallback.running = true;
+                    if (!usingFallback) {
+                        console.log("No wallpapers found in main directory, using fallback");
+                        usingFallback = true;
+                        scanFallback.running = true;
+                    }
                 } else {
+                    usingFallback = false;
                     // Only update if the list has actually changed
                     const newFiles = files.sort();
                     if (JSON.stringify(newFiles) !== JSON.stringify(wallpaperPaths)) {
                         console.log("Wallpaper directory updated. Found", newFiles.length, "images");
                         wallpaperPaths = newFiles;
-                        if (wallpaperPaths.length > 0) {
+                        
+                        // Initialize wallpaper selection
+                        if (wallpaperPaths.length > 0 && !initialLoadCompleted) {
                             if (wallpaperConfig.adapter.currentWall) {
                                 const savedIndex = wallpaperPaths.indexOf(wallpaperConfig.adapter.currentWall);
                                 if (savedIndex !== -1) {
@@ -217,6 +221,7 @@ PanelWindow {
                                 currentIndex = 0;
                                 wallpaperConfig.adapter.currentWall = wallpaperPaths[0];
                             }
+                            initialLoadCompleted = true;
                         }
                     }
                 }
@@ -226,7 +231,12 @@ PanelWindow {
         stderr: StdioCollector {
             onStreamFinished: {
                 if (text.length > 0) {
-                    scanFallback.running = true;
+                    console.warn("Error scanning wallpaper directory:", text);
+                    // Only fallback if we don't already have wallpapers loaded and not already using fallback
+                    if (wallpaperPaths.length === 0 && !usingFallback) {
+                        usingFallback = true;
+                        scanFallback.running = true;
+                    }
                 }
             }
         }
@@ -240,19 +250,17 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 const files = text.trim().split("\n").filter(f => f.length > 0);
-                wallpaperPaths = files.sort();
-                if (wallpaperPaths.length > 0) {
-                    if (wallpaperConfig.adapter.currentWall) {
-                        const savedIndex = wallpaperPaths.indexOf(wallpaperConfig.adapter.currentWall);
-                        if (savedIndex !== -1) {
-                            currentIndex = savedIndex;
-                        } else {
-                            currentIndex = 0;
-                            wallpaperConfig.adapter.currentWall = wallpaperPaths[0];
-                        }
-                    } else {
+                console.log("Using fallback wallpapers. Found", files.length, "images");
+                
+                // Only use fallback if we don't already have main wallpapers loaded
+                if (usingFallback) {
+                    wallpaperPaths = files.sort();
+                    
+                    // Initialize fallback wallpaper selection
+                    if (wallpaperPaths.length > 0 && !initialLoadCompleted) {
                         currentIndex = 0;
                         wallpaperConfig.adapter.currentWall = wallpaperPaths[0];
+                        initialLoadCompleted = true;
                     }
                 }
             }
