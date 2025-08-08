@@ -37,19 +37,30 @@ Item {
     }
     readonly property var toplevels: ToplevelManager.toplevels
 
+    readonly property string barPosition: Config.bar.position
+    readonly property int barReserved: (Config.bar.showBackground ? 44 : 40)
+
     property real workspaceImplicitWidth: {
         const isRotated = (monitorData?.transform % 2 === 1);
         const monitorScale = monitorData?.scale || 1.0;  // Use monitor's scale, not config scale
         const width = isRotated ? (monitor?.height || 1920) : (monitor?.width || 1920);
-        const scaledWidth = (width / monitorScale) * scale;  // Apply monitor scale then config scale
-        return scaledWidth;
+        let scaledWidth = (width / monitorScale) * scale;  // Apply monitor scale then config scale
+        if (barPosition === "left" || barPosition === "right") {
+            // Substraer la zona reservada de la barra en orientación horizontal
+            scaledWidth -= barReserved * scale;
+        }
+        return Math.max(0, scaledWidth);
     }
     property real workspaceImplicitHeight: {
         const isRotated = (monitorData?.transform % 2 === 1);
         const monitorScale = monitorData?.scale || 1.0;  // Use monitor's scale, not config scale
         const height = isRotated ? (monitor?.width || 1080) : (monitor?.height || 1080);
-        const scaledHeight = (height / monitorScale) * scale;  // Apply monitor scale then config scale
-        return scaledHeight;
+        let scaledHeight = (height / monitorScale) * scale;  // Apply monitor scale then config scale
+        if (barPosition === "top" || barPosition === "bottom") {
+            // Substraer la zona reservada de la barra en orientación vertical
+            scaledHeight -= barReserved * scale;
+        }
+        return Math.max(0, scaledHeight);
     }
 
     property int draggingFromWorkspace: -1
@@ -186,6 +197,8 @@ Item {
                     availableWorkspaceWidth: overviewRoot.workspaceImplicitWidth
                     availableWorkspaceHeight: overviewRoot.workspaceImplicitHeight
                     monitorData: overviewRoot.monitorData
+                    barPosition: overviewRoot.barPosition
+                    barReserved: overviewRoot.barReserved
 
                     property int workspaceColIndex: (windowData?.workspace.id - 1) % overviewRoot.columns
                     property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % overviewRoot.workspacesShown / overviewRoot.columns)

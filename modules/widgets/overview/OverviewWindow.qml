@@ -27,8 +27,24 @@ Item {
     property bool pressed: false
     property bool atInitPosition: (initX == x && initY == y)
 
-    property real initX: Math.max(((windowData?.at[0] || 0) - (monitorData?.x || 0)) * scale, 0) + xOffset
-    property real initY: Math.max(((windowData?.at[1] || 0) - (monitorData?.y || 0)) * scale, 0) + yOffset
+    // Propiedades de la barra pasadas desde Overview
+    property string barPosition: "top"
+    property int barReserved: 0
+
+    property real initX: {
+        let base = (windowData?.at?.[0] || 0) - (monitorData?.x || 0);
+        if (barPosition === "left") {
+            base -= barReserved;
+        }
+        return Math.max(base * scale, 0) + xOffset;
+    }
+    property real initY: {
+        let base = (windowData?.at?.[1] || 0) - (monitorData?.y || 0);
+        if (barPosition === "top") {
+            base -= barReserved;
+        }
+        return Math.max(base * scale, 0) + yOffset;
+    }
     property real targetWindowWidth: (windowData?.size[0] || 100) * scale
     property real targetWindowHeight: (windowData?.size[1] || 100) * scale
 
@@ -95,7 +111,7 @@ Item {
         Rectangle {
             id: previewBackground
             anchors.fill: parent
-            radius: Math.max(0, Config.roundness - workspaceSpacing)
+            radius: Math.max(0, Config.roundness - workspaceSpacing - 2)
             color: pressed ? Colors.surfaceContainerHighest : hovered ? Colors.surfaceContainer : Colors.surface
             border.color: Colors.surfaceContainerHighest
             border.width: 2
@@ -165,7 +181,7 @@ Item {
         Rectangle {
             id: previewOverlay
             anchors.fill: parent
-            radius: Math.max(0, Config.roundness - workspaceSpacing)
+            radius: Math.max(0, Config.roundness - workspaceSpacing - 2)
             color: pressed ? Qt.rgba(Colors.surfaceContainerHighest.r, Colors.surfaceContainerHighest.g, Colors.surfaceContainerHighest.b, 0.5) : hovered ? Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.2) : "transparent"
             border.color: Colors.surfaceContainerHighest
             border.width: 2
