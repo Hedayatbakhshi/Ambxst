@@ -71,7 +71,23 @@ Item {
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Escape) {
-            Visibilities.setActiveModule("");
+            // Find any window in the current workspace and focus it
+            let currentWorkspace = monitor?.activeWorkspace?.id;
+            if (currentWorkspace) {
+                // Find a window in the current workspace
+                let windowInWorkspace = windowList.find(win => win?.workspace?.id === currentWorkspace && monitor?.id === win.monitor);
+                
+                Visibilities.setActiveModule("");
+                
+                // Use the same focus restoration pattern as double-click
+                if (windowInWorkspace) {
+                    Qt.callLater(() => {
+                        Hyprland.dispatch(`focuswindow address:${windowInWorkspace.address}`);
+                    });
+                }
+            } else {
+                Visibilities.setActiveModule("");
+            }
             event.accepted = true;
         } else if (event.key === Qt.Key_Left) {
             Hyprland.dispatch("workspace r-1");
