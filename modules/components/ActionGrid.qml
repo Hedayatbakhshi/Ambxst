@@ -28,7 +28,7 @@ FocusScope {
             repeater.itemAt(0).forceActiveFocus();
         }
     }
-    
+
     onActiveFocusChanged: {
         if (activeFocus && repeater.count > 0) {
             Qt.callLater(() => {
@@ -75,6 +75,52 @@ FocusScope {
         anchors.fill: parent
         color: "transparent"
 
+        // Highlight que se desplaza entre botones
+        Rectangle {
+            id: highlight
+            width: root.buttonSize
+            height: root.buttonSize
+            color: Colors.adapter.surfaceContainerHighest
+            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+            border.width: 0
+            border.color: Colors.adapter.primary
+            z: 0 // Por debajo de los botones
+            visible: repeater.count > 0
+
+            // Posición calculada basada en currentIndex
+            x: {
+                if (root.layout === "row") {
+                    return container.x + root.currentIndex * (root.buttonSize + root.spacing);
+                } else {
+                    let col = root.currentIndex % root.columns;
+                    return container.x + col * (root.buttonSize + root.spacing);
+                }
+            }
+
+            y: {
+                if (root.layout === "row") {
+                    return container.y;
+                } else {
+                    let row = Math.floor(root.currentIndex / root.columns);
+                    return container.y + row * (root.buttonSize + root.spacing);
+                }
+            }
+
+            Behavior on x {
+                NumberAnimation {
+                    duration: Config.animDuration / 2
+                    easing.type: Easing.OutQuart
+                }
+            }
+
+            Behavior on y {
+                NumberAnimation {
+                    duration: Config.animDuration / 2
+                    easing.type: Easing.OutQuart
+                }
+            }
+        }
+
         Grid {
             id: container
             anchors.centerIn: parent
@@ -91,6 +137,7 @@ FocusScope {
 
                     implicitWidth: root.buttonSize
                     implicitHeight: root.buttonSize
+                    z: 1 // Por encima del highlight
 
                     Process {
                         id: commandProcess
@@ -105,12 +152,9 @@ FocusScope {
                         }
                     }
 
-                    background: BgRect {
-                        color: actionButton.pressed ? Colors.adapter.primary : (actionButton.hovered || actionButton.activeFocus) ? Colors.adapter.surfaceContainerHighest : "transparent"
+                    background: Rectangle {
+                        color: "transparent"
                         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-
-                        border.width: actionButton.activeFocus ? 2 : 0
-                        border.color: Colors.adapter.primary
                     }
 
                     contentItem: Text {
@@ -123,6 +167,12 @@ FocusScope {
                     }
 
                     onClicked: triggerAction()
+
+                    onHoveredChanged: {
+                        if (hovered) {
+                            root.currentIndex = index;
+                        }
+                    }
 
                     onActiveFocusChanged: {
                         if (activeFocus) {
