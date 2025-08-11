@@ -15,6 +15,7 @@ Rectangle {
     property string searchText: ""
     readonly property int gridRows: 3
     readonly property int gridColumns: 5
+    property int selectedIndex: GlobalStates.wallpaperSelectedIndex
 
     function focusSearch() {
         wallpaperSearchInput.focusInput();
@@ -61,10 +62,87 @@ Rectangle {
 
                 onSearchTextChanged: text => {
                     searchText = text;
+                    // Auto-highlight first wallpaper when text is entered
+                    if (text.length > 0 && filteredWallpapers.length > 0) {
+                        GlobalStates.wallpaperSelectedIndex = 0;
+                        selectedIndex = 0;
+                    } else {
+                        GlobalStates.wallpaperSelectedIndex = -1;
+                        selectedIndex = -1;
+                    }
                 }
 
                 onEscapePressed: {
                     Visibilities.setActiveModule("");
+                }
+
+                onDownPressed: {
+                    if (filteredWallpapers.length > 0) {
+                        if (selectedIndex < filteredWallpapers.length - 1) {
+                            let newIndex = selectedIndex + gridColumns;
+                            if (newIndex >= filteredWallpapers.length) {
+                                newIndex = filteredWallpapers.length - 1;
+                            }
+                            GlobalStates.wallpaperSelectedIndex = newIndex;
+                            selectedIndex = newIndex;
+                        } else if (selectedIndex === -1) {
+                            GlobalStates.wallpaperSelectedIndex = 0;
+                            selectedIndex = 0;
+                        }
+                    }
+                }
+
+                onUpPressed: {
+                    if (filteredWallpapers.length > 0 && selectedIndex > 0) {
+                        let newIndex = selectedIndex - gridColumns;
+                        if (newIndex < 0) {
+                            newIndex = 0;
+                        }
+                        GlobalStates.wallpaperSelectedIndex = newIndex;
+                        selectedIndex = newIndex;
+                    } else if (selectedIndex === 0 && searchText.length === 0) {
+                        GlobalStates.wallpaperSelectedIndex = -1;
+                        selectedIndex = -1;
+                    }
+                }
+
+                onAccepted: {
+                    if (selectedIndex >= 0 && selectedIndex < filteredWallpapers.length) {
+                        let selectedWallpaper = filteredWallpapers[selectedIndex];
+                        if (selectedWallpaper && GlobalStates.wallpaperManager) {
+                            GlobalStates.wallpaperManager.setWallpaper(selectedWallpaper);
+                        }
+                    }
+                }
+
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Left && filteredWallpapers.length > 0) {
+                        if (selectedIndex > 0) {
+                            GlobalStates.wallpaperSelectedIndex = selectedIndex - 1;
+                            selectedIndex = selectedIndex - 1;
+                        } else if (selectedIndex === -1) {
+                            GlobalStates.wallpaperSelectedIndex = 0;
+                            selectedIndex = 0;
+                        }
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_Right && filteredWallpapers.length > 0) {
+                        if (selectedIndex < filteredWallpapers.length - 1) {
+                            GlobalStates.wallpaperSelectedIndex = selectedIndex + 1;
+                            selectedIndex = selectedIndex + 1;
+                        } else if (selectedIndex === -1) {
+                            GlobalStates.wallpaperSelectedIndex = 0;
+                            selectedIndex = 0;
+                        }
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_Home && filteredWallpapers.length > 0) {
+                        GlobalStates.wallpaperSelectedIndex = 0;
+                        selectedIndex = 0;
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_End && filteredWallpapers.length > 0) {
+                        GlobalStates.wallpaperSelectedIndex = filteredWallpapers.length - 1;
+                        selectedIndex = filteredWallpapers.length - 1;
+                        event.accepted = true;
+                    }
                 }
             }
 
@@ -126,6 +204,7 @@ Rectangle {
                         }
 
                         property bool isHovered: false
+                        property bool isSelected: selectedIndex === index
 
                         Loader {
                             anchors.fill: parent
@@ -143,6 +222,24 @@ Rectangle {
                             }
 
                             property string sourceFile: modelData
+                        }
+
+                        // Highlight border para navegación por teclado
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "transparent"
+                            border.color: Colors.adapter.primary
+                            border.width: 2
+                            radius: 4
+                            visible: parent.isSelected
+                            z: 15
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: Config.animDuration / 2
+                                    easing.type: Easing.OutQuart
+                                }
+                            }
                         }
 
                         // Etiqueta "CURRENT" para wallpaper actual
@@ -254,6 +351,10 @@ Rectangle {
 
                             onEntered: {
                                 parent.isHovered = true;
+                                // Sincronizar selección con hover
+                                GlobalStates.wallpaperSelectedIndex = index;
+                                selectedIndex = index;
+                                
                                 if (!parent.isCurrentWallpaper) {
                                     parent.color = Colors.surfaceContainerHigh;
                                 }
@@ -278,6 +379,7 @@ Rectangle {
                             onReleased: parent.scale = 1.0
 
                             onClicked: {
+                                // Aplicar wallpaper seleccionado
                                 if (GlobalStates.wallpaperManager) {
                                     GlobalStates.wallpaperManager.setWallpaper(modelData);
                                 }

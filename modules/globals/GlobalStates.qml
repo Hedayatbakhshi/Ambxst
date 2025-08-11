@@ -19,6 +19,13 @@ Singleton {
         launcherSelectedIndex = -1;
     }
 
+    // Persistent wallpaper navigation state
+    property int wallpaperSelectedIndex: -1
+
+    function clearWallpaperState() {
+        wallpaperSelectedIndex = -1;
+    }
+
     function getNotchOpen(screenName) {
         let visibilities = Visibilities.getForScreen(screenName);
         return visibilities.launcher || visibilities.dashboard || visibilities.overview;
