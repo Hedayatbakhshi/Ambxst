@@ -198,7 +198,7 @@ Rectangle {
         // Contenedor para la cuadrícula de fondos de pantalla.
         Rectangle {
             id: wallpaperGridContainer
-            width: wallpaperWidth * gridColumns
+            width: (wallpaperHeight + wallpaperMargin / 2) * gridColumns + wallpaperMargin
             height: parent.height
             color: Colors.surfaceContainer
             radius: Config.roundness > 0 ? Config.roundness - 8 : 0
@@ -206,12 +206,14 @@ Rectangle {
             border.width: 0
             clip: true
 
-            readonly property int wallpaperHeight: height / gridRows
-            readonly property int wallpaperWidth: wallpaperHeight
+            readonly property int wallpaperHeight: (height - wallpaperMargin) / gridRows
+            readonly property int wallpaperWidth: (width - wallpaperMargin) / gridColumns
+            readonly property int wallpaperMargin: 4
 
             ScrollView {
                 id: scrollView
                 anchors.fill: parent
+                anchors.margins: wallpaperGridContainer.wallpaperMargin / 2
 
                 GridView {
                     id: wallpaperGrid
@@ -361,7 +363,7 @@ Rectangle {
                     delegate: Rectangle {
                         width: wallpaperGridContainer.wallpaperWidth
                         height: wallpaperGridContainer.wallpaperHeight
-                        color: Colors.surface
+                        color: "transparent"
 
                         property bool isCurrentWallpaper: {
                             if (!GlobalStates.wallpaperManager)
@@ -375,6 +377,7 @@ Rectangle {
                         // Carga la imagen o el GIF según el tipo de archivo.
                         Loader {
                             anchors.fill: parent
+                            anchors.margins: wallpaperGridContainer.wallpaperMargin
                             sourceComponent: {
                                 if (!GlobalStates.wallpaperManager)
                                     return null;
@@ -428,9 +431,6 @@ Rectangle {
                             }
                             onExited: {
                                 parent.isHovered = false;
-                                if (!parent.isCurrentWallpaper) {
-                                    parent.color = Colors.surface;
-                                }
                             }
                             onPressed: parent.scale = 0.95
                             onReleased: parent.scale = 1.0
