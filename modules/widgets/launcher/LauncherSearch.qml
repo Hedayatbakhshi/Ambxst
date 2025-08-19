@@ -79,15 +79,15 @@ Rectangle {
 
             onDownPressed: {
                 if (resultsList.count > 0) {
-                    if (root.selectedIndex < resultsList.count - 1) {
-                        GlobalStates.launcherSelectedIndex++;
-                        root.selectedIndex++;
-                        resultsList.currentIndex = root.selectedIndex;
-                    } else if (root.selectedIndex === -1) {
-                        // When no search text and nothing selected, start at first item
+                    if (root.selectedIndex === -1) {
+                        // When nothing selected, start at first item
                         GlobalStates.launcherSelectedIndex = 0;
                         root.selectedIndex = 0;
                         resultsList.currentIndex = 0;
+                    } else if (root.selectedIndex < resultsList.count - 1) {
+                        GlobalStates.launcherSelectedIndex++;
+                        root.selectedIndex++;
+                        resultsList.currentIndex = root.selectedIndex;
                     }
                 }
             }
