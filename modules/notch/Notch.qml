@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import qs.modules.globals
 import qs.modules.theme
 import qs.modules.components
@@ -87,11 +88,41 @@ Item {
             height: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitHeight + 32 : 32
             clip: true
 
+            // Propiedad para controlar el blur durante las transiciones
+            property real transitionBlur: 0.0
+
+            // Aplicar MultiEffect con blur animable
+            layer.enabled: transitionBlur > 0.0
+            layer.effect: MultiEffect {
+                blurEnabled: true
+                blurMax: 64
+                blur: Math.min(Math.max(stackContainer.transitionBlur, 0.0), 1.0)
+            }
+
+            // Animación simple de blur → nitidez durante transiciones
+            PropertyAnimation {
+                id: blurTransitionAnimation
+                target: stackContainer
+                property: "transitionBlur"
+                from: 1.0
+                to: 0.0
+                duration: Config.animDuration
+                easing.type: Easing.OutQuart
+            }
+
             StackView {
                 id: stackViewInternal
                 anchors.fill: parent
                 anchors.margins: 16
                 initialItem: defaultViewComponent
+
+                // Activar blur al inicio de transición y animarlo a nítido
+                onBusyChanged: {
+                    if (busy) {
+                        stackContainer.transitionBlur = 1.0
+                        blurTransitionAnimation.start()
+                    }
+                }
 
                 pushEnter: Transition {
                     PropertyAnimation {
