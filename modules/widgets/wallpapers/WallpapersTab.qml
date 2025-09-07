@@ -85,7 +85,7 @@ Rectangle {
                 placeholderText: "Search wallpapers..."
                 iconText: ""
                 clearOnEscape: false
-                radius: Config.roundness > 0 ? Config.roundness : 0
+                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
                 // Manejo de eventos de búsqueda y teclado.
                 onSearchTextChanged: text => {
@@ -178,7 +178,7 @@ Rectangle {
                 width: parent.width
                 height: parent.height - wallpaperSearchInput.height - 12
                 color: Colors.surface
-                radius: Config.roundness > 0 ? Config.roundness : 0
+                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                 border.color: Colors.adapter.outline
                 border.width: 0
 
@@ -195,23 +195,25 @@ Rectangle {
         }
 
         // Contenedor para la cuadrícula de fondos de pantalla.
-        Rectangle {
+        ClippingRectangle {
             id: wallpaperGridContainer
-            width: wallpaperHeight * gridColumns
+            width: (wallpaperHeight * gridColumns) - 8
             height: parent.height
             color: "transparent"
-            radius: Config.roundness > 0 ? Config.roundness : 0
+            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
             border.color: Colors.adapter.outline
             border.width: 0
             clip: true
 
-            readonly property int wallpaperHeight: (height + wallpaperMargin) / gridRows
-            readonly property int wallpaperWidth: (width + wallpaperMargin) / gridColumns
             readonly property int wallpaperMargin: 4
+            readonly property int wallpaperHeight: (height + wallpaperMargin * 2) / gridRows
+            readonly property int wallpaperWidth: (width + wallpaperMargin * 2) / gridColumns
 
             ScrollView {
                 id: scrollView
                 anchors.fill: parent
+                anchors.centerIn: parent
+                anchors.margins: -4
 
                 GridView {
                     id: wallpaperGrid
@@ -274,7 +276,7 @@ Rectangle {
                             border.color: Colors.adapter.primary
                             border.width: 2
                             visible: selectedIndex >= 0
-                            radius: Config.roundness > 0 ? Config.roundness : 0
+                            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                             z: 10
 
                             // Borde interior original
@@ -287,7 +289,7 @@ Rectangle {
                                 color: "transparent"
                                 border.color: Colors.background
                                 border.width: 28
-                                radius: Config.roundness > 0 ? Config.roundness + 20 : 0
+                                radius: Config.roundness > 0 ? Config.roundness + 24 : 0
                                 z: 5
 
                                 // Etiqueta unificada que se anima con el highlight
@@ -425,7 +427,7 @@ Rectangle {
                             ClippingRectangle {
                                 anchors.fill: parent
                                 color: Colors.surface
-                                radius: Config.roundness > 0 ? Config.roundness : 0
+                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
                                 // Lazy loader que solo carga cuando el item está visible
                                 Loader {
@@ -523,23 +525,75 @@ Rectangle {
     Component {
         id: staticImageComponent
         Image {
-            source: parent.sourceFile ? "file://" + parent.sourceFile : ""
+            source: {
+                if (!parent.sourceFile)
+                    return "";
+
+                // Usar thumbnail si está disponible, fallback a original
+                var thumbnailPath = GlobalStates.wallpaperManager.getThumbnailPath(parent.sourceFile);
+                return thumbnailPath ? "file://" + thumbnailPath : "file://" + parent.sourceFile;
+            }
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             smooth: true
             cache: false // Evitar acumular cache innecesario
+
+            // Fallback a imagen original si el thumbnail falla
+            onStatusChanged: {
+                if (status === Image.Error && source.includes("/.cache/quickshell/image_thumbnails/")) {
+                    console.log("Thumbnail failed, using original:", parent.sourceFile);
+                    source = "file://" + parent.sourceFile;
+                }
+            }
         }
     }
 
     Component {
         id: animatedImageComponent
-        AnimatedImage {
-            source: parent.sourceFile ? "file://" + parent.sourceFile : ""
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            smooth: true
-            playing: false
-            cache: false
+        Item {
+            property string thumbnailPath: {
+                if (!parent.sourceFile)
+                    return "";
+                return GlobalStates.wallpaperManager.getThumbnailPath(parent.sourceFile);
+            }
+
+            // Para GIFs, usar thumbnail estático en el grid
+            Image {
+                anchors.fill: parent
+                source: parent.thumbnailPath ? "file://" + parent.thumbnailPath : "file://" + parent.sourceFile
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                smooth: true
+                cache: false
+
+                // Fallback a GIF original si el thumbnail falla
+                onStatusChanged: {
+                    if (status === Image.Error && source.includes("/.cache/quickshell/gif_thumbnails/")) {
+                        console.log("GIF thumbnail failed, using original:", parent.sourceFile);
+                        source = "file://" + parent.sourceFile;
+                    }
+                }
+
+                // Placeholder mientras carga
+                Rectangle {
+                    anchors.fill: parent
+                    color: Colors.surface
+                    visible: parent.status !== Image.Ready
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: {
+                            if (parent.status === Image.Loading)
+                                return "⏳";
+                            if (parent.status === Image.Error)
+                                return "🖼️";
+                            return "🎞️";
+                        }
+                        font.pixelSize: 24
+                        color: Colors.adapter.overSurfaceVariant
+                    }
+                }
+            }
         }
     }
 
@@ -547,16 +601,15 @@ Rectangle {
         id: videoThumbnailComponent
         Item {
             property string thumbnailPath: {
-                // Construir ruta del thumbnail basado en el nombre del video
-                var videoName = parent.sourceFile.split('/').pop();
-                var baseName = videoName.substring(0, videoName.lastIndexOf('.'));
-                return "file://" + Quickshell.env("HOME") + "/.cache/quickshell/video_thumbnails/" + baseName + ".jpg";
+                if (!parent.sourceFile)
+                    return "";
+                return GlobalStates.wallpaperManager.getThumbnailPath(parent.sourceFile);
             }
 
             // Thumbnail pre-generado
             Image {
                 anchors.fill: parent
-                source: parent.thumbnailPath
+                source: parent.thumbnailPath ? "file://" + parent.thumbnailPath : ""
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 smooth: true
@@ -571,9 +624,9 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         text: {
-                            if (parent.parent.status === Image.Loading)
+                            if (parent.status === Image.Loading)
                                 return "⏳";
-                            if (parent.parent.status === Image.Error)
+                            if (parent.status === Image.Error)
                                 return "❌";
                             return "📹";
                         }

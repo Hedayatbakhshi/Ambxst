@@ -43,10 +43,49 @@ PanelWindow {
         return 'unknown';
     }
 
-    function getThumbnailPath(videoPath) {
-        var fileName = videoPath.split('/').pop();
+    function getThumbnailPath(filePath) {
+        var fileName = filePath.split('/').pop();
         var baseName = fileName.substring(0, fileName.lastIndexOf('.'));
-        return Quickshell.env("HOME") + "/.cache/quickshell/video_thumbnails/" + baseName + ".jpg";
+        var fileType = getFileType(filePath);
+        var cacheDir = "";
+        
+        if (fileType === 'video') {
+            cacheDir = "video_thumbnails";
+        } else if (fileType === 'image') {
+            cacheDir = "image_thumbnails";
+        } else if (fileType === 'gif') {
+            cacheDir = "gif_thumbnails";
+        } else {
+            return ""; // Unknown type
+        }
+        
+        return Quickshell.env("HOME") + "/.cache/quickshell/" + cacheDir + "/" + baseName + ".jpg";
+    }
+
+    function getDisplaySource(filePath) {
+        var fileType = getFileType(filePath);
+        
+        // Para el display (WallpapersTab), siempre usar thumbnails si están disponibles
+        if (fileType === 'video' || fileType === 'image' || fileType === 'gif') {
+            var thumbnailPath = getThumbnailPath(filePath);
+            // Verificar si el thumbnail existe (esto es solo para debugging, QML manejará el fallback)
+            return thumbnailPath;
+        }
+        
+        // Fallback al archivo original si no es un tipo soportado
+        return filePath;
+    }
+
+    function getColorSource(filePath) {
+        var fileType = getFileType(filePath);
+        
+        // Para generación de colores: solo videos usan thumbnails
+        if (fileType === 'video') {
+            return getThumbnailPath(filePath);
+        }
+        
+        // Imágenes y GIFs usan el archivo original para colores
+        return filePath;
     }
 
     // Update directory watcher when wallpaperDir changes
@@ -62,13 +101,9 @@ PanelWindow {
             console.log("Wallpaper changed to:", currentWallpaper);
 
             var fileType = getFileType(currentWallpaper);
-            var matugenSource = currentWallpaper;
+            var matugenSource = getColorSource(currentWallpaper);
             
-            // Si es un video, usar su thumbnail para matugen
-            if (fileType === 'video') {
-                matugenSource = getThumbnailPath(currentWallpaper);
-                console.log("Using video thumbnail for matugen:", matugenSource);
-            }
+            console.log("Using source for matugen:", matugenSource, "(type:", fileType + ")");
 
             // Ejecutar matugen con configuración específica
             var command = ["matugen", "image", matugenSource, "-c", Qt.resolvedUrl("../../../assets/matugen/config.toml").toString().replace("file://", "")];
@@ -211,13 +246,9 @@ PanelWindow {
             // Cuando termina el primer proceso, ejecutar el segundo sin configuración
             console.log("Matugen with config finished, running normal matugen...");
             var fileType = getFileType(currentWallpaper);
-            var matugenSource = currentWallpaper;
+            var matugenSource = getColorSource(currentWallpaper);
             
-            // Si es un video, usar su thumbnail para matugen
-            if (fileType === 'video') {
-                matugenSource = getThumbnailPath(currentWallpaper);
-                console.log("Using video thumbnail for normal matugen:", matugenSource);
-            }
+            console.log("Using source for normal matugen:", matugenSource, "(type:", fileType + ")");
             
             var command = ["matugen", "image", matugenSource];
             if (Config.theme.lightMode) {
