@@ -49,6 +49,10 @@ Singleton {
                 property real scale: 0.1
                 property real workspaceSpacing: 4
             }
+
+            property JsonObject notch: JsonObject {
+                property string theme: "default"
+            }
         }
     }
 
