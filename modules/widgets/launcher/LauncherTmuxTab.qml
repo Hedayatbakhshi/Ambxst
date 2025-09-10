@@ -630,16 +630,16 @@ Rectangle {
                 }
 
                 // Menú contextual usando el componente reutilizable
-                ContextMenu {
+                OptionsMenu {
                     id: contextMenu
-                    
+
                     items: [
                         {
                             text: "Rename",
                             icon: Icons.edit,
                             highlightColor: Colors.adapter.secondary,
                             textColor: Colors.adapter.overSecondary,
-                            onTriggered: function() {
+                            onTriggered: function () {
                                 console.log("DEBUG: Rename clicked from ContextMenu");
                                 root.enterRenameMode(modelData.name);
                             }
@@ -649,7 +649,7 @@ Rectangle {
                             icon: Icons.alert,
                             highlightColor: Colors.adapter.errorContainer,
                             textColor: Colors.adapter.error,
-                            onTriggered: function() {
+                            onTriggered: function () {
                                 console.log("DEBUG: Quit clicked from ContextMenu");
                                 root.enterDeleteMode(modelData.name);
                             }
