@@ -690,7 +690,7 @@ Rectangle {
                     // Highlight elástico que se estira entre botones para rename
                     Rectangle {
                         id: renameHighlight
-                        color: Colors.adapter.overPrimary
+                        color: Colors.adapter.overSecondary
                         radius: Config.roundness > 4 ? Config.roundness - 4 : 0
                         visible: isInRenameMode
                         z: 0
