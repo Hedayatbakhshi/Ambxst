@@ -799,7 +799,8 @@ Rectangle {
                                     anchors.fill: parent
                                     anchors.margins: -4
                                     anchors.topMargin: 0
-                                    color: Colors.adapter.error
+                                    // color: Colors.adapter.error
+                                    color: "transparent"
                                 }
 
                                 // Highlight elástico que se estira entre botones
@@ -942,18 +943,26 @@ Rectangle {
                             }
                         }
 
-                        highlight: Rectangle {
+                        highlight: ClippingRectangle {
                             color: "transparent"
                             z: 100
-                            border.color: root.imageDeleteMode ? Colors.adapter.error : Colors.adapter.primary
-                            border.width: 4
                             radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                             visible: root.isImageSectionFocused
 
-                            Behavior on border.color {
-                                ColorAnimation {
-                                    duration: Config.animDuration / 2
-                                    easing.type: Easing.OutQuart
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -32
+                                anchors.bottomMargin: root.imageDeleteMode ? -4 : -32
+                                color: "transparent"
+                                border.color: root.imageDeleteMode ? Colors.adapter.error : Colors.adapter.primary
+                                border.width: 36
+                                radius: Config.roundness > 0 ? Config.roundness + 36 : 0
+
+                                Behavior on border.color {
+                                    ColorAnimation {
+                                        duration: Config.animDuration / 2
+                                        easing.type: Easing.OutQuart
+                                    }
                                 }
                             }
                         }
