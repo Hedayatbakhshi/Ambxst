@@ -291,7 +291,7 @@ PanelWindow {
     Process {
         id: thumbnailGeneratorScript
         running: false
-        command: ["python3", Qt.resolvedUrl("../../../scripts/generate_thumbnails.py").toString().replace("file://", ""), Qt.resolvedUrl("wallpaper_config.json").toString().replace("file://", "")]
+        command: ["python3", Qt.resolvedUrl("../../../../scripts/generate_thumbnails.py").toString().replace("file://", ""), Qt.resolvedUrl("wallpaper_config.json").toString().replace("file://", "")]
 
         stdout: StdioCollector {
             onStreamFinished: {
