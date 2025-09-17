@@ -4,15 +4,15 @@ Thumbnail Generator for Ambyst Wallpaper System
 Generates thumbnails for video files, images, and GIFs using FFmpeg and ImageMagick with multithreading.
 """
 
-import os
-import sys
 import json
-import threading
+import os
 import subprocess
+import sys
+import threading
 import time
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Tuple, Optional
+from pathlib import Path
+from typing import List, Optional, Tuple
 
 # Supported extensions
 VIDEO_EXTENSIONS = {'.mp4', '.webm', '.mov', '.avi', '.mkv'}
@@ -389,7 +389,7 @@ def main():
     """Entry point."""
     if len(sys.argv) != 2:
         print("Usage: python3 generate_thumbnails.py <config_path>")
-        print("Example: python3 generate_thumbnails.py modules/widgets/wallpapers/wallpaper_config.json")
+        print("Example: python3 generate_thumbnails.py wallpaper_config.json")
         return 1
     
     config_path = sys.argv[1]

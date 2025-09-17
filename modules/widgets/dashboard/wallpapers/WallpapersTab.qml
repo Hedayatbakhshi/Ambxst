@@ -540,7 +540,7 @@ Rectangle {
 
             // Fallback a imagen original si el thumbnail falla
             onStatusChanged: {
-                if (status === Image.Error && source.includes("/.cache/quickshell/image_thumbnails/")) {
+                if (status === Image.Error && source.toString().includes("/.cache/quickshell/image_thumbnails/")) {
                     console.log("Thumbnail failed, using original:", parent.sourceFile);
                     source = "file://" + parent.sourceFile;
                 }
@@ -568,7 +568,7 @@ Rectangle {
 
                 // Fallback a GIF original si el thumbnail falla
                 onStatusChanged: {
-                    if (status === Image.Error && source.includes("/.cache/quickshell/gif_thumbnails/")) {
+                    if (status === Image.Error && source.toString().includes("/.cache/quickshell/gif_thumbnails/")) {
                         console.log("GIF thumbnail failed, using original:", parent.sourceFile);
                         source = "file://" + parent.sourceFile;
                     }
