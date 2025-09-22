@@ -92,8 +92,9 @@ Item {
                 // Botón del dashboard (solo)
                 Rectangle {
                     id: dashboardAccess
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: 250
                     Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignHCenter
                     color: dashboardAccessMouse.containsMouse ? Colors.surfaceBright : Colors.surface
                     topLeftRadius: 0
                     topRightRadius: 0
@@ -215,7 +216,6 @@ Item {
                 Button {
                     width: 32
                     height: 32
-                    text: "✕"
                     hoverEnabled: true
 
                     onHoveredChanged: {
@@ -223,8 +223,8 @@ Item {
                     }
 
                     background: Rectangle {
-                        color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : "transparent")
-                        radius: 6
+                        color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
+                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
                         Behavior on color {
                             ColorAnimation {
@@ -234,9 +234,9 @@ Item {
                     }
 
                     contentItem: Text {
-                        text: parent.text
-                        font.family: Config.theme.font
-                        font.pixelSize: 8
+                        text: Icons.cancel
+                        font.family: Icons.font
+                        font.pixelSize: 16
                         color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -278,6 +278,7 @@ Item {
                         text: modelData.text
                         font.family: Config.theme.font
                         font.pixelSize: Config.theme.fontSize
+                        font.weight: Font.Bold
                         hoverEnabled: true
 
                         onHoveredChanged: {
@@ -298,7 +299,7 @@ Item {
                         contentItem: Text {
                             text: parent.text
                             font: parent.font
-                            color: parent.pressed ? Colors.adapter.overPrimary : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.primary)
+                            color: parent.pressed ? Colors.adapter.overPrimary : (parent.hovered ? Colors.adapter.primary : Colors.adapter.overBackground)
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
 
