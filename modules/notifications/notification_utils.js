@@ -1,47 +1,4 @@
 /**
- * @param { string } summary 
- * @returns { string }
- */
-function findSuitableMaterialSymbol(summary = "") {
-    const defaultType = 'chat';
-    if(summary.length === 0) return defaultType;
-
-    const keywordsToTypes = {
-        'reboot': 'restart_alt',
-        'recording': 'screen_record',
-        'battery': 'power',
-        'power': 'power',
-        'screenshot': 'screenshot_monitor',
-        'welcome': 'waving_hand',
-        'time': 'schedule',
-        'installed': 'download',
-        'configuration reloaded': 'settings',
-        'config': 'settings',
-        'update': 'update',
-        'ai response': 'psychology',
-        'control': 'settings',
-        'upscale': 'compare',
-        'install': 'deployed_code_update',
-        'startswith:file': 'folder_copy', // Declarative startsWith check
-    };
-
-    const lowerSummary = summary.toLowerCase();
-
-    for (const [keyword, type] of Object.entries(keywordsToTypes)) {
-        if (keyword.startsWith('startswith:')) {
-            const startsWithKeyword = keyword.replace('startswith:', '');
-            if (lowerSummary.startsWith(startsWithKeyword)) {
-                return type;
-            }
-        } else if (lowerSummary.includes(keyword)) {
-            return type;
-        }
-    }
-
-    return defaultType;
-}
-
-/**
  * @param { number | string | Date } timestamp 
  * @returns { string }
  */

@@ -8,16 +8,21 @@ ListView {
     id: root
     property bool popup: false
 
-    spacing: 3
+    spacing: 8
 
-    model: root.popup ? Notifications.popupAppNameList : Notifications.appNameList
+    // Mostrar todas las notificaciones individuales en lugar de grupos
+    model: root.popup ? Notifications.popupNotifications : Notifications.notifications
 
-    delegate: NotificationGroup {
+    delegate: NotificationItem {
         required property int index
         required property var modelData
-        popup: root.popup
         anchors.left: parent?.left
         anchors.right: parent?.right
-        notificationGroup: popup ? Notifications.popupGroupsByAppName[modelData] : Notifications.groupsByAppName[modelData]
+        notificationObject: modelData
+        expanded: true // Siempre expandidas para mostrar toda la información
+        
+        onDestroyRequested: {
+            // No necesitamos lógica especial aquí
+        }
     }
 }
