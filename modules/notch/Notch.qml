@@ -133,7 +133,7 @@ Item {
                 id: stackViewInternal
                 anchors.fill: parent
                 anchors.margins: 16
-                anchors.topMargin: (hasActiveNotifications && stackViewInternal.currentItem && stackViewInternal.currentItem.hovered) ? 0 : 16
+                anchors.topMargin: (hasActiveNotifications && stackViewInternal.currentItem && stackViewInternal.currentItem.hovered) ? Config.theme.borderSize : 16
                 initialItem: hasActiveNotifications ? notificationViewComponent : defaultViewComponent
 
                 Behavior on anchors.topMargin {
