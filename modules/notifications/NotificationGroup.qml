@@ -29,9 +29,9 @@ Item {
             groups[summary].push(notif);
         });
         return Object.values(groups).map(notifications => ({
-            summary: notifications[0].summary,
-            notifications: notifications
-        }));
+                    summary: notifications[0].summary,
+                    notifications: notifications
+                }));
     }
 
     onNotificationGroupChanged: {}
@@ -162,9 +162,9 @@ Item {
             anchors.margins: root.padding
             spacing: root.padding / 2
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: root.notificationCount === 1 ? 0 : (root.expanded ? 8 : 4)
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: root.notificationCount === 1 ? 0 : (root.expanded ? 8 : 4)
 
                 Behavior on spacing {
                     NumberAnimation {
@@ -188,6 +188,13 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 5
                         visible: root.multipleNotifications
+
+                        Text {
+                            text: Icons.info
+                            font.family: Icons.font
+                            font.pixelSize: 16
+                            color: topRow.showAppName ? Colors.adapter.outline : Colors.adapter.primary
+                        }
 
                         Text {
                             id: appName

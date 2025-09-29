@@ -55,4 +55,6 @@ QtObject {
     readonly property string broom: ""
     readonly property string xeyes: ""
     readonly property string seal: ""
+    readonly property string info: ""
+    readonly property string help: ""
 }
