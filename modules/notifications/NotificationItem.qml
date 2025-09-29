@@ -128,58 +128,101 @@ Item {
                     spacing: onlyNotification ? 4 : 0
 
                     // Fila del summary, app name y timestamp
-                    Row {
-                        width: parent.width
-                        spacing: 4
+                     RowLayout {
+                         width: parent.width
+                         spacing: 4
 
-                        // Contenedor izquierdo para summary y app name
-                        Row {
-                            width: parent.width - timestampText.width - parent.spacing
-                            spacing: 4
+                         // Contenedor izquierdo para summary y app name
+                         Row {
+                             Layout.fillWidth: true
+                             Layout.minimumWidth: 0
+                             spacing: 4
 
-                            Text {
-                                id: summaryText
-                                width: Math.min(implicitWidth, parent.width - (appNameText.visible ? appNameText.width + parent.spacing : 0))
-                                text: notificationObject ? notificationObject.summary : ""
-                                font.family: Config.theme.font
-                                font.pixelSize: Config.theme.fontSize
-                                font.weight: Font.Bold
-                                color: Colors.adapter.primary
-                                elide: Text.ElideRight
-                                maximumLineCount: 1
-                                wrapMode: Text.NoWrap
-                                verticalAlignment: Text.AlignVCenter
-                            }
+                             Text {
+                                 id: summaryText
+                                 width: Math.min(implicitWidth, parent.width - (appNameText.visible ? appNameText.width + parent.spacing : 0))
+                                 text: notificationObject ? notificationObject.summary : ""
+                                 font.family: Config.theme.font
+                                 font.pixelSize: Config.theme.fontSize
+                                 font.weight: Font.Bold
+                                 color: Colors.adapter.primary
+                                 elide: Text.ElideRight
+                                 maximumLineCount: 1
+                                 wrapMode: Text.NoWrap
+                                 verticalAlignment: Text.AlignVCenter
+                             }
 
-                            Text {
-                                id: appNameText
-                                width: Math.min(implicitWidth, Math.max(60, parent.width * 0.3))
-                                text: notificationObject ? "• " + notificationObject.appName : ""
-                                font.family: Config.theme.font
-                                font.pixelSize: Config.theme.fontSize
-                                font.weight: Font.Bold
-                                color: Colors.adapter.outline
-                                elide: Text.ElideRight
-                                maximumLineCount: 1
-                                wrapMode: Text.NoWrap
-                                verticalAlignment: Text.AlignVCenter
-                                visible: text !== ""
-                            }
-                        }
+                             Text {
+                                 id: appNameText
+                                 width: Math.min(implicitWidth, Math.max(60, parent.width * 0.3))
+                                 text: notificationObject ? "• " + notificationObject.appName : ""
+                                 font.family: Config.theme.font
+                                 font.pixelSize: Config.theme.fontSize
+                                 font.weight: Font.Bold
+                                 color: Colors.adapter.outline
+                                 elide: Text.ElideRight
+                                 maximumLineCount: 1
+                                 wrapMode: Text.NoWrap
+                                 verticalAlignment: Text.AlignVCenter
+                                 visible: text !== ""
+                             }
+                         }
 
-                        // Timestamp a la derecha
-                        Text {
-                            id: timestampText
-                            text: notificationObject ? NotificationUtils.getFriendlyNotifTimeString(notificationObject.time) : ""
-                            font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize
-                            font.weight: Font.Bold
-                            color: Colors.adapter.outline
-                            verticalAlignment: Text.AlignVCenter
-                            visible: text !== ""
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
+                         // Timestamp a la derecha
+                         Text {
+                             id: timestampText
+                             text: notificationObject ? NotificationUtils.getFriendlyNotifTimeString(notificationObject.time) : ""
+                             font.family: Config.theme.font
+                             font.pixelSize: Config.theme.fontSize
+                             font.weight: Font.Bold
+                             color: Colors.adapter.outline
+                             verticalAlignment: Text.AlignVCenter
+                             visible: text !== ""
+                             Layout.alignment: Qt.AlignVCenter
+                         }
+
+                         // Botón de descartar
+                         Button {
+                             id: dismissButton
+                             Layout.preferredWidth: 24
+                             Layout.preferredHeight: 24
+                             Layout.alignment: Qt.AlignVCenter
+                             hoverEnabled: true
+                             visible: onlyNotification
+
+                             background: Rectangle {
+                                 color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
+                                 radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+                                 Behavior on color {
+                                     ColorAnimation {
+                                         duration: Config.animDuration
+                                     }
+                                 }
+                             }
+
+                             contentItem: Text {
+                                 text: Icons.cancel
+                                 font.family: Icons.font
+                                 font.pixelSize: 14
+                                 color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
+                                 horizontalAlignment: Text.AlignHCenter
+                                 verticalAlignment: Text.AlignVCenter
+
+                                 Behavior on color {
+                                     ColorAnimation {
+                                         duration: Config.animDuration
+                                     }
+                                 }
+                             }
+
+                             onClicked: {
+                                 if (notificationObject) {
+                                     Notifications.discardNotification(notificationObject.id);
+                                 }
+                             }
+                         }
+                     }
 
                     Text {
                         width: parent.width
@@ -195,53 +238,7 @@ Item {
                     }
                 }
 
-                // Columna de botones (solo visible con hover o expanded)
-                Column {
-                    Layout.preferredWidth: onlyNotification ? 32 : 0
-                    Layout.alignment: Qt.AlignTop
-                    spacing: 4
-                    visible: onlyNotification
-                    clip: true
 
-                    // Botón de descartar
-                    Button {
-                        width: 24
-                        height: 24
-                        hoverEnabled: true
-
-                        background: Rectangle {
-                            color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
-                            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: Config.animDuration
-                                }
-                            }
-                        }
-
-                        contentItem: Text {
-                            text: Icons.cancel
-                            font.family: Icons.font
-                            font.pixelSize: 14
-                            color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: Config.animDuration
-                                }
-                            }
-                        }
-
-                        onClicked: {
-                            if (notificationObject) {
-                                Notifications.discardNotification(notificationObject.id);
-                            }
-                        }
-                    }
-                }
             }
 
             // Grouped notification layout (original)
@@ -268,77 +265,82 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: expanded ? columnLayout.implicitHeight : rowLayout.implicitHeight
 
-                    RowLayout {
-                        id: columnLayout
-                        width: parent.width
-                        spacing: 8
-                        visible: expanded
+                     RowLayout {
+                         id: columnLayout
+                         width: parent.width
+                         spacing: 8
+                         visible: expanded
 
-                        Column {
-                            Layout.fillWidth: true
-                            spacing: 4
+                         Column {
+                             Layout.fillWidth: true
+                             spacing: 4
 
-                            Text {
-                                width: parent.width
-                                text: notificationObject.summary || ""
-                                font.family: Config.theme.font
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
-                                color: Colors.adapter.primary
-                                elide: Text.ElideRight
-                            }
+                             RowLayout {
+                                 width: parent.width
+                                 spacing: 4
 
-                            Text {
-                                width: parent.width
-                                text: processNotificationBody(notificationObject.body || "")
-                                font.family: Config.theme.font
-                                font.pixelSize: root.fontSize
-                                color: Colors.adapter.overBackground
-                                wrapMode: Text.Wrap
-                                maximumLineCount: 3
-                                elide: Text.ElideRight
-                                visible: text.length > 0
-                            }
-                        }
+                                 Text {
+                                     Layout.fillWidth: true
+                                     text: notificationObject.summary || ""
+                                     font.family: Config.theme.font
+                                     font.pixelSize: 14
+                                     font.weight: Font.Bold
+                                     color: Colors.adapter.primary
+                                     elide: Text.ElideRight
+                                 }
 
-                        Button {
-                            Layout.preferredWidth: 24
-                            Layout.preferredHeight: 24
-                            hoverEnabled: true
+                                 Button {
+                                     Layout.preferredWidth: 24
+                                     Layout.preferredHeight: 24
+                                     hoverEnabled: true
 
-                            background: Rectangle {
-                                color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
-                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                     background: Rectangle {
+                                         color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
+                                         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Config.animDuration
-                                    }
-                                }
-                            }
+                                         Behavior on color {
+                                             ColorAnimation {
+                                                 duration: Config.animDuration
+                                             }
+                                         }
+                                     }
 
-                            contentItem: Text {
-                                text: Icons.cancel
-                                font.family: Icons.font
-                                font.pixelSize: 16
-                                color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
+                                     contentItem: Text {
+                                         text: Icons.cancel
+                                         font.family: Icons.font
+                                         font.pixelSize: 16
+                                         color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
+                                         horizontalAlignment: Text.AlignHCenter
+                                         verticalAlignment: Text.AlignVCenter
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Config.animDuration
-                                    }
-                                }
-                            }
+                                         Behavior on color {
+                                             ColorAnimation {
+                                                 duration: Config.animDuration
+                                             }
+                                         }
+                                     }
 
-                            onClicked: {
-                                if (notificationObject) {
-                                    Notifications.discardNotification(notificationObject.id);
-                                }
-                            }
-                        }
-                    }
+                                     onClicked: {
+                                         if (notificationObject) {
+                                             Notifications.discardNotification(notificationObject.id);
+                                         }
+                                     }
+                                 }
+                             }
+
+                             Text {
+                                 width: parent.width
+                                 text: processNotificationBody(notificationObject.body || "")
+                                 font.family: Config.theme.font
+                                 font.pixelSize: root.fontSize
+                                 color: Colors.adapter.overBackground
+                                 wrapMode: Text.Wrap
+                                 maximumLineCount: 3
+                                 elide: Text.ElideRight
+                                 visible: text.length > 0
+                             }
+                         }
+                     }
 
                     RowLayout {
                         id: rowLayout

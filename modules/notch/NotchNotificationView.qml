@@ -402,59 +402,100 @@ Item {
                                     Layout.alignment: Qt.AlignVCenter
                                     spacing: hovered ? 4 : 0
 
-                                    // Fila del summary, app name y timestamp
-                                    Row {
-                                        width: parent.width
-                                        spacing: 4
+                                     // Fila del summary, app name y timestamp
+                                     Row {
+                                         width: parent.width
+                                         spacing: 4
 
-                                        // Contenedor izquierdo para summary y app name
-                                        Row {
-                                            width: parent.width - timestampText.width - parent.spacing
-                                            spacing: 4
+                                         // Contenedor izquierdo para summary y app name
+                                         Row {
+                                             width: parent.width - (timestampText.visible ? timestampText.implicitWidth + parent.spacing : 0) - (hovered ? 24 + parent.spacing : 0)
+                                             spacing: 4
 
-                                            Text {
-                                                id: summaryText
-                                                width: Math.min(implicitWidth, parent.width - (appNameText.visible ? appNameText.width + parent.spacing : 0))
-                                                text: notification ? notification.summary : ""
-                                                font.family: Config.theme.font
-                                                font.pixelSize: Config.theme.fontSize
-                                                font.weight: Font.Bold
-                                                color: Colors.adapter.primary
-                                                elide: Text.ElideRight
-                                                maximumLineCount: 1
-                                                wrapMode: Text.NoWrap
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
+                                             Text {
+                                                 id: summaryText
+                                                 width: Math.min(implicitWidth, parent.width - (appNameText.visible ? appNameText.width + parent.spacing : 0))
+                                                 text: notification ? notification.summary : ""
+                                                 font.family: Config.theme.font
+                                                 font.pixelSize: Config.theme.fontSize
+                                                 font.weight: Font.Bold
+                                                 color: Colors.adapter.primary
+                                                 elide: Text.ElideRight
+                                                 maximumLineCount: 1
+                                                 wrapMode: Text.NoWrap
+                                                 verticalAlignment: Text.AlignVCenter
+                                             }
 
-                                            Text {
-                                                id: appNameText
-                                                width: Math.min(implicitWidth, Math.max(60, parent.width * 0.3))
-                                                text: notification ? "• " + notification.appName : ""
-                                                font.family: Config.theme.font
-                                                font.pixelSize: Config.theme.fontSize
-                                                font.weight: Font.Bold
-                                                color: Colors.adapter.outline
-                                                elide: Text.ElideRight
-                                                maximumLineCount: 1
-                                                wrapMode: Text.NoWrap
-                                                verticalAlignment: Text.AlignVCenter
-                                                visible: text !== ""
-                                            }
-                                        }
+                                             Text {
+                                                 id: appNameText
+                                                 width: Math.min(implicitWidth, Math.max(60, parent.width * 0.3))
+                                                 text: notification ? "• " + notification.appName : ""
+                                                 font.family: Config.theme.font
+                                                 font.pixelSize: Config.theme.fontSize
+                                                 font.weight: Font.Bold
+                                                 color: Colors.adapter.outline
+                                                 elide: Text.ElideRight
+                                                 maximumLineCount: 1
+                                                 wrapMode: Text.NoWrap
+                                                 verticalAlignment: Text.AlignVCenter
+                                                 visible: text !== ""
+                                             }
+                                         }
 
-                                        // Timestamp a la derecha
-                                        Text {
-                                            id: timestampText
-                                            text: notification ? NotificationUtils.getFriendlyNotifTimeString(notification.time) : ""
-                                            font.family: Config.theme.font
-                                            font.pixelSize: Config.theme.fontSize
-                                            font.weight: Font.Bold
-                                            color: Colors.adapter.outline
-                                            verticalAlignment: Text.AlignVCenter
-                                            visible: text !== ""
-                                            anchors.verticalCenter: parent.verticalCenter
-                                        }
-                                    }
+                                         // Timestamp a la derecha
+                                         Text {
+                                             id: timestampText
+                                             text: notification ? NotificationUtils.getFriendlyNotifTimeString(notification.time) : ""
+                                             font.family: Config.theme.font
+                                             font.pixelSize: Config.theme.fontSize
+                                             font.weight: Font.Bold
+                                             color: Colors.adapter.outline
+                                             verticalAlignment: Text.AlignVCenter
+                                             visible: text !== ""
+                                             anchors.verticalCenter: parent.verticalCenter
+                                         }
+
+                                         // Botón de descartar
+                                         Button {
+                                             id: dismissButton
+                                             width: 24
+                                             height: 24
+                                             hoverEnabled: true
+                                             visible: true
+
+                                             background: Rectangle {
+                                                 color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
+                                                 radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+                                                 Behavior on color {
+                                                     ColorAnimation {
+                                                         duration: Config.animDuration
+                                                     }
+                                                 }
+                                             }
+
+                                             contentItem: Text {
+                                                 text: Icons.cancel
+                                                 font.family: Icons.font
+                                                 font.pixelSize: 14
+                                                 color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
+                                                 horizontalAlignment: Text.AlignHCenter
+                                                 verticalAlignment: Text.AlignVCenter
+
+                                                 Behavior on color {
+                                                     ColorAnimation {
+                                                         duration: Config.animDuration
+                                                     }
+                                                 }
+                                             }
+
+                                             onClicked: {
+                                                 if (notification) {
+                                                     Notifications.discardNotification(notification.id);
+                                                 }
+                                             }
+                                         }
+                                     }
 
                                     Text {
                                         width: parent.width
@@ -470,55 +511,7 @@ Item {
                                     }
                                 }
 
-                                // Columna de botones (solo visible con hover)
-                                Column {
-                                    Layout.preferredWidth: hovered ? 32 : 0
-                                    Layout.alignment: Qt.AlignTop
-                                    spacing: 4
-                                    visible: hovered
-                                    clip: true
 
-                                    // Botón de descartar
-                                    Button {
-                                        width: 24
-                                        height: 24
-                                        hoverEnabled: true
-
-                                        // Ya no necesita gestionar anyButtonHovered porque mouseArea principal maneja el hover
-
-                                        background: Rectangle {
-                                            color: parent.pressed ? Colors.adapter.error : (parent.hovered ? Colors.surfaceBright : Colors.surface)
-                                            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: Config.animDuration
-                                                }
-                                            }
-                                        }
-
-                                        contentItem: Text {
-                                            text: Icons.cancel
-                                            font.family: Icons.font
-                                            font.pixelSize: 14
-                                            color: parent.pressed ? Colors.adapter.overError : (parent.hovered ? Colors.adapter.overBackground : Colors.adapter.error)
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: Config.animDuration
-                                                }
-                                            }
-                                        }
-
-                                        onClicked: {
-                                            if (notification) {
-                                                Notifications.discardNotification(notification.id);
-                                            }
-                                        }
-                                    }
-                                }
                             }
 
                             // Botones de acción (solo visible con hover)
