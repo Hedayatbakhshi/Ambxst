@@ -8,6 +8,7 @@ import qs.modules.theme
 import qs.modules.services
 import qs.config
 import "./NotificationAnimation.qml"
+import "./NotificationSummaryGroup.qml"
 import "./notification_utils.js" as NotificationUtils
 
 Item {
@@ -17,6 +18,21 @@ Item {
     property int notificationCount: notifications.length
     property bool multipleNotifications: notificationCount > 1
     property var validNotifications: notifications.filter(n => n != null && n.summary != null)
+
+    property var groupedNotifications: {
+        const groups = {};
+        root.validNotifications.forEach(notif => {
+            const summary = notif.summary || "";
+            if (!groups[summary]) {
+                groups[summary] = [];
+            }
+            groups[summary].push(notif);
+        });
+        return Object.values(groups).map(notifications => ({
+            summary: notifications[0].summary,
+            notifications: notifications
+        }));
+    }
 
     onNotificationGroupChanged: {}
 
@@ -221,15 +237,15 @@ Item {
                         }
                     }
 
-                    model: expanded ? root.validNotifications.slice().reverse() : root.validNotifications.slice().reverse().slice(0, 2)
+                    model: expanded ? root.groupedNotifications : root.groupedNotifications.slice(0, 2)
 
-                    delegate: NotificationItem {
+                    delegate: NotificationSummaryGroup {
                         required property int index
                         required property var modelData
-                        notificationObject: modelData
+                        notifications: modelData.notifications
                         expanded: root.expanded
-                        onlyNotification: (root.notificationCount === 1)
-                        opacity: (!root.expanded && index == 1 && root.notificationCount > 2) ? 0.5 : 1
+                        onlyNotification: (modelData.notifications.length === 1)
+                        opacity: (!root.expanded && index == 1 && root.groupedNotifications.length > 2) ? 0.5 : 1
                         visible: root.expanded || (index < 2)
                         anchors.left: parent?.left
                         anchors.right: parent?.right
@@ -237,9 +253,8 @@ Item {
                         Component.onCompleted: {}
 
                         onDestroyRequested: {
-                            if (root.notificationCount === 1) {
-                                root.destroyWithAnimation();
-                            }
+                            // Destruir todo el grupo si es el único o si hay múltiples
+                            root.destroyWithAnimation();
                         }
                     }
                 }
