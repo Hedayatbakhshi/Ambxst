@@ -130,8 +130,8 @@ Item {
                         size: onlyNotification ? 48 : 32
                         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                         visible: latestNotification && (latestNotification.appIcon !== "" || latestNotification.image !== "")
-                        appIcon: latestNotification ? latestNotification.appIcon : ""
-                        image: latestNotification ? latestNotification.image : ""
+                        appIcon: latestNotification ? (latestNotification.cachedAppIcon || latestNotification.appIcon) : ""
+                        image: latestNotification ? (latestNotification.cachedImage || latestNotification.image) : ""
                         summary: latestNotification ? latestNotification.summary : ""
                         urgency: latestNotification ? latestNotification.urgency : NotificationUrgency.Normal
                     }
@@ -278,8 +278,8 @@ Item {
                         size: expanded ? 48 : 24
                         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                         visible: latestNotification && (latestNotification.appIcon !== "" || latestNotification.image !== "")
-                        appIcon: latestNotification ? latestNotification.appIcon : ""
-                        image: latestNotification ? latestNotification.image : ""
+                        appIcon: latestNotification ? (latestNotification.cachedAppIcon || latestNotification.appIcon) : ""
+                        image: latestNotification ? (latestNotification.cachedImage || latestNotification.image) : ""
                         summary: latestNotification ? latestNotification.summary : ""
                         urgency: latestNotification ? latestNotification.urgency : NotificationUrgency.Normal
                     }
@@ -435,7 +435,7 @@ Item {
             Item {
                 id: actionButtonsRow
                 Layout.fillWidth: true
-                implicitHeight: ((onlyNotification || expanded) && latestNotification && latestNotification.actions.length > 0) ? 32 : 0
+                implicitHeight: ((onlyNotification || expanded) && latestNotification && latestNotification.actions.length > 0 && !latestNotification.isCached) ? 32 : 0
                 height: implicitHeight
                 clip: true
 

@@ -27,7 +27,14 @@ Singleton {
         property double time
         property string urgency: "normal"
         property Timer timer
-        
+
+        // Propiedades para cache de imágenes
+        property string cachedAppIcon: ""
+        property string cachedImage: ""
+
+        // Indica si esta notificación fue cargada desde cache
+        property bool isCached: false
+
         // Inicializar valores cuando se asigna la notification
         onNotificationChanged: {
             if (notification) {
@@ -37,6 +44,18 @@ Singleton {
                 image = notification.image ?? "";
                 summary = notification.summary ?? "";
                 urgency = notification.urgency.toString() ?? "normal";
+
+                // Cachear imágenes
+                if (appIcon && !appIcon.startsWith("data:")) {
+                    root.cacheImageAsBase64(appIcon, function(cachedData) {
+                        cachedAppIcon = cachedData;
+                    });
+                }
+                if (image && !image.startsWith("data:")) {
+                    root.cacheImageAsBase64(image, function(cachedData) {
+                        cachedImage = cachedData;
+                    });
+                }
             }
         }
     }
@@ -51,7 +70,10 @@ Singleton {
             "image": notif.image,
             "summary": notif.summary,
             "time": notif.time,
-            "urgency": notif.urgency
+            "urgency": notif.urgency,
+            "cachedAppIcon": notif.cachedAppIcon,
+            "cachedImage": notif.cachedImage,
+            "isCached": notif.isCached
         };
     }
 
@@ -123,13 +145,16 @@ Singleton {
         return notifComponent.createObject(root, {
             "id": json.id,
             "actions": json.actions,
-            "appIcon": json.appIcon,
+            "appIcon": json.cachedAppIcon || json.appIcon,  // Usar cached si disponible
             "appName": json.appName,
             "body": json.body,
-            "image": json.image,
+            "image": json.cachedImage || json.image,  // Usar cached si disponible
             "summary": json.summary,
             "time": json.time,
             "urgency": json.urgency,
+            "cachedAppIcon": json.cachedAppIcon || "",
+            "cachedImage": json.cachedImage || "",
+            "isCached": json.isCached || true,  // Default to true for loaded notifications
             "popup": false  // No popup para notificaciones cargadas
         });
     }
@@ -360,6 +385,68 @@ Singleton {
 
     function triggerListChange() {
         root.list = root.list.slice(0);
+    }
+
+    // Función para cachear imágenes como base64
+    function cacheImageAsBase64(imageUrl, callback) {
+        if (!imageUrl || imageUrl.startsWith("data:")) {
+            // Ya es un data URL o URL vacío
+            callback(imageUrl);
+            return;
+        }
+
+        // Solo cachear URLs HTTP/HTTPS, no archivos locales o iconos del sistema
+        if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+            // Para iconos del sistema (image://) o archivos locales, devolver la URL original
+            callback(imageUrl);
+            return;
+        }
+
+        // Usar XMLHttpRequest para descargar la imagen
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", imageUrl);
+        xhr.responseType = "arraybuffer";
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    // Convertir ArrayBuffer a base64
+                    var arrayBuffer = xhr.response;
+                    var bytes = new Uint8Array(arrayBuffer);
+                    var binary = '';
+                    for (var i = 0; i < bytes.byteLength; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    var base64 = btoa(binary);
+
+                    // Determinar el tipo MIME basado en la URL
+                    var mimeType = "image/png"; // default
+                    if (imageUrl.toLowerCase().includes(".jpg") || imageUrl.toLowerCase().includes(".jpeg")) {
+                        mimeType = "image/jpeg";
+                    } else if (imageUrl.toLowerCase().includes(".gif")) {
+                        mimeType = "image/gif";
+                    } else if (imageUrl.toLowerCase().includes(".webp")) {
+                        mimeType = "image/webp";
+                    }
+
+                    var dataUrl = "data:" + mimeType + ";base64," + base64;
+                    callback(dataUrl);
+                } catch (e) {
+                    console.log("Error converting image to base64:", e);
+                    callback(imageUrl); // fallback to original URL
+                }
+            } else {
+                console.log("Failed to download image:", imageUrl, "status:", xhr.status);
+                callback(imageUrl); // fallback to original URL
+            }
+        };
+
+        xhr.onerror = function() {
+            console.log("Error downloading image:", imageUrl);
+            callback(imageUrl); // fallback to original URL
+        };
+
+        xhr.send();
     }
 
     Component.onCompleted: {

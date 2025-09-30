@@ -394,8 +394,8 @@ Item {
                                         size: hovered ? 48 : 32
                                         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                                         visible: notification && (notification.appIcon !== "" || notification.image !== "")
-                                        appIcon: notification ? notification.appIcon : ""
-                                        image: notification ? notification.image : ""
+                                        appIcon: notification ? (notification.cachedAppIcon || notification.appIcon) : ""
+                                        image: notification ? (notification.cachedImage || notification.image) : ""
                                         summary: notification ? notification.summary : ""
                                         urgency: notification ? notification.urgency : NotificationUrgency.Normal
                                     }
@@ -531,7 +531,7 @@ Item {
                             Item {
                                 id: actionButtonsRow
                                 width: parent.width
-                                implicitHeight: (hovered && notification && notification.actions.length > 0) ? 32 : 0
+                                implicitHeight: (hovered && notification && notification.actions.length > 0 && !notification.isCached) ? 32 : 0
                                 height: implicitHeight
                                 clip: true
 
