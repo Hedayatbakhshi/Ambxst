@@ -10,6 +10,7 @@ import Quickshell.Hyprland
 import qs.modules.globals
 import qs.modules.theme
 import qs.modules.services
+import qs.modules.components
 import qs.config
 
 Item {
@@ -37,17 +38,17 @@ Item {
         if (barPosition === "left") {
             base -= barReserved;
         }
-        return Math.max(base * scale, 0) + xOffset;
+        return Math.round(Math.max(base * scale, 0) + xOffset);
     }
     property real initY: {
         let base = (windowData?.at?.[1] || 0) - (monitorData?.y || 0);
         if (barPosition === "top") {
             base -= barReserved;
         }
-        return Math.max(base * scale, 0) + yOffset;
+        return Math.round(Math.max(base * scale, 0) + yOffset);
     }
-    property real targetWindowWidth: (windowData?.size[0] || 100) * scale
-    property real targetWindowHeight: (windowData?.size[1] || 100) * scale
+    property real targetWindowWidth: Math.round((windowData?.size[0] || 100) * scale)
+    property real targetWindowHeight: Math.round((windowData?.size[1] || 100) * scale)
 
     property real iconToWindowRatio: 0.35
     property real iconToWindowRatioCompact: 0.6
@@ -141,15 +142,12 @@ Item {
         visible: !windowPreview.hasContent || !Config.performance.windowPreview
         z: 10
 
-        Image {
-            id: windowIcon
-            property real iconSize: Math.min(root.targetWindowWidth, root.targetWindowHeight) * (root.compactMode ? root.iconToWindowRatioCompact : root.iconToWindowRatio)
+        Loader {
+            id: windowIconLoader
+            property real iconSize: Math.round(Math.min(root.targetWindowWidth, root.targetWindowHeight) * (root.compactMode ? root.iconToWindowRatioCompact : root.iconToWindowRatio))
 
             anchors.horizontalCenter: parent.horizontalCenter
-            source: Quickshell.iconPath(root.iconPath, "image-missing")
-            width: iconSize
-            height: iconSize
-            sourceSize: Qt.size(iconSize, iconSize)
+            sourceComponent: Config.tintIcons ? tintedWindowIconComponent : normalWindowIconComponent
 
             Behavior on width {
                 NumberAnimation {
@@ -161,6 +159,30 @@ Item {
                 NumberAnimation {
                     duration: Config.animDuration
                     easing.type: Easing.OutQuart
+                }
+            }
+        }
+
+        Component {
+            id: normalWindowIconComponent
+            Image {
+                width: windowIconLoader.iconSize
+                height: windowIconLoader.iconSize
+                source: Quickshell.iconPath(root.iconPath, "image-missing")
+                sourceSize: Qt.size(windowIconLoader.iconSize, windowIconLoader.iconSize)
+            }
+        }
+
+        Component {
+            id: tintedWindowIconComponent
+            Tinted {
+                width: windowIconLoader.iconSize
+                height: windowIconLoader.iconSize
+                sourceItem: Image {
+                    width: windowIconLoader.iconSize
+                    height: windowIconLoader.iconSize
+                    source: Quickshell.iconPath(root.iconPath, "image-missing")
+                    sourceSize: Qt.size(windowIconLoader.iconSize, windowIconLoader.iconSize)
                 }
             }
         }
@@ -211,18 +233,41 @@ Item {
     }
 
     // Overlay icon when preview is available (smaller, in corner)
-    Image {
-        id: overlayIcon
+    Loader {
+        id: overlayIconLoader
         visible: windowPreview.hasContent && !root.compactMode && Config.performance.windowPreview
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 4
-        source: Quickshell.iconPath(root.iconPath, "image-missing")
         width: 16
         height: 16
-        sourceSize: Qt.size(16, 16)
+        sourceComponent: Config.tintIcons ? tintedOverlayIconComponent : normalOverlayIconComponent
         opacity: 0.8
         z: 10
+    }
+
+    Component {
+        id: normalOverlayIconComponent
+        Image {
+            width: 16
+            height: 16
+            source: Quickshell.iconPath(root.iconPath, "image-missing")
+            sourceSize: Qt.size(16, 16)
+        }
+    }
+
+    Component {
+        id: tintedOverlayIconComponent
+        Tinted {
+            width: 16
+            height: 16
+            sourceItem: Image {
+                width: 16
+                height: 16
+                source: Quickshell.iconPath(root.iconPath, "image-missing")
+                sourceSize: Qt.size(16, 16)
+            }
+        }
     }
 
     // XWayland indicator

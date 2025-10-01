@@ -49,7 +49,7 @@ Item {
             // Substraer la zona reservada de la barra en orientación horizontal
             scaledWidth -= barReserved * scale;
         }
-        return Math.max(0, scaledWidth);
+        return Math.max(0, Math.round(scaledWidth));
     }
     property real workspaceImplicitHeight: {
         const isRotated = (monitorData?.transform % 2 === 1);
@@ -60,7 +60,7 @@ Item {
             // Substraer la zona reservada de la barra en orientación vertical
             scaledHeight -= barReserved * scale;
         }
-        return Math.max(0, scaledHeight);
+        return Math.max(0, Math.round(scaledHeight));
     }
 
     property int draggingFromWorkspace: -1
@@ -226,8 +226,8 @@ Item {
                     property int workspaceColIndex: (windowData?.workspace.id - 1) % overviewRoot.columns
                     property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % overviewRoot.workspacesShown / overviewRoot.columns)
 
-                    xOffset: (overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2
-                    yOffset: (overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2
+                    xOffset: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
+                    yOffset: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
 
                     onDragStarted: overviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
                     onDragFinished: targetWorkspace => {
@@ -256,10 +256,10 @@ Item {
                 property int activeWorkspaceRowIndex: Math.floor((activeWorkspaceInGroup - 1) / overviewRoot.columns)
                 property int activeWorkspaceColIndex: (activeWorkspaceInGroup - 1) % overviewRoot.columns
 
-                x: (overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex
-                y: (overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex
-                width: overviewRoot.workspaceImplicitWidth + workspacePadding
-                height: overviewRoot.workspaceImplicitHeight + workspacePadding
+                x: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex)
+                y: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
+                width: Math.round(overviewRoot.workspaceImplicitWidth + workspacePadding)
+                height: Math.round(overviewRoot.workspaceImplicitHeight + workspacePadding)
                 color: "transparent"
                 radius: Math.max(0, Config.roundness - workspaceSpacing + 4)
                 border.width: 2
