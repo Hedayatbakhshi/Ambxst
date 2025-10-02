@@ -60,6 +60,20 @@ Rectangle {
                     }
                 }
             }
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 16
+                visible: Notifications.appNameList.length === 0
+
+                Text {
+                    text: Icons.bell
+                    font.family: Icons.font
+                    font.pixelSize: 64
+                    color: Colors.surfaceBright
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+            }
         }
     }
 }
