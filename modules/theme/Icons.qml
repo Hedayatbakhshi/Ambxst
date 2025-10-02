@@ -42,6 +42,11 @@ QtObject {
     readonly property string terminalWindow: ""
     readonly property string clipboard: ""
     readonly property string emoji: ""
+    // Notifications
+    readonly property string bell: ""
+    readonly property string bellRinging: ""
+    readonly property string bellSlash: ""
+    readonly property string bellZ: ""
     // Misc
     readonly property string accept: ""
     readonly property string cancel: ""
