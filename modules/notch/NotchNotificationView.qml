@@ -22,7 +22,8 @@ Item {
         return (Notifications.popupList.length > currentIndex && currentIndex >= 0) ? Notifications.popupList[currentIndex] : (Notifications.popupList.length > 0 ? Notifications.popupList[0] : null);
     }
     property bool notchHovered: false
-    property bool hovered: notchHovered
+    property bool isNavigating: false
+    property bool hovered: notchHovered || isNavigating
 
     // Índice actual para navegación
     property int currentIndex: 0
@@ -66,9 +67,21 @@ Item {
         }
     }
 
+    // Timer para mantener hover durante navegación
+    Timer {
+        id: navigationHoverTimer
+        interval: Config.animDuration + 50
+        repeat: false
+        onTriggered: {
+            root.isNavigating = false;
+        }
+    }
+
     // Funciones de navegación
     function navigateToNext() {
         if (Notifications.popupList.length > 1) {
+            root.isNavigating = true;
+            navigationHoverTimer.restart();
             const nextIndex = (currentIndex + 1) % Notifications.popupList.length;
             notificationStack.navigateToNotification(nextIndex);
         }
@@ -76,6 +89,8 @@ Item {
 
     function navigateToPrevious() {
         if (Notifications.popupList.length > 1) {
+            root.isNavigating = true;
+            navigationHoverTimer.restart();
             const prevIndex = currentIndex > 0 ? currentIndex - 1 : Notifications.popupList.length - 1;
             notificationStack.navigateToNotification(prevIndex);
         }
@@ -128,12 +143,6 @@ Item {
                     bottomRightRadius: Config.roundness
                     z: 200
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: Config.animDuration
-                        }
-                    }
-
                     MouseArea {
                         id: dashboardAccessMouse
                         anchors.fill: parent
@@ -153,12 +162,6 @@ Item {
                         font.family: Icons.font
                         font.pixelSize: 16
                         color: dashboardAccessMouse.containsMouse ? Colors.overBackground : Colors.surfaceBright
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: Config.animDuration
-                            }
-                        }
                     }
                 }
             }
@@ -558,12 +561,6 @@ Item {
                                                     property bool isCritical: notification && notification.urgency == NotificationUrgency.Critical
                                                     color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.error : (parent.hovered ? Colors.surfaceBright : Colors.surface))
                                                     radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-
-                                                    Behavior on color {
-                                                        ColorAnimation {
-                                                            duration: Config.animDuration
-                                                        }
-                                                    }
                                                 }
 
                                                 contentItem: Text {
@@ -573,12 +570,6 @@ Item {
                                                     color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overError : (parent.hovered ? Colors.overBackground : Colors.error))
                                                     horizontalAlignment: Text.AlignHCenter
                                                     verticalAlignment: Text.AlignVCenter
-
-                                                    Behavior on color {
-                                                        ColorAnimation {
-                                                            duration: Config.animDuration
-                                                        }
-                                                    }
                                                 }
 
                                                 onClicked: {
@@ -623,12 +614,6 @@ Item {
                                                 property bool isCritical: notification && notification.urgency == NotificationUrgency.Critical
                                                 color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.primary : (parent.hovered ? Colors.surfaceBright : Colors.surface))
                                                 radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-
-                                                Behavior on color {
-                                                    ColorAnimation {
-                                                        duration: Config.animDuration
-                                                    }
-                                                }
                                             }
 
                                             contentItem: Text {
@@ -638,12 +623,6 @@ Item {
                                                 horizontalAlignment: Text.AlignHCenter
                                                 verticalAlignment: Text.AlignVCenter
                                                 elide: Text.ElideRight
-
-                                                Behavior on color {
-                                                    ColorAnimation {
-                                                        duration: Config.animDuration
-                                                    }
-                                                }
                                             }
 
                                             onClicked: {
