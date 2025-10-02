@@ -408,7 +408,7 @@ Item {
                                     anchors.bottomMargin: parent.criticalMargins
                                     anchors.leftMargin: parent.criticalMargins > 0 ? 8 : 0
                                     anchors.rightMargin: parent.criticalMargins > 0 ? 8 : 0
-                                    implicitHeight: Math.max(hovered ? 48 : 32, textColumn.implicitHeight)
+                                    implicitHeight: Math.max(hovered ? 48 : 32, textContainer.implicitHeight)
                                     spacing: 8
 
                                     // Contenido principal
@@ -433,6 +433,7 @@ Item {
 
                                         // Textos de la notificación
                                         Item {
+                                            id: textContainer
                                             Layout.fillWidth: true
                                             implicitHeight: hovered ? textColumnExpanded.implicitHeight : textRowCollapsed.implicitHeight
 
