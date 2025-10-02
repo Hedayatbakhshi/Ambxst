@@ -55,6 +55,8 @@ Rectangle {
     property bool imageOptionsMenuOpen: false
     property int textMenuItemIndex: -1
     property int imageMenuItemIndex: -1
+    property bool textMenuJustClosed: false
+    property bool imageMenuJustClosed: false
 
     property int imgSize: 78
 
@@ -672,6 +674,10 @@ Rectangle {
                                 }
 
                                 onClicked: mouse => {
+                                    if (imageMenuJustClosed) {
+                                        return;
+                                    }
+
                                     if (mouse.button === Qt.LeftButton && !imageMouseArea.isInImageDeleteMode) {
                                         // Verificar si hay algún modo activo y este no es el item en modo activo
                                         if (root.deleteMode && modelData.id !== root.itemToDelete) {
@@ -762,9 +768,27 @@ Rectangle {
                                 OptionsMenu {
                                     id: imageContextMenu
 
+                                    onAboutToHide: {
+                                        imageMouseArea.enabled = false;
+                                    }
+
                                     onClosed: {
                                         root.imageOptionsMenuOpen = false;
                                         root.imageMenuItemIndex = -1;
+                                        Qt.callLater(() => {
+                                            imageMouseArea.enabled = !root.deleteMode && !root.imageDeleteMode && !root.textOptionsMenuOpen && !root.imageOptionsMenuOpen;
+                                        });
+                                        root.imageMenuJustClosed = true;
+                                        imageMenuClosedTimer.start();
+                                    }
+
+                                    Timer {
+                                        id: imageMenuClosedTimer
+                                        interval: 100
+                                        repeat: false
+                                        onTriggered: {
+                                            root.imageMenuJustClosed = false;
+                                        }
                                     }
 
                                     items: [
@@ -1168,6 +1192,10 @@ Rectangle {
                             }
 
                             onClicked: mouse => {
+                                if (textMenuJustClosed) {
+                                    return;
+                                }
+
                                 if (mouse.button === Qt.LeftButton && !mouseArea.isInDeleteMode) {
                                     // Verificar si hay algún modo activo y este no es el item en modo activo
                                     if (root.deleteMode && modelData.id !== root.itemToDelete) {
@@ -1421,9 +1449,27 @@ Rectangle {
                         OptionsMenu {
                             id: contextMenu
 
+                            onAboutToHide: {
+                                mouseArea.enabled = false;
+                            }
+
                             onClosed: {
                                 root.textOptionsMenuOpen = false;
                                 root.textMenuItemIndex = -1;
+                                Qt.callLater(() => {
+                                    mouseArea.enabled = !root.deleteMode && !root.imageDeleteMode && !root.textOptionsMenuOpen && !root.imageOptionsMenuOpen;
+                                });
+                                root.textMenuJustClosed = true;
+                                textMenuClosedTimer.start();
+                            }
+
+                            Timer {
+                                id: textMenuClosedTimer
+                                interval: 100
+                                repeat: false
+                                onTriggered: {
+                                    root.textMenuJustClosed = false;
+                                }
                             }
 
                             items: [

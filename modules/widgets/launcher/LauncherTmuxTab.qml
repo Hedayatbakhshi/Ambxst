@@ -37,6 +37,7 @@ Rectangle {
     // Options menu state
     property bool optionsMenuOpen: false
     property int menuItemIndex: -1
+    property bool menuJustClosed: false
 
     signal itemSelected
 
@@ -502,6 +503,10 @@ Rectangle {
                     }
 
                     onClicked: mouse => {
+                        if (root.menuJustClosed) {
+                            return;
+                        }
+
                         if (mouse.button === Qt.LeftButton) {
                             if (root.deleteMode && modelData.name !== root.sessionToDelete) {
                                 root.cancelDeleteMode();
@@ -595,6 +600,17 @@ Rectangle {
                     onClosed: {
                         root.optionsMenuOpen = false;
                         root.menuItemIndex = -1;
+                        root.menuJustClosed = true;
+                        menuClosedTimer.start();
+                    }
+
+                    Timer {
+                        id: menuClosedTimer
+                        interval: 100
+                        repeat: false
+                        onTriggered: {
+                            root.menuJustClosed = false;
+                        }
                     }
 
                     items: [
