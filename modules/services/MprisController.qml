@@ -40,7 +40,8 @@ Singleton {
             }
 
             function onPlaybackStateChanged() {
-                if (root.trackedPlayer !== modelData) root.trackedPlayer = modelData
+                // Comentado para evitar cambio automático de player
+                // if (root.trackedPlayer !== modelData) root.trackedPlayer = modelData
             }
         }
     }
@@ -87,5 +88,21 @@ Singleton {
         const targetPlayer = player ?? Mpris.players[0]
 
         this.trackedPlayer = targetPlayer
+    }
+
+    function cyclePlayer(direction) {
+        const players = Mpris.players.values;
+        if (players.length === 0) return;
+        
+        const currentIndex = players.indexOf(this.activePlayer);
+        let newIndex;
+        
+        if (direction > 0) {
+            newIndex = (currentIndex + 1) % players.length;
+        } else {
+            newIndex = (currentIndex - 1 + players.length) % players.length;
+        }
+        
+        this.trackedPlayer = players[newIndex];
     }
 }

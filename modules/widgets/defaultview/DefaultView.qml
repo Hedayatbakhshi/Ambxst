@@ -472,10 +472,35 @@ Item {
                             return Icons.player;
                         }
                         textFormat: Text.RichText
-                        color: Colors.whiteSource
+                        color: playerIconHover.hovered ? Colors.primaryFixed : Colors.whiteSource
                         font.pixelSize: 20
                         font.family: Icons.font
                         verticalAlignment: Text.AlignVCenter
+                        
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+                        
+                        HoverHandler {
+                            id: playerIconHover
+                        }
+                        
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            
+                            onClicked: mouse => {
+                                if (mouse.button === Qt.LeftButton) {
+                                    MprisController.cyclePlayer(1);
+                                } else if (mouse.button === Qt.RightButton) {
+                                    MprisController.cyclePlayer(-1);
+                                }
+                            }
+                        }
                     }
                 }
             }
