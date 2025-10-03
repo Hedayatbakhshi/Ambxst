@@ -27,11 +27,29 @@ Item {
     readonly property bool screenNotchOpen: visibilities ? (visibilities.launcher || visibilities.dashboard || visibilities.overview || visibilities.powermenu) : false
     readonly property bool hasActiveNotifications: Notifications.popupList.length > 0
 
-    property int defaultHeight: Config.bar.showBackground ? Math.max(stackContainer.height, screenNotchOpen ? 44 : 44) : Math.max(stackContainer.height, screenNotchOpen ? 40 : 40)
-    property int islandHeight: Config.bar.showBackground ? Math.max(stackContainer.height, screenNotchOpen ? 36 : 36) : Math.max(stackContainer.height, screenNotchOpen ? 36 : 36)
+    property int defaultHeight: Config.bar.showBackground ? (screenNotchOpen || hasActiveNotifications ? Math.max(stackContainer.height, 44) : 44) : (screenNotchOpen || hasActiveNotifications ? Math.max(stackContainer.height, 40) : 40)
+    property int islandHeight: Config.bar.showBackground ? (screenNotchOpen || hasActiveNotifications ? Math.max(stackContainer.height, 36) : 36) : (screenNotchOpen || hasActiveNotifications ? Math.max(stackContainer.height, 36) : 36)
 
-    implicitWidth: screenNotchOpen ? Math.max(stackContainer.width + 40, 290) : stackContainer.width + 24
+    implicitWidth: screenNotchOpen || hasActiveNotifications ? Math.max(stackContainer.width + 40, 290) : stackContainer.width + 24
     implicitHeight: Config.notchTheme === "default" ? defaultHeight : (Config.notchTheme === "island" ? islandHeight : defaultHeight)
+
+    Behavior on implicitWidth {
+        enabled: screenNotchOpen || stackViewInternal.busy
+        NumberAnimation {
+            duration: Config.animDuration
+            easing.type: isExpanded ? Easing.OutBack : Easing.OutQuart
+            easing.overshoot: isExpanded ? 1.2 : 1.0
+        }
+    }
+
+    Behavior on implicitHeight {
+        enabled: screenNotchOpen || stackViewInternal.busy
+        NumberAnimation {
+            duration: Config.animDuration
+            easing.type: isExpanded ? Easing.OutBack : Easing.OutQuart
+            easing.overshoot: isExpanded ? 1.2 : 1.0
+        }
+    }
 
     RoundCorner {
         id: leftCorner
@@ -45,8 +63,7 @@ Item {
 
     BgRect {
         id: notchRect
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         width: parent.implicitWidth - 40
         height: parent.implicitHeight
         layer.enabled: false
@@ -83,29 +100,10 @@ Item {
 
         Item {
             id: stackContainer
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitWidth + (screenNotchOpen ? 32 : 0) : 32
-            height: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitHeight + (screenNotchOpen ? 32 : 0) : 32
+            anchors.centerIn: parent
+            width: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitWidth + 32 : 32
+            height: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitHeight + 32 : 32
             clip: true
-
-            Behavior on width {
-                enabled: stackViewInternal.busy
-                NumberAnimation {
-                    duration: Config.animDuration
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
-                }
-            }
-
-            Behavior on height {
-                enabled: stackViewInternal.busy
-                NumberAnimation {
-                    duration: Config.animDuration
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
-                }
-            }
 
             // Propiedad para controlar el blur durante las transiciones
             property real transitionBlur: 0.0
@@ -132,35 +130,12 @@ Item {
             StackView {
                 id: stackViewInternal
                 anchors.fill: parent
-                anchors.margins: screenNotchOpen ? 16 : 0
-                anchors.topMargin: screenNotchOpen ? 16 : 0
-                anchors.bottomMargin: screenNotchOpen ? 16 : 0
+                anchors.margins: 16
                 initialItem: defaultViewComponent
 
                 Component.onCompleted: {
                     isShowingDefault = true;
                     isShowingNotifications = false;
-                }
-
-                Behavior on anchors.margins {
-                    NumberAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
-                    }
-                }
-
-                Behavior on anchors.topMargin {
-                    NumberAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
-                    }
-                }
-
-                Behavior on anchors.bottomMargin {
-                    NumberAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
-                    }
                 }
 
                 // Activar blur al inicio de transición y animarlo a nítido
