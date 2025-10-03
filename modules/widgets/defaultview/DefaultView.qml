@@ -12,6 +12,11 @@ Item {
 
     readonly property bool hasActiveNotifications: Notifications.popupList.length > 0
 
+    HoverHandler {
+        id: notificationHoverHandler
+        enabled: hasActiveNotifications
+    }
+
     Column {
         anchors.fill: parent
         spacing: 0
@@ -106,11 +111,6 @@ Item {
                         easing.type: Easing.OutQuart
                     }
                 }
-            }
-
-            HoverHandler {
-                id: notificationHoverHandler
-                enabled: hasActiveNotifications
             }
         }
     }
