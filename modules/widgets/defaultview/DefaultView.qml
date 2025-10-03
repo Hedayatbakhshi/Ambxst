@@ -13,7 +13,7 @@ Item {
     anchors.top: parent.top
 
     implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : (root.notchHovered ? 420 : 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32))
-    implicitHeight: hasActiveNotifications ? (mainRow.height + (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16)) : 36
+    implicitHeight: hasActiveNotifications ? (mainRow.height + (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16)) : mainRow.height
 
     Behavior on implicitHeight {
         NumberAnimation {
@@ -56,6 +56,7 @@ Item {
             id: mainRow
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 32
+            height: Config.bar.showBackground ? (Config.notchTheme === "island" ? 36 : 44) : (Config.notchTheme === "island" ? 36 : 40)
             spacing: 8
 
             UserInfo {

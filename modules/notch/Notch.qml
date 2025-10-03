@@ -101,8 +101,8 @@ Item {
         Item {
             id: stackContainer
             anchors.centerIn: parent
-            width: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitWidth + 32 : 32
-            height: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitHeight + 32 : 32
+            width: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitWidth + (screenNotchOpen ? 32 : 0) : (screenNotchOpen ? 32 : 0)
+            height: stackViewInternal.currentItem ? stackViewInternal.currentItem.implicitHeight + (screenNotchOpen ? 32 : 0) : (screenNotchOpen ? 32 : 0)
             clip: true
 
             // Propiedad para controlar el blur durante las transiciones
@@ -130,7 +130,7 @@ Item {
             StackView {
                 id: stackViewInternal
                 anchors.fill: parent
-                anchors.margins: 16
+                anchors.margins: screenNotchOpen ? 16 : 0
                 initialItem: defaultViewComponent
 
                 Component.onCompleted: {
