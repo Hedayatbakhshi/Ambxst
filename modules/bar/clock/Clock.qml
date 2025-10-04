@@ -13,7 +13,7 @@ BgRect {
     property bool weatherVisible: false
     property string currentDayAbbrev: ""
 
-    Layout.preferredWidth: dayDisplay.implicitWidth + sep1.implicitWidth + (weatherVisible ? weatherDisplay.implicitWidth + sep2.implicitWidth : 0) + timeDisplay.implicitWidth + (weatherVisible ? 56 : 40)
+    Layout.preferredWidth: dayDisplay.implicitWidth + (weatherVisible ? weatherDisplay.implicitWidth + sep.implicitWidth : 0) + timeDisplay.implicitWidth + (weatherVisible ? 56 : 40)
     Layout.preferredHeight: 36
 
     RowLayout {
@@ -30,15 +30,6 @@ BgRect {
         }
 
         Text {
-            id: sep1
-            text: "•"
-            color: Colors.outline
-            font.pixelSize: Config.theme.fontSize
-            font.family: Config.theme.font
-            font.bold: true
-        }
-
-        Text {
             id: weatherDisplay
             text: clockContainer.weatherText
             color: Colors.overBackground
@@ -49,7 +40,7 @@ BgRect {
         }
 
         Text {
-            id: sep2
+            id: sep
             text: "•"
             color: Colors.outline
             font.pixelSize: Config.theme.fontSize
