@@ -205,4 +205,11 @@ PanelWindow {
             menuHandle = null;
         }
     }
+
+    Connections {
+        target: menu
+        function onClosed() {
+            contextWindow.close();
+        }
+    }
 }
