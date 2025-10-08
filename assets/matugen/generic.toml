@@ -1,6 +1,6 @@
 [templates.ambxst]
 input_path = "player_colors.json"
-output_path = "~/.cache/quickshell/by-shell/Ambxst/players/generic_colors.json"
+output_path = "~/.cache/quickshell/by-shell/Ambxst/generic_colors.json"
 
 [config.custom_colors.red]
 color = "#FF0000"

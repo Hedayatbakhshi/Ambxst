@@ -16,6 +16,8 @@ Item {
     property bool isPlaying: player?.playbackState === MprisPlaybackState.Playing
     property real position: player?.position ?? 0.0
     property real length: player?.length ?? 1.0
+    property bool hasArtwork: (player?.trackArtUrl ?? "") !== ""
+    property var playerColors: hasArtwork ? PlayerColors.getColorsForPlayer(player) : null
 
     Timer {
         running: compactPlayer.isPlaying
@@ -69,7 +71,7 @@ Item {
             ClippingRectangle {
                 anchors.fill: parent
                 radius: compactPlayer.isPlaying ? (Config.roundness > 0 ? Math.max(Config.roundness - 8, 0) : 0) : (Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0)
-                color: Colors.overPrimaryFixed
+                color: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overPrimary : Colors.overPrimaryFixed
 
                 Behavior on radius {
                     NumberAnimation {
@@ -111,7 +113,7 @@ Item {
                     anchors.centerIn: parent
                     text: compactPlayer.isPlaying ? Icons.pause : Icons.play
                     textFormat: Text.RichText
-                    color: playPauseHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                    color: playPauseHover.hovered ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource)
                     font.pixelSize: 16
                     font.family: Icons.font
                     opacity: compactPlayer.player?.canPause ?? false ? 1.0 : 0.3
@@ -192,7 +194,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Icons.previous
                 textFormat: Text.RichText
-                color: previousHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                color: previousHover.hovered ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource)
                 font.pixelSize: 16
                 font.family: Icons.font
                 opacity: compactPlayer.player?.canGoPrevious ?? false ? 1.0 : 0.3
@@ -284,7 +286,7 @@ Item {
                 width: (1 - positionControl.progressRatio) * parent.width - positionControl.dragSeparation
                 height: parent.height
                 radius: height / 2
-                color: Colors.shadow
+                color: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.shadow : Colors.shadow
                 visible: compactPlayer.player !== null
                 z: 0
             }
@@ -294,7 +296,7 @@ Item {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 frequency: 8
-                color: compactPlayer.player ? Colors.primaryFixed : Colors.outline
+                color: compactPlayer.player ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : Colors.outline
                 amplitudeMultiplier: 0.8
                 height: compactPlayer.player ? positionControl.height * 8 : positionControl.height * 4
                 width: compactPlayer.player ? Math.max(0, positionControl.width * positionControl.progressRatio - positionControl.dragSeparation) : positionControl.width
@@ -336,7 +338,7 @@ Item {
                 width: Math.max(0, positionControl.width * positionControl.progressRatio - positionControl.dragSeparation)
                 height: positionControl.height
                 radius: height / 2
-                color: Colors.primaryFixed
+                color: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed
                 visible: !compactPlayer.isPlaying && compactPlayer.player
                 opacity: visible ? 1.0 : 0.0
                 z: 1
@@ -356,7 +358,7 @@ Item {
                 width: positionControl.isDragging ? 4 : 4
                 height: positionControl.isDragging ? 20 : 16
                 radius: width / 2
-                color: Colors.whiteSource
+                color: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource
                 visible: compactPlayer.player !== null
                 z: 2
 
@@ -453,7 +455,7 @@ Item {
                     return Icons.player;
                 }
                 textFormat: Text.RichText
-                color: playerIconHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                color: playerIconHover.hovered ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource)
                 font.pixelSize: 20
                 font.family: Icons.font
                 verticalAlignment: Text.AlignVCenter
@@ -500,7 +502,7 @@ Item {
                     }
                 }
                 textFormat: Text.RichText
-                color: modeHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                color: modeHover.hovered ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource)
                 font.pixelSize: 16
                 font.family: Icons.font
                 opacity: {
@@ -575,7 +577,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Icons.next
                 textFormat: Text.RichText
-                color: nextHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                color: nextHover.hovered ? (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed) : (compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.overBackground : Colors.whiteSource)
                 font.pixelSize: 16
                 font.family: Icons.font
                 opacity: compactPlayer.player?.canGoNext ?? false ? 1.0 : 0.3

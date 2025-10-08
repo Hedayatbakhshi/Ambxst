@@ -16,6 +16,8 @@ PaneRect {
     property bool isPlaying: MprisController.activePlayer?.playbackState === MprisPlaybackState.Playing
     property real position: MprisController.activePlayer?.position ?? 0.0
     property real length: MprisController.activePlayer?.length ?? 1.0
+    property bool hasArtwork: (MprisController.activePlayer?.trackArtUrl ?? "") !== ""
+    property var playerColors: hasArtwork ? PlayerColors.getColorsForPlayer(MprisController.activePlayer) : null
 
     function formatTime(seconds) {
         const totalSeconds = Math.floor(seconds);
@@ -47,7 +49,7 @@ PaneRect {
             anchors.fill: parent
             anchors.margins: 4
             visible: !MprisController.activePlayer
-            
+
             WavyLine {
                 id: noPlayerWavyLine
                 anchors.left: parent.left
@@ -125,7 +127,7 @@ PaneRect {
                         Layout.fillWidth: true
                         text: MprisController.activePlayer?.trackTitle ?? "No hay reproducción activa"
                         textFormat: Text.PlainText
-                        color: Colors.whiteSource
+                        color: player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource
                         font.pixelSize: Config.theme.fontSize
                         font.weight: Font.Bold
                         font.family: Config.theme.font
@@ -136,7 +138,7 @@ PaneRect {
                         Layout.fillWidth: true
                         text: MprisController.activePlayer?.trackArtist ?? ""
                         textFormat: Text.PlainText
-                        color: Colors.whiteSource
+                        color: player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource
                         font.pixelSize: Config.theme.fontSize
                         font.family: Config.theme.font
                         opacity: 0.7
@@ -151,7 +153,7 @@ PaneRect {
                         Text {
                             text: player.formatTime(player.position)
                             textFormat: Text.PlainText
-                            color: Colors.whiteSource
+                            color: player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource
                             font.pixelSize: Config.theme.fontSize
                             font.family: Config.theme.font
                             visible: MprisController.activePlayer !== null
@@ -160,7 +162,7 @@ PaneRect {
                         Text {
                             text: "/ " + player.formatTime(player.length)
                             textFormat: Text.PlainText
-                            color: Colors.whiteSource
+                            color: player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource
                             font.pixelSize: Config.theme.fontSize
                             font.family: Config.theme.font
                             opacity: 0.5
@@ -172,7 +174,7 @@ PaneRect {
                 Rectangle {
                     Layout.preferredWidth: 40
                     Layout.preferredHeight: 40
-                    color: playPauseHover.hovered ? Colors.whiteSource : Colors.primaryFixed
+                    color: playPauseHover.hovered ? (player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource) : (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed)
                     radius: player.isPlaying ? Math.max(0, Config.roundness - 4) : Config.roundness > 0 ? Config.roundness + 4 : 0
                     opacity: MprisController.canTogglePlaying ? 1.0 : 0.3
 
@@ -181,6 +183,13 @@ PaneRect {
                             duration: Config.animDuration
                             easing.type: Easing.OutBack
                             easing.overshoot: 1.5
+                        }
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Config.animDuration
+                            easing.type: Easing.OutQuart
                         }
                     }
 
@@ -216,7 +225,7 @@ PaneRect {
                     id: previousBtn
                     text: Icons.previous
                     textFormat: Text.RichText
-                    color: previousHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                    color: previousHover.hovered ? (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed) : (player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource)
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.canGoPrevious ? 1.0 : 0.3
@@ -256,7 +265,7 @@ PaneRect {
                         width: (1 - positionControl.progressRatio) * parent.width - positionControl.dragSeparation
                         height: parent.height
                         radius: height / 2
-                        color: Colors.shadow
+                        color: player.hasArtwork && player.playerColors ? player.playerColors.shadow : Colors.shadow
                         visible: MprisController.activePlayer !== null
                     }
 
@@ -265,7 +274,7 @@ PaneRect {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         frequency: 8
-                        color: MprisController.activePlayer ? Colors.primaryFixed : Colors.outline
+                        color: MprisController.activePlayer ? (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed) : Colors.outline
                         amplitudeMultiplier: 0.8
                         height: MprisController.activePlayer ? positionControl.height * 8 : positionControl.height * 4
                         width: MprisController.activePlayer ? Math.max(0, positionControl.width * positionControl.progressRatio - positionControl.dragSeparation) : positionControl.width
@@ -306,7 +315,7 @@ PaneRect {
                         width: Math.max(0, positionControl.width * positionControl.progressRatio - positionControl.dragSeparation)
                         height: positionControl.height
                         radius: height / 2
-                        color: Colors.primaryFixed
+                        color: player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed
                         visible: !player.isPlaying && MprisController.activePlayer
                         opacity: visible ? 1.0 : 0.0
 
@@ -325,7 +334,7 @@ PaneRect {
                         width: 4
                         height: positionControl.isDragging ? 20 : 16
                         radius: width / 2
-                        color: Colors.whiteSource
+                        color: player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource
                         visible: MprisController.activePlayer !== null
 
                         Behavior on height {
@@ -367,7 +376,7 @@ PaneRect {
                     id: nextBtn
                     text: Icons.next
                     textFormat: Text.RichText
-                    color: nextHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                    color: nextHover.hovered ? (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed) : (player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource)
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.canGoNext ? 1.0 : 0.3
@@ -406,7 +415,7 @@ PaneRect {
                         }
                     }
                     textFormat: Text.RichText
-                    color: modeHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                    color: modeHover.hovered ? (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed) : (player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource)
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: {
@@ -465,7 +474,7 @@ PaneRect {
                         return Icons.player;
                     }
                     textFormat: Text.RichText
-                    color: playerIconHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                    color: playerIconHover.hovered ? (player.hasArtwork && player.playerColors ? player.playerColors.primary : Colors.primaryFixed) : (player.hasArtwork && player.playerColors ? player.playerColors.overBackground : Colors.whiteSource)
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.activePlayer ? 1.0 : 0.3
