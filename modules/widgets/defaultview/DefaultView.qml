@@ -10,6 +10,14 @@ Item {
     id: root
     anchors.top: parent.top
 
+    focus: true
+
+    Component.onCompleted: {
+        Qt.callLater(() => {
+            forceActiveFocus();
+        });
+    }
+
     readonly property real mainRowContentWidth: 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32
 
     implicitWidth: Math.round(hasActiveNotifications ? Math.max(expandedState ? 420 + 32 : 320 + 32, mainRowContentWidth) : (expandedState ? 420 + 32 : mainRowContentWidth))
