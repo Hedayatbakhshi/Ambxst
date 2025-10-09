@@ -56,27 +56,46 @@ PaneRect {
     ColumnLayout {
         id: calendarColumn
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 0
+        anchors.margins: 4
+        spacing: 4
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 0
+            // Layout.leftMargin: 8
+            // Layout.rightMargin: 8
+            spacing: 4
 
-            Text {
+            Rectangle {
+                Layout.preferredWidth: 150
+                Layout.preferredHeight: 32
+                color: Colors.background
+                radius: Config.roundness > 0 ? Config.roundness - 4 : 0
+                Text {
+                    Layout.fillWidth: true
+                    anchors.centerIn: parent
+                    text: viewingDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")
+                    font.pixelSize: Config.theme.fontSize
+                    font.weight: Font.Bold
+                    font.family: Config.defaultFont
+                    color: Colors.overSurface
+                }
+            }
+
+            Item {
                 Layout.fillWidth: true
-                text: viewingDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")
-                font.pixelSize: Config.theme.fontSize
-                font.weight: Font.Bold
-                font.family: Config.defaultFont
-                color: Colors.overSurface
             }
 
             Rectangle {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                color: "transparent"
-                radius: Config.roundness > 0 ? Config.roundness - 2 : 0
+                color: leftMouseArea.containsMouse ? Colors.surfaceBright : Colors.background
+                radius: Config.roundness > 0 ? Config.roundness - 4 : 0
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Config.animDuration / 2
+                    }
+                }
 
                 Text {
                     anchors.centerIn: parent
@@ -86,7 +105,9 @@ PaneRect {
                 }
 
                 MouseArea {
+                    id: leftMouseArea
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: monthShift--
                     cursorShape: Qt.PointingHandCursor
                 }
@@ -95,8 +116,14 @@ PaneRect {
             Rectangle {
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                color: "transparent"
-                radius: Config.roundness > 0 ? Config.roundness - 2 : 0
+                color: rightMouseArea.containsMouse ? Colors.surfaceBright : Colors.background
+                radius: Config.roundness > 0 ? Config.roundness - 4 : 0
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Config.animDuration / 2
+                    }
+                }
 
                 Text {
                     anchors.centerIn: parent
@@ -106,45 +133,59 @@ PaneRect {
                 }
 
                 MouseArea {
+                    id: rightMouseArea
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: monthShift++
                     cursorShape: Qt.PointingHandCursor
                 }
             }
         }
 
-        RowLayout {
+        Rectangle {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            // spacing: 5
+            Layout.fillHeight: true
+            color: Colors.background
+            radius: Config.roundness > 0 ? Config.roundness - 4 : 0
 
-            Repeater {
-                model: weekDays
-                delegate: CalendarDayButton {
-                    required property int index
-                    day: root.weekDays[index].day
-                    isToday: root.weekDays[index].today
-                    bold: true
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 0
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+
+                    Repeater {
+                        model: weekDays
+                        delegate: CalendarDayButton {
+                            required property int index
+                            day: root.weekDays[index].day
+                            isToday: root.weekDays[index].today
+                            bold: true
+                        }
+                    }
                 }
-            }
-        }
-
-        Repeater {
-            model: 6
-            delegate: RowLayout {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: -8
-
-                required property int index
-                property int rowIndex: index
 
                 Repeater {
-                    model: 7
-                    delegate: CalendarDayButton {
+                    model: 6
+                    delegate: RowLayout {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: -8
+
                         required property int index
-                        day: calendarLayout[rowIndex][index].day
-                        isToday: calendarLayout[rowIndex][index].today
+                        property int rowIndex: index
+
+                        Repeater {
+                            model: 7
+                            delegate: CalendarDayButton {
+                                required property int index
+                                day: calendarLayout[rowIndex][index].day
+                                isToday: calendarLayout[rowIndex][index].today
+                            }
+                        }
                     }
                 }
             }

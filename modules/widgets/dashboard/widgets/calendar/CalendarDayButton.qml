@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.modules.theme
+import qs.modules.components
 import qs.config
 
 Rectangle {
@@ -15,22 +16,31 @@ Rectangle {
     Layout.preferredWidth: 32
     Layout.preferredHeight: 32
 
-    color: (isToday === 1) ? Colors.primary : "transparent"
+    color: Colors.background
     radius: Config.roundness > 0 ? Config.roundness - 2 : 0
 
-    Text {
+    Rectangle {
         anchors.fill: parent
-        text: day
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        font.weight: Font.Bold
-        font.pixelSize: Config.theme.fontSize
-        font.family: Config.defaultFont
-        color: (isToday === 1) ? Colors.overPrimary : (isToday === 0) ? Colors.overSurface : Colors.outline
+        color: (isToday === 1) ? Colors.primary : "transparent"
+        radius: parent.radius
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 150
+        Text {
+            anchors.fill: parent
+            text: day
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.weight: Font.Bold
+            font.pixelSize: Config.theme.fontSize
+            font.family: Config.defaultFont
+            color: (isToday === 1) ? Colors.overPrimary : (isToday === 0) ? Colors.overSurface : Colors.surfaceBright
+
+            layer.enabled: true
+            layer.effect: BgShadow {}
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 150
+                }
             }
         }
     }

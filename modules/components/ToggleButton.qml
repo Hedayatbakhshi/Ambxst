@@ -22,6 +22,12 @@ Button {
             color: Colors.primary
             opacity: root.pressed ? 0.5 : (root.hovered ? 0.25 : 0)
             radius: parent.radius
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Config.animDuration / 2
+                }
+            }
         }
     }
 
