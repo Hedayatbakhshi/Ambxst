@@ -1,6 +1,6 @@
 [templates.ambxst]
 input_path = "player_colors.json"
-output_path = "~/.cache/quickshell/by-shell/Ambxst/spotify_colors.json"
+output_path = "~/.local/share/Ambxst/players/spotify_colors.json"
 
 [config.custom_colors.red]
 color = "#FF0000"

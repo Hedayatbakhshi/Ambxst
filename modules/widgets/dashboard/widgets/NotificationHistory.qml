@@ -60,11 +60,19 @@ Item {
                     id: dndToggle
                     radius: Notifications.silent ? (Config.roundness > 4 ? Config.roundness - 4 : 0) : Config.roundness
                     bottomLeftRadius: Config.roundness
-                    color: Notifications.silent ? Colors.primary : Colors.surface
+                    color: Notifications.silent ? (dndHover.containsMouse ? Colors.overBackground : Colors.primary) : (dndHover.containsMouse ? Colors.surfaceBright : Colors.surface)
                     width: 36
                     height: 36
                     anchors.top: parent.top
                     anchors.right: parent.right
+
+                    Behavior on color {
+                        ColorAnimation { duration: Config.animDuration / 2 }
+                    }
+
+                    Behavior on radius {
+                        NumberAnimation { duration: Config.animDuration / 2 }
+                    }
 
                     Text {
                         anchors.centerIn: parent
@@ -73,11 +81,17 @@ Item {
                         font.family: Icons.font
                         font.pixelSize: 20
                         color: Notifications.silent ? Colors.overPrimary : Colors.primary
+
+                        Behavior on color {
+                            ColorAnimation { duration: Config.animDuration / 2 }
+                        }
                     }
 
                     MouseArea {
+                        id: dndHover
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
                         onClicked: Notifications.silent = !Notifications.silent
                     }
                 }
@@ -87,8 +101,16 @@ Item {
                 Layout.preferredWidth: 36
                 Layout.preferredHeight: 36
                 Layout.bottomMargin: 4
-                radius: Config.roundness
-                color: Colors.surface
+                radius: broomHover.pressed ? Config.roundness : (broomHover.containsMouse ? (Config.roundness > 4 ? Config.roundness - 4 : 0) : Config.roundness)
+                color: broomHover.pressed ? Colors.error : (broomHover.containsMouse ? Colors.overError : Colors.surface)
+
+                Behavior on color {
+                    ColorAnimation { duration: Config.animDuration / 2 }
+                }
+
+                Behavior on radius {
+                    NumberAnimation { duration: Config.animDuration / 2 }
+                }
 
                 Text {
                     anchors.centerIn: parent
@@ -96,12 +118,18 @@ Item {
                     textFormat: Text.RichText
                     font.family: Icons.font
                     font.pixelSize: 20
-                    color: Colors.error
+                    color: broomHover.pressed ? Colors.overError : Colors.error
+
+                    Behavior on color {
+                        ColorAnimation { duration: Config.animDuration / 2 }
+                    }
                 }
 
                 MouseArea {
+                    id: broomHover
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
                     onClicked: Notifications.discardAllNotifications()
                 }
             }

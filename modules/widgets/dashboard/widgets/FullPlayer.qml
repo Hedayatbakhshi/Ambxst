@@ -477,6 +477,8 @@ PaneRect {
                             return Icons.chromium;
                         if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
                             return Icons.firefox;
+                        if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
+                            return Icons.telegram;
                         return Icons.player;
                     }
                     textFormat: Text.RichText
@@ -544,6 +546,8 @@ PaneRect {
                                 return Icons.chromium;
                             if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
                                 return Icons.firefox;
+                            if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
+                                return Icons.telegram;
                             return Icons.player;
                         }
 

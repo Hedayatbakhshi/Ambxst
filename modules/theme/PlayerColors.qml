@@ -12,7 +12,7 @@ Item {
 
     FileView {
         id: spotifyColors
-        path: Quickshell.dataPath("spotify_colors.json")
+        path: Quickshell.dataPath("players/spotify_colors.json")
         watchChanges: true
         onFileChanged: reload()
 
@@ -28,7 +28,7 @@ Item {
 
     FileView {
         id: firefoxColors
-        path: Quickshell.dataPath("firefox_colors.json")
+        path: Quickshell.dataPath("players/firefox_colors.json")
         watchChanges: true
         onFileChanged: reload()
 
@@ -44,7 +44,23 @@ Item {
 
     FileView {
         id: chromiumColors
-        path: Quickshell.dataPath("chromium_colors.json")
+        path: Quickshell.dataPath("players/chromium_colors.json")
+        watchChanges: true
+        onFileChanged: reload()
+
+        adapter: JsonAdapter {
+            property color background: "#1a1111"
+            property color overBackground: "#f1dedd"
+            property color overPrimary: "#571d1c"
+            property color primary: "#ffb3ae"
+            property color shadow: "#000000"
+            property color sourceColor: "#7f2424"
+        }
+    }
+
+    FileView {
+        id: telegramColors
+        path: Quickshell.dataPath("players/telegram_colors.json")
         watchChanges: true
         onFileChanged: reload()
 
@@ -60,7 +76,7 @@ Item {
 
     FileView {
         id: genericColors
-        path: Quickshell.dataPath("generic_colors.json")
+        path: Quickshell.dataPath("players/generic_colors.json")
         watchChanges: true
         onFileChanged: reload()
 
@@ -95,6 +111,13 @@ Item {
     property color chromiumShadow: chromiumColors.adapter.shadow
     property color chromiumSourceColor: chromiumColors.adapter.sourceColor
 
+    property color telegramBackground: telegramColors.adapter.background
+    property color telegramOverBackground: telegramColors.adapter.overBackground
+    property color telegramOverPrimary: telegramColors.adapter.overPrimary
+    property color telegramPrimary: telegramColors.adapter.primary
+    property color telegramShadow: telegramColors.adapter.shadow
+    property color telegramSourceColor: telegramColors.adapter.sourceColor
+
     property color genericBackground: genericColors.adapter.background
     property color genericOverBackground: genericColors.adapter.overBackground
     property color genericOverPrimary: genericColors.adapter.overPrimary
@@ -117,6 +140,8 @@ Item {
             return "spotify";
         if (dbusName.includes("chromium") || dbusName.includes("chrome") || desktopEntry.includes("chromium") || desktopEntry.includes("chrome"))
             return "chromium";
+        if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
+            return "telegram";
         if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
             return "firefox";
         return "generic";
@@ -151,6 +176,15 @@ Item {
                 primary: chromiumPrimary,
                 shadow: chromiumShadow,
                 sourceColor: chromiumSourceColor
+            };
+        case "telegram":
+            return {
+                background: telegramBackground,
+                overBackground: telegramOverBackground,
+                overPrimary: telegramOverPrimary,
+                primary: telegramPrimary,
+                shadow: telegramShadow,
+                sourceColor: telegramSourceColor
             };
         default:
             return {
