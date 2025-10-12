@@ -77,6 +77,13 @@ RowLayout {
             radius: height / 2
             color: root.backgroundColor
             z: 0
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
+            }
         }
 
         WavyLine {
@@ -94,6 +101,13 @@ RowLayout {
             opacity: 1.0
             z: 1
 
+            Behavior on width {
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
+            }
+
             FrameAnimation {
                 running: wavyFill.visible && wavyFill.opacity > 0
                 onTriggered: wavyFill.requestPaint()
@@ -109,6 +123,13 @@ RowLayout {
             color: root.progressColor
             visible: !root.wavy
             z: 1
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
+            }
         }
 
         Rectangle {
@@ -120,6 +141,13 @@ RowLayout {
             radius: width / 2
             color: Colors.whiteSource
             z: 2
+
+            Behavior on x {
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
+            }
 
             Behavior on width {
                 NumberAnimation {

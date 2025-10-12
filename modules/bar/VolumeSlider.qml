@@ -30,8 +30,8 @@ Item {
             anchors.margins: 8
             value: 0
             wavy: true
-            wavyAmplitude: 0.5
-            wavyFrequency: 1.0
+            wavyAmplitude: Audio.sink?.audio?.muted ? 0.5 : 2.0 * value
+            wavyFrequency: Audio.sink?.audio?.muted ? 1.0 : 10.0 * value
             icon: {
                 if (Audio.sink?.audio?.muted)
                     return Icons.speakerSlash;
