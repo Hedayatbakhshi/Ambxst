@@ -17,13 +17,15 @@ Item {
             spacing: 4
 
             Text {
+                id: volumeIcon
                 text: Icons.speakerHigh
                 font.family: Icons.font
-                font.pixelSize: 16
+                font.pixelSize: 20
                 color: Colors.overBackground
             }
 
             StyledSlider {
+                id: volumeSlider
                 Layout.fillWidth: true
                 height: 4
                 value: Audio.sink?.audio?.volume ?? 0

@@ -20,6 +20,8 @@ Item {
     property int dragSeparation: 4
     property real progressRatio: isDragging ? dragPosition : value
     property string tooltipText: `${Math.round(value * 100)}%`
+    property color progressColor: Colors.primary
+    property color backgroundColor: Colors.surfaceBright
     property bool wavy: false
 
     Rectangle {
@@ -27,7 +29,7 @@ Item {
         width: (1 - root.progressRatio) * parent.width - root.dragSeparation
         height: parent.height
         radius: height / 2
-        color: Colors.surfaceBright
+        color: root.backgroundColor
         z: 0
     }
 
@@ -36,7 +38,7 @@ Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         frequency: 8
-        color: Colors.primaryFixed
+        color: root.progressColor
         amplitudeMultiplier: 0.8
         height: parent.height * 8
         width: Math.max(0, parent.width * root.progressRatio - root.dragSeparation)
@@ -58,7 +60,7 @@ Item {
         width: Math.max(0, parent.width * root.progressRatio - root.dragSeparation)
         height: parent.height
         radius: height / 2
-        color: Colors.primaryFixed
+        color: root.progressColor
         visible: !root.wavy
         z: 1
     }
