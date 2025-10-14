@@ -10,11 +10,12 @@ import qs.modules.components
  * Simplified slider inspired by CompactPlayer position control.
  */
 
-RowLayout {
-    id: root
+ RowLayout {
+     id: root
 
-    implicitHeight: 4
-    spacing: 4
+     Layout.fillHeight: true
+     implicitHeight: 4
+     spacing: 4
 
     signal iconClicked
 
@@ -32,8 +33,9 @@ RowLayout {
     property real wavyFrequency: 8
     property real heightMultiplier: 8
     property bool resizeAnim: true
-    property bool scroll: true
-    property bool tooltip: true
+     property bool scroll: true
+     property bool tooltip: true
+     property bool updateOnRelease: false
 
     Behavior on wavyAmplitude {
         NumberAnimation {
@@ -65,17 +67,56 @@ RowLayout {
         color: Colors.overBackground
         Layout.fillHeight: true
 
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onEntered: iconText.color = Colors.primary
-            onExited: iconText.color = Colors.overBackground
-            onClicked: root.iconClicked()
-        }
-    }
+         MouseArea {
+             anchors.fill: parent
+             hoverEnabled: true
+             cursorShape: Qt.PointingHandCursor
+             z: 4
+             onEntered: iconText.color = Colors.primary
+             onExited: iconText.color = Colors.overBackground
+             onClicked: root.iconClicked()
+         }
+     }
 
-    Item {
+     MouseArea {
+         id: mouseArea
+         anchors.fill: root
+         cursorShape: Qt.PointingHandCursor
+         z: 3
+         onClicked: mouse => {
+             const relativeX = mouse.x - sliderItem.x;
+             root.value = Math.max(0, Math.min(1, relativeX / sliderItem.width));
+         }
+         onPressed: mouse => {
+             root.isDragging = true;
+             const relativeX = mouse.x - sliderItem.x;
+             root.dragPosition = Math.max(0, Math.min(1, relativeX / sliderItem.width));
+         }
+         onReleased: {
+             root.value = root.dragPosition;
+             root.isDragging = false;
+         }
+         onPositionChanged: mouse => {
+             if (root.isDragging) {
+                 const relativeX = mouse.x - sliderItem.x;
+                 root.dragPosition = Math.max(0, Math.min(1, relativeX / sliderItem.width));
+                 if (!root.updateOnRelease) {
+                     root.value = root.dragPosition;
+                 }
+             }
+         }
+         onWheel: wheel => {
+             if (root.scroll) {
+                 if (wheel.angleDelta.y > 0) {
+                     root.value = Math.min(1, root.value + 0.1);
+                 } else {
+                     root.value = Math.max(0, root.value - 0.1);
+                 }
+             }
+         }
+     }
+
+     Item {
         id: sliderItem
         Layout.fillWidth: true
         Layout.preferredHeight: 4
@@ -179,42 +220,9 @@ RowLayout {
                     easing.type: Easing.OutQuart
                 }
             }
-        }
+         }
 
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            z: 3
-            onClicked: mouse => {
-                root.value = mouse.x / width;
-            }
-            onPressed: {
-                root.isDragging = true;
-                root.dragPosition = Math.min(Math.max(0, mouseX / width), 1);
-            }
-            onReleased: {
-                root.value = root.dragPosition;
-                root.isDragging = false;
-            }
-            onPositionChanged: {
-                if (root.isDragging) {
-                    root.dragPosition = Math.min(Math.max(0, mouseX / width), 1);
-                    root.value = root.dragPosition;
-                }
-            }
-            onWheel: wheel => {
-                if (root.scroll) {
-                    if (wheel.angleDelta.y > 0) {
-                        root.value = Math.min(1, root.value + 0.1);
-                    } else {
-                        root.value = Math.max(0, root.value - 0.1);
-                    }
-                }
-            }
-        }
-
-        StyledToolTip {
+         StyledToolTip {
             tooltipText: root.tooltipText
             visible: root.isDragging && root.tooltip
             x: dragHandle.x + dragHandle.width / 2 - width / 2

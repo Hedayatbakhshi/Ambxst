@@ -1887,3 +1887,4 @@ AH↗️HA↘️HA↗️HA↘️ pekora arrows hahaha rabbit
 👉👈 etou ughhhhhhh shy
 👉👌 put it in imagination perv
 ‼️🗣️🔥 ax-shell mentioned fire in the hole speak exclamation shout
+🌱💧🩵💚🌐 frutiger aero

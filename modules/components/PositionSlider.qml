@@ -5,10 +5,12 @@ import qs.modules.theme
 import qs.modules.components
 import qs.config
 
-Item {
-    id: root
+ Item {
+     id: root
 
-    required property MprisPlayer player
+     Layout.fillHeight: true
+
+     required property MprisPlayer player
 
     property bool isPlaying: player?.playbackState === MprisPlaybackState.Playing
     property real position: player?.position ?? 0.0
@@ -33,6 +35,7 @@ Item {
         resizeAnim: false
         scroll: false
         tooltip: false
+        updateOnRelease: true
 
         onValueChanged: {
             if (isDragging && root.player && root.player.canSeek) {

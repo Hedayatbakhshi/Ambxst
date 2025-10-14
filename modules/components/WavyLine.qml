@@ -10,30 +10,30 @@ Item {
     property real lineWidth: 4
     property real fullLength: width
     property real speed: 2.4
-    
+
     // Factor de supersampling más agresivo
     readonly property real supersampleFactor: 4.0
-    
+
     layer.enabled: true
     layer.smooth: true
     layer.samples: 8  // MSAA para el layer principal
-    
+
     // Contenedor para el shader renderizado a mayor resolución
     Item {
         id: shaderContainer
         anchors.fill: parent
         visible: Config.performance.wavyLine
-        
+
         ShaderEffect {
             id: wavyShader
             // Renderizar a 4x la resolución
             width: root.width * root.supersampleFactor
             height: root.height * root.supersampleFactor
-            
+
             // Escalar hacia abajo al tamaño original
             scale: 1.0 / root.supersampleFactor
             transformOrigin: Item.TopLeft
-            
+
             property real phase: 0
             property real amplitude: root.lineWidth * root.amplitudeMultiplier * root.supersampleFactor
             property real frequency: root.frequency
@@ -42,33 +42,25 @@ Item {
             property real canvasWidth: root.width * root.supersampleFactor
             property real canvasHeight: root.height * root.supersampleFactor
             property real fullLength: root.fullLength * root.supersampleFactor
-            
+
             vertexShader: Qt.resolvedUrl("wavyline.vert.qsb")
             fragmentShader: Qt.resolvedUrl("wavyline.frag.qsb")
-            
+
             smooth: true
             antialiasing: true
             blending: true  // Habilitar blending para mejor antialiasing
-            
+
             // Layer con MSAA y tamaño completo
             layer.enabled: true
             layer.smooth: true
             layer.samples: 8  // Multisampling antialiasing
             layer.textureSize: Qt.size(width, height)
             layer.mipmap: true
-            
+
             Component.onCompleted: {
-                console.log("Shader values (supersampled 4x):");
-                console.log("  supersampleFactor:", root.supersampleFactor);
-                console.log("  amplitude:", amplitude);
-                console.log("  frequency:", frequency);
-                console.log("  lineWidth:", lineWidth);
-                console.log("  canvasWidth:", canvasWidth);
-                console.log("  canvasHeight:", canvasHeight);
-                console.log("  fullLength:", fullLength);
                 animationTimer.start();
             }
-            
+
             Timer {
                 id: animationTimer
                 interval: 16
@@ -81,7 +73,7 @@ Item {
             }
         }
     }
-    
+
     Rectangle {
         id: simpleRect
         anchors.verticalCenter: parent.verticalCenter
@@ -91,8 +83,8 @@ Item {
         color: root.color
         radius: 2
     }
-    
+
     function requestPaint() {
-        // Mantenido por compatibilidad
+    // Mantenido por compatibilidad
     }
 }
