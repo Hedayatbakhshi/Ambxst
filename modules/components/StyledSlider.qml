@@ -208,13 +208,15 @@ Item {
             Layout.preferredWidth: 4
             Layout.alignment: Qt.AlignHCenter
 
-            Rectangle {
-                anchors.top: parent.top
-                height: (1 - root.progressRatio) * parent.height - root.dragSeparation
-                width: parent.width
-                radius: width / 2
-                color: root.backgroundColor
-                z: 0
+             Rectangle {
+                 anchors.top: parent.top
+                 height: (1 - root.progressRatio) * parent.height - root.dragSeparation
+                 width: parent.width
+                 radius: Config.roundness / 4
+                 topLeftRadius: Config.roundness / 8
+                 topRightRadius: Config.roundness / 8
+                 color: root.backgroundColor
+                 z: 0
 
                 Behavior on height {
                     enabled: root.resizeAnim
@@ -241,7 +243,7 @@ Item {
                     amplitudeMultiplier: root.wavyAmplitude
                     height: parent.width
                     width: parent.height
-                    lineWidth: parent.width / heightMultiplier
+                     lineWidth: root.thickness
                     fullLength: parent.height
                     visible: root.wavy
                     opacity: 1.0
@@ -262,15 +264,17 @@ Item {
                 }
             }
 
-            Rectangle {
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: Math.max(0, parent.height * root.progressRatio - root.dragSeparation)
-                width: parent.width
-                radius: width / 2
-                color: root.progressColor
-                visible: !root.wavy
-                z: 1
+             Rectangle {
+                 anchors.bottom: parent.bottom
+                 anchors.horizontalCenter: parent.horizontalCenter
+                 height: Math.max(0, parent.height * root.progressRatio - root.dragSeparation)
+                 width: parent.width
+                 radius: Config.roundness / 4
+                 bottomLeftRadius: Config.roundness / 8
+                 bottomRightRadius: Config.roundness / 8
+                 color: root.progressColor
+                 visible: !root.wavy
+                 z: 1
 
                 Behavior on height {
                     enabled: root.resizeAnim
@@ -281,15 +285,15 @@ Item {
                 }
             }
 
-            Rectangle {
-                id: vDragHandle
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: parent.height * (1 - root.progressRatio) - 2
-                height: root.isDragging ? 2 : 4
-                width: root.isDragging ? 20 : 16
-                radius: height / 2
-                color: Colors.overBackground
-                z: 2
+             Rectangle {
+                 id: vDragHandle
+                 anchors.horizontalCenter: parent.horizontalCenter
+                 y: parent.height * (1 - root.progressRatio) - 2
+                 height: root.isDragging ? 2 : 4
+                 width: root.isDragging ? Math.max(20, root.thickness + 12) : Math.max(16, root.thickness + 8)
+                 radius: Config.roundness
+                 color: Colors.overBackground
+                 z: 2
 
                 Behavior on y {
                     enabled: root.resizeAnim
