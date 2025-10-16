@@ -9,6 +9,8 @@ import qs.config
 Item {
     property bool schemeListExpanded: false
     readonly property var schemeDisplayNames: ["Content", "Expressive", "Fidelity", "Fruit Salad", "Monochrome", "Neutral", "Rainbow", "Tonal Spot"]
+    property bool scrollBarPressed: false
+    property real opacityValue: schemeListExpanded ? 1 : 0
 
     function getSchemeDisplayName(scheme) {
         const map = {
@@ -87,87 +89,112 @@ Item {
                 }
             }
 
-            ClippingRectangle {
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: schemeListExpanded ? 40 * 3 : 0
-                Layout.topMargin: schemeListExpanded ? 4 : 0
-                color: Colors.background
-                radius: Config.roundness
+                spacing: 4
 
-                Flickable {
-                    id: schemeFlickable
-                    anchors.fill: parent
-                    contentHeight: schemeColumn.height
-                    clip: true
+                ClippingRectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: schemeListExpanded ? 40 * 3 : 0
+                    Layout.topMargin: schemeListExpanded ? 4 : 0
+                    color: Colors.background
+                    radius: Config.roundness
+                    opacity: opacityValue
 
-                    Column {
-                        id: schemeColumn
-                        width: parent.width
-                        spacing: 0
+                    Flickable {
+                        id: schemeFlickable
+                        anchors.fill: parent
+                        contentHeight: schemeColumn.height
+                        clip: true
 
-                        Repeater {
-                            model: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot"]
+                        Column {
+                            id: schemeColumn
+                            width: parent.width
+                            spacing: 0
 
-                            Button {
-                                width: parent.width
-                                height: 40
-                                text: schemeDisplayNames[index]
-                                onClicked: {
-                                    Config.theme.matugenScheme = modelData;
-                                    schemeListExpanded = false;
-                                    if (GlobalStates.wallpaperManager) {
-                                        GlobalStates.wallpaperManager.runMatugenForCurrentWallpaper();
+                            Repeater {
+                                model: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot"]
+
+                                Button {
+                                    width: parent.width
+                                    height: 40
+                                    text: schemeDisplayNames[index]
+                                    onClicked: {
+                                        Config.theme.matugenScheme = modelData;
+                                        schemeListExpanded = false;
+                                        if (GlobalStates.wallpaperManager) {
+                                            GlobalStates.wallpaperManager.runMatugenForCurrentWallpaper();
+                                        }
                                     }
-                                }
 
-                                background: Rectangle {
-                                    color: "transparent"
-                                }
+                                    background: Rectangle {
+                                        color: "transparent"
+                                    }
 
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: Colors.overSurface
-                                    font.family: Config.theme.font
-                                    font.pixelSize: Config.theme.fontSize
-                                    verticalAlignment: Text.AlignVCenter
-                                    leftPadding: 8
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: Colors.overSurface
+                                        font.family: Config.theme.font
+                                        font.pixelSize: Config.theme.fontSize
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 8
+                                    }
                                 }
                             }
                         }
                     }
 
-                    ScrollBar.vertical: ScrollBar {
-                        parent: schemeFlickable
-                        anchors.right: parent.right
-                        anchors.rightMargin: 2
-                        height: parent.height
-                        width: 8
-                        policy: ScrollBar.AlwaysOn
-
-                        background: Rectangle {
-                            color: Colors.background
-                            radius: Config.roundness
+                    // Animate topMargin for ClippingRectangle
+                    Behavior on Layout.topMargin {
+                        NumberAnimation {
+                            duration: Config.animDuration
+                            easing.type: Easing.OutQuart
                         }
+                    }
 
-                        contentItem: Rectangle {
-                            color: Colors.primary
-                            radius: Config.roundness
+                    Behavior on Layout.preferredHeight {
+                        NumberAnimation {
+                            duration: Config.animDuration
+                            easing.type: Easing.OutQuart
+                        }
+                    }
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: Config.animDuration
+                            easing.type: Easing.OutQuart
                         }
                     }
                 }
 
-                // Animate topMargin for ClippingRectangle
-                Behavior on Layout.topMargin {
-                    NumberAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
-                    }
-                }
+                ScrollBar {
+                    Layout.preferredWidth: 8
+                    Layout.preferredHeight: schemeListExpanded ? (40 * 3) - 32 : 0
+                    Layout.alignment: Qt.AlignVCenter
+                    orientation: Qt.Vertical
+                    visible: schemeFlickable.contentHeight > schemeFlickable.height
 
-                Behavior on Layout.preferredHeight {
-                    NumberAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
+                    position: schemeFlickable.contentY / schemeFlickable.contentHeight
+                    size: schemeFlickable.height / schemeFlickable.contentHeight
+
+                    background: Rectangle {
+                        color: Colors.background
+                        radius: Config.roundness
+                    }
+
+                    contentItem: Rectangle {
+                        color: Colors.primary
+                        radius: Config.roundness
+                    }
+
+                    onPressedChanged: {
+                        scrollBarPressed = pressed;
+                    }
+
+                    onPositionChanged: {
+                        if (scrollBarPressed && schemeFlickable.contentHeight > schemeFlickable.height) {
+                            schemeFlickable.contentY = position * schemeFlickable.contentHeight;
+                        }
                     }
                 }
             }

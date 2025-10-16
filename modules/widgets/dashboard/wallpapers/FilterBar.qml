@@ -32,8 +32,6 @@ Item {
         flickableDirection: Flickable.HorizontalFlick
         clip: true
 
-
-
         // Modelo de filtros
         ListModel {
             id: filterModel
@@ -95,7 +93,7 @@ Item {
 
         Row {
             id: filterRow
-            spacing: 8
+            spacing: 4
 
             Repeater {
                 model: filterModel
@@ -201,6 +199,7 @@ Item {
         id: scrollBar
         anchors.top: flickable.bottom
         anchors.topMargin: 4
+        Layout.preferredHeight: 4
         width: flickable.width
         height: implicitHeight
         orientation: Qt.Horizontal
@@ -210,17 +209,17 @@ Item {
         size: flickable.width / flickable.contentWidth
 
         background: Rectangle {
-            implicitWidth: 12
-            implicitHeight: 12
+            implicitWidth: 4
+            implicitHeight: 4
             color: Colors.surface
-            radius: 6
+            radius: Config.roundness
         }
 
         contentItem: Rectangle {
-            implicitWidth: 8
-            implicitHeight: 8
+            implicitWidth: 4
+            implicitHeight: 4
             color: Colors.primary
-            radius: 4
+            radius: Config.roundness
         }
 
         onPressedChanged: {

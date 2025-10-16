@@ -582,7 +582,7 @@ Rectangle {
         // Contenedor de resultados del clipboard
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
+            spacing: 5
 
             // Sección de imágenes horizontal
             Item {
@@ -1030,21 +1030,21 @@ Rectangle {
                                                 onExited: parent.color = "transparent"
                                             }
 
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: Icons.cancel
-                                            color: imageCancelButton.isHighlighted ? Colors.error : Colors.overError
-                                            font.pixelSize: 16
-                                            font.family: Icons.font
-                                            textFormat: Text.RichText
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: Icons.cancel
+                                                color: imageCancelButton.isHighlighted ? Colors.error : Colors.overError
+                                                font.pixelSize: 16
+                                                font.family: Icons.font
+                                                textFormat: Text.RichText
 
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: Config.animDuration / 2
-                                                    easing.type: Easing.OutQuart
+                                                Behavior on color {
+                                                    ColorAnimation {
+                                                        duration: Config.animDuration / 2
+                                                        easing.type: Easing.OutQuart
+                                                    }
                                                 }
                                             }
-                                        }
                                         }
 
                                         // Botón confirmar (trash)
@@ -1067,21 +1067,21 @@ Rectangle {
                                                 onExited: parent.color = "transparent"
                                             }
 
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: Icons.trash
-                                            color: imageConfirmButton.isHighlighted ? Colors.error : Colors.overError
-                                            font.pixelSize: 16
-                                            font.family: Icons.font
-                                            textFormat: Text.RichText
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: Icons.trash
+                                                color: imageConfirmButton.isHighlighted ? Colors.error : Colors.overError
+                                                font.pixelSize: 16
+                                                font.family: Icons.font
+                                                textFormat: Text.RichText
 
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: Config.animDuration / 2
-                                                    easing.type: Easing.OutQuart
+                                                Behavior on color {
+                                                    ColorAnimation {
+                                                        duration: Config.animDuration / 2
+                                                        easing.type: Easing.OutQuart
+                                                    }
                                                 }
                                             }
-                                        }
                                         }
                                     }
                                 }
@@ -1115,7 +1115,6 @@ Rectangle {
             ScrollBar {
                 id: imageScrollBar
                 Layout.fillWidth: true
-                Layout.preferredHeight: 10
                 visible: root.imageItems.length > 0 && root.searchText.length === 0
                 orientation: Qt.Horizontal
 
@@ -1123,11 +1122,15 @@ Rectangle {
                 position: imageResultsList.contentX / imageResultsList.contentWidth
 
                 background: Rectangle {
+                    implicitWidth: 4
+                    implicitHeight: 4
                     color: Colors.surface
                     radius: Config.roundness
                 }
 
                 contentItem: Rectangle {
+                    implicitWidth: 4
+                    implicitHeight: 4
                     color: Colors.primary
                     radius: Config.roundness
                 }
