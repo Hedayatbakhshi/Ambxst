@@ -40,8 +40,9 @@ Item {
     property bool tooltip: true
     property bool updateOnRelease: false
     property string iconPos: "start"
-    property real size: 100
-    property real thickness: 4
+     property real size: 100
+     property real thickness: 4
+     property color iconColor: Colors.overBackground
 
     Behavior on wavyAmplitude {
         NumberAnimation {
@@ -292,7 +293,7 @@ Item {
                  height: root.isDragging ? 2 : 4
                  width: root.isDragging ? Math.max(20, root.thickness + 12) : Math.max(16, root.thickness + 8)
                  radius: Config.roundness
-                 color: Colors.overBackground
+         color: iconColor
                  z: 2
 
                 Behavior on y {
@@ -344,8 +345,8 @@ Item {
              hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             z: 4
-            onEntered: iconText.color = Colors.primary
-            onExited: iconText.color = Colors.overBackground
+             onEntered: iconColor = Colors.primary
+             onExited: iconColor = Colors.overBackground
             onClicked: root.iconClicked()
         }
     }
