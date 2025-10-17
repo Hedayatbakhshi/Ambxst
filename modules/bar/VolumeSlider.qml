@@ -12,10 +12,11 @@ Item {
     // Orientación derivada de la barra
     property bool vertical: bar.orientation === "vertical"
 
-    // Estado de hover para activar wavy
-    property bool isHovered: false
-    property bool mainHovered: false
-    property bool iconHovered: false
+     // Estado de hover para activar wavy
+     property bool isHovered: false
+     property bool mainHovered: false
+     property bool iconHovered: false
+     property bool externalVolumeChange: false
 
     HoverHandler {
         onHoveredChanged: {
@@ -31,9 +32,9 @@ Item {
     Layout.preferredHeight: root.vertical ? 80 : 4
 
     states: [
-        State {
-            name: "hovered"
-            when: root.isHovered || volumeSlider.isDragging
+         State {
+             name: "hovered"
+             when: root.isHovered || volumeSlider.isDragging || root.externalVolumeChange
             PropertyChanges {
                 target: root
                 implicitWidth: root.vertical ? 4 : 128
@@ -120,20 +121,28 @@ Item {
                 }
             }
 
-            Connections {
-                target: Audio.sink?.audio
-                function onVolumeChanged() {
-                    volumeSlider.value = Audio.sink.audio.volume;
-                }
-            }
+             Connections {
+                 target: Audio.sink?.audio
+                 function onVolumeChanged() {
+                     volumeSlider.value = Audio.sink.audio.volume;
+                     root.externalVolumeChange = true;
+                     externalChangeTimer.restart();
+                 }
+             }
 
             Connections {
                 target: volumeSlider
                 function onIconHovered(hovered) {
                     root.iconHovered = hovered;
                     root.isHovered = root.mainHovered || root.iconHovered;
-                }
-            }
-        }
-    }
+             }
+         }
+
+         Timer {
+             id: externalChangeTimer
+             interval: 1000
+             onTriggered: root.externalVolumeChange = false
+         }
+     }
+ }
 }
