@@ -14,8 +14,10 @@ Item {
     implicitHeight: resizeParent ? (vertical ? size : 4) : 0
     implicitWidth: resizeParent ? (!vertical ? size : 4) : 0
 
-    onWidthChanged: if (!resizeParent && !vertical) size = width
-    onHeightChanged: if (!resizeParent && vertical) size = height
+    onWidthChanged: if (!resizeParent && !vertical)
+        size = width
+    onHeightChanged: if (!resizeParent && vertical)
+        size = height
 
     signal iconClicked
     signal iconHovered(bool hovered)
@@ -121,9 +123,8 @@ Item {
             }
 
             Rectangle {
-                // Background (derecha del handle)
                 anchors.left: hDragHandle.right
-                anchors.leftMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.leftMargin: root.handleSpacing
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 height: root.thickness
@@ -134,10 +135,9 @@ Item {
 
             WavyLine {
                 id: hWavyFill
-                // Progress (izquierda del handle)
                 anchors.left: parent.left
                 anchors.right: hDragHandle.left
-                anchors.rightMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.rightMargin: root.handleSpacing
                 anchors.verticalCenter: parent.verticalCenter
                 frequency: root.wavyFrequency
                 color: root.progressColor
@@ -152,10 +152,9 @@ Item {
                 }
             }
             Rectangle {
-                // Progress (izquierda del handle)
                 anchors.left: parent.left
                 anchors.right: hDragHandle.left
-                anchors.rightMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.rightMargin: root.handleSpacing
                 anchors.verticalCenter: parent.verticalCenter
                 height: root.thickness
                 radius: Config.roundness / 4
@@ -214,10 +213,9 @@ Item {
             }
 
             Rectangle {
-                // Background (encima del handle)
                 anchors.top: parent.top
                 anchors.bottom: vDragHandle.top
-                anchors.bottomMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.bottomMargin: root.handleSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: root.thickness
                 radius: Config.roundness / 4
@@ -226,9 +224,8 @@ Item {
             }
 
             Item {
-                // Progress (debajo del handle) - Wavy
                 anchors.top: vDragHandle.bottom
-                anchors.topMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.topMargin: root.handleSpacing
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: parent.width * heightMultiplier
@@ -251,9 +248,8 @@ Item {
                 }
             }
             Rectangle {
-                // Progress (debajo del handle) - Rect
                 anchors.top: vDragHandle.bottom
-                anchors.topMargin: root.handleSpacing // <-- CAMBIO APLICADO
+                anchors.topMargin: root.handleSpacing
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: root.thickness
