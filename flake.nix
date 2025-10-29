@@ -51,6 +51,7 @@
         wtype
         imagemagick
         matugen
+        ffmpeg
       ];
     };
   };
