@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Wayland
 import qs.modules.bar.workspaces
 import qs.modules.theme
@@ -147,43 +148,81 @@ PanelWindow {
             LauncherButton {
                 id: launcherButton
             }
-            Workspaces {
-                orientation: panel.orientation
-                bar: QtObject {
-                    property var screen: panel.screen
+
+            ClippingRectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 36
+                color: "transparent"
+                radius: Config.roundness
+
+                Flickable {
+                    anchors.fill: parent
+                    contentWidth: leftContent.width
+                    contentHeight: 36
+                    flickableDirection: Flickable.HorizontalFlick
+
+                    RowLayout {
+                        id: leftContent
+                        spacing: 4
+
+                        Workspaces {
+                            orientation: panel.orientation
+                            bar: QtObject {
+                                property var screen: panel.screen
+                            }
+                        }
+                        OverviewButton {
+                            id: overviewButton
+                        }
+                    }
                 }
             }
-            OverviewButton {
-                id: overviewButton
-            }
 
-            Item {
+            ClippingRectangle {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 36
+                color: "transparent"
+                radius: Config.roundness
+
+                Flickable {
+                    anchors.fill: parent
+                    contentWidth: rightContent.width
+                    contentHeight: 36
+                    flickableDirection: Flickable.HorizontalFlick
+                    rotation: 180
+
+                    RowLayout {
+                        id: rightContent
+                        spacing: 4
+                        rotation: 180
+
+                        MicSlider {
+                            bar: panel
+                        }
+
+                        VolumeSlider {
+                            id: volume
+                            bar: panel
+                        }
+
+                        BrightnessSlider {
+                            bar: panel
+                        }
+                        SysTray {
+                            bar: panel
+                        }
+                        Weather {
+                            id: weatherComponent
+                            bar: panel
+                        }
+                        Clock {
+                            id: clockComponent
+                            bar: panel
+                        }
+                    }
+                }
             }
 
-            MicSlider {
-                bar: panel
-            }
-
-            VolumeSlider {
-                id: volume
-                bar: panel
-            }
-
-            BrightnessSlider {
-                bar: panel
-            }
-            SysTray {
-                bar: panel
-            }
-            Weather {
-                id: weatherComponent
-                bar: panel
-            }
-            Clock {
-                id: clockComponent
-                bar: panel
-            }
             PowerButton {
                 id: powerButton
             }
@@ -200,43 +239,81 @@ PanelWindow {
                 id: launcherButtonVert
                 Layout.preferredHeight: 36
             }
-            Workspaces {
-                orientation: panel.orientation
-                bar: QtObject {
-                    property var screen: panel.screen
+
+            ClippingRectangle {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 36
+                color: "transparent"
+                radius: Config.roundness
+
+                Flickable {
+                    anchors.fill: parent
+                    contentWidth: 36
+                    contentHeight: topContent.height
+                    flickableDirection: Flickable.VerticalFlick
+
+                    ColumnLayout {
+                        id: topContent
+                        spacing: 4
+
+                        Workspaces {
+                            orientation: panel.orientation
+                            bar: QtObject {
+                                property var screen: panel.screen
+                            }
+                        }
+                        OverviewButton {
+                            id: overviewButtonVert
+                            Layout.preferredHeight: 36
+                        }
+                    }
                 }
             }
-            OverviewButton {
-                id: overviewButtonVert
-                Layout.preferredHeight: 36
-            }
 
-            Item {
+            ClippingRectangle {
                 Layout.fillHeight: true
+                Layout.preferredWidth: 36
+                color: "transparent"
+                radius: Config.roundness
+
+                Flickable {
+                    anchors.fill: parent
+                    contentWidth: 36
+                    contentHeight: bottomContent.height
+                    flickableDirection: Flickable.VerticalFlick
+                    rotation: 180
+
+                    ColumnLayout {
+                        id: bottomContent
+                        spacing: 4
+                        rotation: 180
+
+                        MicSlider {
+                            bar: panel
+                        }
+
+                        VolumeSlider {
+                            bar: panel
+                        }
+
+                        BrightnessSlider {
+                            bar: panel
+                        }
+                        SysTray {
+                            bar: panel
+                        }
+                        Weather {
+                            id: weatherComponentVert
+                            bar: panel
+                        }
+                        Clock {
+                            id: clockComponentVert
+                            bar: panel
+                        }
+                    }
+                }
             }
 
-            MicSlider {
-                bar: panel
-            }
-
-            VolumeSlider {
-                bar: panel
-            }
-
-            BrightnessSlider {
-                bar: panel
-            }
-            SysTray {
-                bar: panel
-            }
-            Weather {
-                id: weatherComponentVert
-                bar: panel
-            }
-            Clock {
-                id: clockComponentVert
-                bar: panel
-            }
             PowerButton {
                 id: powerButtonVert
                 Layout.preferredHeight: 36
