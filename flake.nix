@@ -9,8 +9,11 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixgl }:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    nixgl,
+  }: let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
@@ -19,19 +22,20 @@
 
     nixGL = nixgl.packages.${system}.nixGLDefault;
 
-    wrapWithNixGL = pkg: pkgs.symlinkJoin {
-      name = "${pkg.pname or pkg.name}-nixGL";
-      paths = [ pkg ];
-      buildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        for bin in $out/bin/*; do
-          if [ -x "$bin" ]; then
-            mv "$bin" "$bin.orig"
-            makeWrapper ${nixGL}/bin/nixGL "$bin" --add-flags "$bin.orig"
-          fi
-        done
-      '';
-    };
+    wrapWithNixGL = pkg:
+      pkgs.symlinkJoin {
+        name = "${pkg.pname or pkg.name}-nixGL";
+        paths = [pkg];
+        buildInputs = [pkgs.makeWrapper];
+        postBuild = ''
+          for bin in $out/bin/*; do
+            if [ -x "$bin" ]; then
+              mv "$bin" "$bin.orig"
+              makeWrapper ${nixGL}/bin/nixGL "$bin" --add-flags "$bin.orig"
+            fi
+          done
+        '';
+      };
 
     # Entorno con todos los binarios
     env = pkgs.buildEnv {
@@ -43,10 +47,24 @@
         wl-clipboard
         cliphist
         nixGL
-        mesa libglvnd egl-wayland wayland
-        qt6.qtbase qt6.qtsvg qt6.qttools qt6.qtwayland qt6.qtdeclarative qt6.qtimageformats qt6.qtwebengine
-        kdePackages.breeze-icons hicolor-icon-theme
-        fuzzel wtype imagemagick matugen ffmpeg
+        mesa
+        libglvnd
+        egl-wayland
+        wayland
+        qt6.qtbase
+        qt6.qtsvg
+        qt6.qttools
+        qt6.qtwayland
+        qt6.qtdeclarative
+        qt6.qtimageformats
+        qt6.qtwebengine
+        kdePackages.breeze-icons
+        hicolor-icon-theme
+        fuzzel
+        wtype
+        imagemagick
+        matugen
+        ffmpeg
       ];
     };
 
@@ -60,7 +78,7 @@
     # Combina entorno + launcher
     packages.${system}.default = pkgs.buildEnv {
       name = "ambxst";
-      paths = [ env launcher ];
+      paths = [env launcher];
     };
   };
 }
