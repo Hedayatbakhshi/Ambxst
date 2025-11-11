@@ -24,9 +24,9 @@ FocusScope {
     property var focusableElements: [
         { id: "filters", focusFunc: function() { filterBar.focusFilters(); } },
         { id: "schemeSelector", focusFunc: function() { schemeSelector.openAndFocus(); } },
-        { id: "oledButton", focusFunc: function() { 
-            oledButton.keyboardNavigationActive = true;
-            oledButton.forceActiveFocus();
+        { id: "oledCheckbox", focusFunc: function() { 
+            oledCheckboxContainer.keyboardNavigationActive = true;
+            oledCheckbox.forceActiveFocus();
         }}
     ]
 
@@ -323,70 +323,21 @@ FocusScope {
                             }
                         }
 
-                        // OLED Mode Toggle Button
-                        Button {
-                            id: oledButton
+                        // OLED Mode Checkbox
+                        Item {
+                            id: oledCheckboxContainer
                             Layout.fillWidth: true
                             Layout.preferredHeight: 48
-                            enabled: !Config.theme.lightMode
 
-                            property bool isActive: Config.theme.oledMode
                             property bool keyboardNavigationActive: false
 
-                            onActiveFocusChanged: {
-                                if (!activeFocus) {
-                                    keyboardNavigationActive = false;
-                                }
-                            }
-
-                            onClicked: {
-                                keyboardNavigationActive = false;
-                                if (enabled) {
-                                    Config.theme.oledMode = !Config.theme.oledMode;
-                                }
-                            }
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Tab) {
-                                    keyboardNavigationActive = false;
-                                    if (event.modifiers & Qt.ShiftModifier) {
-                                        wallpapersTabRoot.focusPreviousElement();
-                                    } else {
-                                        wallpapersTabRoot.focusNextElement();
-                                    }
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
-                                    if (enabled) {
-                                        Config.theme.oledMode = !Config.theme.oledMode;
-                                    }
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Escape) {
-                                    keyboardNavigationActive = false;
-                                    focusSearch();
-                                    event.accepted = true;
-                                }
-                            }
-
-                            background: Rectangle {
-                                color: oledButton.isActive ? Colors.primary : Colors.surface
-                                radius: oledButton.isActive ? (Config.roundness > 0 ? (Config.roundness + 4) / 2 : 0) : (Config.roundness > 0 ? Config.roundness + 4 : 0)
-                                opacity: oledButton.enabled ? 1.0 : 0.5
+                            Rectangle {
+                                anchors.fill: parent
+                                color: Colors.surface
+                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                opacity: oledCheckbox.enabled ? 1.0 : 0.5
                                 border.color: Colors.outline
-                                border.width: oledButton.keyboardNavigationActive && oledButton.activeFocus ? 2 : 0
-
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
-
-                                Behavior on radius {
-                                    NumberAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
+                                border.width: oledCheckboxContainer.keyboardNavigationActive && oledCheckbox.activeFocus ? 2 : 0
 
                                 Behavior on opacity {
                                     NumberAnimation {
@@ -401,41 +352,129 @@ FocusScope {
                                         easing.type: Easing.OutQuart
                                     }
                                 }
-                            }
 
-                            contentItem: Text {
-                                text: "OLED"
-                                color: oledButton.isActive ? Colors.overPrimary : Colors.overSurface
-                                font.family: Config.theme.font
-                                font.pixelSize: Config.theme.fontSize
-                                font.weight: Font.Bold
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: 4
+                                    spacing: 4
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                        color: Colors.background
+                                        radius: Config.roundness
+
+                                        Text {
+                                            anchors.fill: parent
+                                            text: "OLED Mode"
+                                            color: Colors.overSurface
+                                            font.family: Config.theme.font
+                                            font.pixelSize: Config.theme.fontSize
+                                            font.weight: Font.Medium
+                                            verticalAlignment: Text.AlignVCenter
+                                            leftPadding: 8
+
+                                            Behavior on color {
+                                                ColorAnimation {
+                                                    duration: Config.animDuration / 2
+                                                    easing.type: Easing.OutQuart
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                            }
 
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: oledButton.enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                                onClicked: {
-                                    oledButton.keyboardNavigationActive = false;
-                                    if (oledButton.enabled) {
-                                        Config.theme.oledMode = !Config.theme.oledMode;
+                                    Item {
+                                        id: oledCheckbox
+                                        Layout.preferredWidth: 40
+                                        Layout.preferredHeight: 40
+                                        
+                                        property bool checked: Config.theme.oledMode
+                                        property bool enabled: !Config.theme.lightMode
+
+                                        onActiveFocusChanged: {
+                                            if (!activeFocus) {
+                                                oledCheckboxContainer.keyboardNavigationActive = false;
+                                            }
+                                        }
+
+                                        Keys.onPressed: event => {
+                                            if (event.key === Qt.Key_Tab) {
+                                                oledCheckboxContainer.keyboardNavigationActive = false;
+                                                if (event.modifiers & Qt.ShiftModifier) {
+                                                    wallpapersTabRoot.focusPreviousElement();
+                                                } else {
+                                                    wallpapersTabRoot.focusNextElement();
+                                                }
+                                                event.accepted = true;
+                                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+                                                if (enabled) {
+                                                    Config.theme.oledMode = !Config.theme.oledMode;
+                                                }
+                                                event.accepted = true;
+                                            } else if (event.key === Qt.Key_Escape) {
+                                                oledCheckboxContainer.keyboardNavigationActive = false;
+                                                focusSearch();
+                                                event.accepted = true;
+                                            }
+                                        }
+
+                                        // Update checked state when config changes
+                                        Connections {
+                                            target: Config.theme
+                                            function onOledModeChanged() {
+                                                oledCheckbox.checked = Config.theme.oledMode;
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            radius: Config.roundness
+                                            color: oledCheckbox.checked ? Colors.primary : Colors.background
+
+                                            Behavior on color {
+                                                ColorAnimation {
+                                                    duration: Config.animDuration / 2
+                                                    easing.type: Easing.OutQuart
+                                                }
+                                            }
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: Icons.accept
+                                                color: Colors.overPrimary
+                                                font.family: Icons.font
+                                                font.pixelSize: 20
+                                                visible: oledCheckbox.checked
+                                                scale: oledCheckbox.checked ? 1.0 : 0.0
+                                                opacity: oledCheckbox.checked ? 1.0 : 0.0
+
+                                                Behavior on scale {
+                                                    NumberAnimation {
+                                                        duration: Config.animDuration / 2
+                                                        easing.type: Easing.OutBack
+                                                        easing.overshoot: 1.5
+                                                    }
+                                                }
+
+                                                Behavior on opacity {
+                                                    NumberAnimation {
+                                                        duration: Config.animDuration / 2
+                                                        easing.type: Easing.OutQuart
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: oledCheckbox.enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
+                                            onClicked: {
+                                                if (oledCheckbox.enabled) {
+                                                    Config.theme.oledMode = !Config.theme.oledMode;
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                            }
-
-                            // Update active state when config changes
-                            Connections {
-                                target: Config.theme
-                                function onOledModeChanged() {
-                                    oledButton.isActive = Config.theme.oledMode;
                                 }
                             }
                         }
