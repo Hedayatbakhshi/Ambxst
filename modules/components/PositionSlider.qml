@@ -21,13 +21,18 @@ Item {
     property alias value: slider.value
     property alias isDragging: slider.isDragging
 
+    // Propiedades opcionales para sobrescribir colores
+    property color customProgressColor: PlayerColors.primary
+    property color customBackgroundColor: PlayerColors.shadow
+    property bool useCustomColors: false
+
     StyledSlider {
         id: slider
         anchors.fill: parent
 
         value: root.length > 0 ? Math.min(1.0, root.position / root.length) : 0
-        progressColor: PlayerColors.primary
-        backgroundColor: PlayerColors.shadow
+        progressColor: root.useCustomColors ? root.customProgressColor : PlayerColors.primary
+        backgroundColor: root.useCustomColors ? root.customBackgroundColor : PlayerColors.shadow
         wavy: true
         wavyAmplitude: root.isPlaying ? 1 : 0.0
         wavyFrequency: root.isPlaying ? 8 : 0

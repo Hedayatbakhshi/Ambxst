@@ -143,10 +143,9 @@ PanelWindow {
             }
         }
 
-        FullPlayer {
+        LockPlayer {
             id: playerContent
             width: parent.width
-            playerRadius: Config.roundness * 2
         }
     }
 
@@ -159,7 +158,7 @@ PanelWindow {
             bottomMargin: 32
         }
         width: 350
-        height: 80
+        height: 96
 
         transform: Translate {
             y: (GlobalStates.lockscreenVisible && !unlocking) ? 0 : passwordContainer.height + 32
@@ -177,7 +176,7 @@ PanelWindow {
             id: passwordInputBox
             anchors.centerIn: parent
             width: parent.width
-            height: 80
+            height: 96
             radius: Config.roundness > 0 ? (height / 2) * (Config.roundness / 16) : 0
 
             property real shakeOffset: 0
@@ -207,14 +206,15 @@ PanelWindow {
 
             Row {
                 anchors.fill: parent
-                anchors.margins: 16
+                anchors.leftMargin: 16
+                anchors.rightMargin: 24
                 spacing: 12
 
-                // Avatar (48x48)
+                // Avatar (64x64)
                 Rectangle {
                     id: avatarContainer
-                    width: 48
-                    height: 48
+                    width: 64
+                    height: 64
                     radius: Config.roundness > 0 ? (height / 2) * (Config.roundness / 16) : 0
                     color: "transparent"
                     anchors.verticalCenter: parent.verticalCenter
@@ -247,7 +247,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: "👤"
-                        font.pixelSize: 24
+                        font.pixelSize: 32
                         visible: userAvatar.status !== Image.Ready
                     }
                 }
@@ -255,7 +255,7 @@ PanelWindow {
                 // Password field
                 Rectangle {
                     width: parent.width - avatarContainer.width - parent.spacing
-                    height: parent.height
+                    height: 48
                     anchors.verticalCenter: parent.verticalCenter
                     color: passwordInputBox.showError ? Colors.errorContainer : Colors.surface
                     radius: Config.roundness > 0 ? (height / 2) * (Config.roundness / 16) : 0
@@ -270,7 +270,7 @@ PanelWindow {
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 16
-                        anchors.rightMargin: 16
+                        anchors.rightMargin: 32
                         spacing: 8
 
                         // User icon / Spinner
