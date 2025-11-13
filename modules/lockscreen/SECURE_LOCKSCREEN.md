@@ -25,6 +25,46 @@ La implementación segura del lockscreen en Ambxst utiliza el protocolo Wayland 
    - Componente antiguo usando `PanelWindow` + `WlrLayershell`
    - **NO SEGURO** - se mantiene por compatibilidad pero no debería usarse
 
+## Autenticación PAM
+
+### Binario ambxst-auth
+
+El lockscreen utiliza un binario compilado en C que realiza la autenticación PAM:
+
+- **Ubicación**: `modules/lockscreen/auth.c`
+- **Compilación**: `modules/lockscreen/build.sh`
+- **Requiere**: PAM headers (`libpam`)
+
+### Instalación
+
+#### En NixOS
+
+El flake incluye el binario automáticamente. Solo necesitas importar el módulo:
+
+```nix
+# En tu configuration.nix
+{ inputs.ambxst.url = "github:Axenide/Ambxst";
+  imports = [ inputs.ambxst.nixosModules.default ];
+}
+```
+
+#### En sistemas non-NixOS
+
+El script `install.sh` compila el binario localmente y lo copia a `~/.local/bin/`. No requiere configuración adicional.
+
+### ¿Por qué no necesita permisos especiales?
+
+El binario `ambxst-auth` **no necesita capabilities ni setuid** porque:
+
+1. No lee `/etc/shadow` directamente
+2. Llama a PAM, que usa su propio helper privilegiado (`/usr/bin/unix_chkpwd`)
+3. El helper de PAM ya tiene setuid root configurado por el sistema
+4. Tu binario solo se comunica con PAM y recibe el resultado
+
+```
+ambxst-auth → pam_authenticate() → pam_unix.so → unix_chkpwd (setuid) → /etc/shadow
+```
+
 ## Seguridad: ¿Por qué es seguro?
 
 ### Protocolo WlSessionLock

@@ -66,6 +66,7 @@
         installPhase = ''
           mkdir -p $out/bin
           cp ambxst-auth $out/bin/
+          chmod 755 $out/bin/ambxst-auth
         '';
       };
 
@@ -78,8 +79,13 @@
         ddcutil
         wl-clipboard
         cliphist
+      ] ++ (if isNixOS then [ 
         ambxst-auth
-      ] ++ (if isNixOS then [ power-profiles-daemon networkmanager ] else [ nixGL ]) ++ (with pkgs; [
+        power-profiles-daemon 
+        networkmanager 
+      ] else [ 
+        nixGL 
+      ]) ++ (with pkgs; [
         mesa
         libglvnd
         egl-wayland
@@ -112,7 +118,13 @@
 
       launcher = pkgs.writeShellScriptBin "ambxst" ''
         # Ensure ambxst-auth is in PATH for lockscreen
-        export PATH="${ambxst-auth}/bin:$PATH"
+        ${lib.optionalString isNixOS ''
+          export PATH="${ambxst-auth}/bin:$PATH"
+        ''}
+        ${lib.optionalString (!isNixOS) ''
+          # On non-NixOS, use local build from ~/.local/bin
+          export PATH="$HOME/.local/bin:$PATH"
+        ''}
         exec ${lib.optionalString (!isNixOS) "${nixGL}/bin/nixGL "}${pkgs.quickshell}/bin/qs -p ${self}/shell.qml
       '';
 
