@@ -1148,7 +1148,7 @@ Rectangle {
                 }
             }
 
-             highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+             highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
              highlightMoveVelocity: -1
 
              MouseArea {

@@ -351,7 +351,7 @@ Rectangle {
                 visible: root.selectedIndex >= 0 && (root.optionsMenuOpen ? root.selectedIndex === root.menuItemIndex : true)
             }
 
-            highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+            highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
             highlightMoveVelocity: -1
         }
     }

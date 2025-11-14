@@ -1007,7 +1007,7 @@ Rectangle {
                                         Behavior on idx2X {
                                             enabled: Config.animDuration > 0
                                             NumberAnimation {
-                                                duration: Config.animDuration
+                                                duration: Config.animDuration / 2
                                                 easing.type: Easing.OutSine
                                             }
                                         }
@@ -1100,7 +1100,7 @@ Rectangle {
                             }
                         }
 
-                        highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+                        highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
                         highlightMoveVelocity: -1
                     }
 
@@ -1631,7 +1631,7 @@ Rectangle {
                         }
                     }
 
-                    highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+                    highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
                     highlightMoveVelocity: -1
                 }
 

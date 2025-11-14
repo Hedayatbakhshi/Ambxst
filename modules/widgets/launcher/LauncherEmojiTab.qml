@@ -462,7 +462,7 @@ Rectangle {
                 Behavior on Layout.preferredWidth {
                     enabled: Config.animDuration > 0
                     NumberAnimation {
-                        duration: Config.animDuration
+                        duration: Config.animDuration / 2
                         easing.type: Easing.OutQuart
                     }
                 }
@@ -641,7 +641,7 @@ Rectangle {
                         visible: root.isRecentFocused
                     }
 
-                    highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+                    highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
                     highlightMoveVelocity: -1
                 }
             }
@@ -750,7 +750,7 @@ Rectangle {
                     visible: root.selectedIndex >= 0 && !root.isRecentFocused
                 }
 
-                highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration : 0 > 0 ? Config.animDuration / 2 : 0
+                highlightMoveDuration: Config.animDuration > 0 ? Config.animDuration / 2 : 0
                 highlightMoveVelocity: -1
             }
         }
