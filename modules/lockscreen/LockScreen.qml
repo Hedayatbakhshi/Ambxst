@@ -90,7 +90,7 @@ WlSessionLockSurface {
         blur: startAnim ? 1 : 0
         blurMax: 64
         visible: true
-        opacity: 0  // Controlado solo por animaciones
+        opacity: startAnim ? 1 : 0
         z: 2
 
         property real zoomScale: startAnim ? 1.25 : 1.0
@@ -110,35 +110,10 @@ WlSessionLockSurface {
             }
         }
 
-        SequentialAnimation on opacity {
-            id: opacityAnimation
-            running: false
-
-            // Animación de entrada (fade in)
+        Behavior on opacity {
+            enabled: Config.animDuration > 0
             NumberAnimation {
-                from: 0
-                to: 1
                 duration: Config.animDuration * 2
-                easing.type: Easing.OutQuint
-            }
-        }
-        
-        SequentialAnimation {
-            id: exitOpacityAnimation
-            running: false
-            
-            // Esperar a que termine el zoom out
-            PauseAnimation {
-                duration: Config.animDuration
-            }
-            
-            // Fade out después del zoom
-            NumberAnimation {
-                target: blurEffect
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: Config.animDuration
                 easing.type: Easing.OutQuint
             }
         }
@@ -693,9 +668,6 @@ WlSessionLockSurface {
             if (exitCode === 0) {
                 // Autenticación exitosa - trigger exit animation
                 startAnim = false;
-                if (Config.animDuration > 0) {
-                    exitOpacityAnimation.start();
-                }
 
                 // Wait for exit animation, then unlock
                 unlockTimer.start();
@@ -801,12 +773,9 @@ WlSessionLockSurface {
     Component.onCompleted: {
         // Capture screen immediately
         screencopyBackground.captureFrame();
-        
+
         // Start animations
         startAnim = true;
-        if (Config.animDuration > 0) {
-            opacityAnimation.start();
-        }
         passwordInput.forceActiveFocus();
     }
 }
