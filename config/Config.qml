@@ -198,35 +198,29 @@ Singleton {
         adapter: JsonAdapter {
             property JsonObject ambxst: JsonObject {
                 property JsonObject launcher: JsonObject {
-                    property JsonObject apps: JsonObject {
-                        property list<string> modifiers: ["SUPER"]
-                        property string key: "R"
-                        property string dispatcher: "global"
-                        property string argument: "ambxst:launcher-apps"
-                    }
                     property JsonObject tmux: JsonObject {
                         property list<string> modifiers: ["SUPER"]
                         property string key: "T"
                         property string dispatcher: "global"
-                        property string argument: "ambxst:launcher-tmux"
+                        property string argument: "ambxst:dashboard-tmux"
                     }
                     property JsonObject clipboard: JsonObject {
                         property list<string> modifiers: ["SUPER"]
                         property string key: "V"
                         property string dispatcher: "global"
-                        property string argument: "ambxst:launcher-clipboard"
+                        property string argument: "ambxst:dashboard-clipboard"
                     }
                     property JsonObject emoji: JsonObject {
                         property list<string> modifiers: ["SUPER"]
                         property string key: "PERIOD"
                         property string dispatcher: "global"
-                        property string argument: "ambxst:launcher-emoji"
+                        property string argument: "ambxst:dashboard-emoji"
                     }
                 }
                 property JsonObject dashboard: JsonObject {
                     property JsonObject widgets: JsonObject {
                         property list<string> modifiers: ["SUPER"]
-                        property string key: "D"
+                        property string key: "R"
                         property string dispatcher: "global"
                         property string argument: "ambxst:dashboard-widgets"
                     }

@@ -64,14 +64,12 @@ QtObject {
         // Procesar Ambxst keybinds
         const ambxst = Config.keybindsLoader.adapter.ambxst;
         
-        // Launcher keybinds
+        // Launcher keybinds (dashboard quick access)
         const launcher = ambxst.launcher;
-        unbindCommands.push(createUnbindCommand(launcher.apps));
         unbindCommands.push(createUnbindCommand(launcher.tmux));
         unbindCommands.push(createUnbindCommand(launcher.clipboard));
         unbindCommands.push(createUnbindCommand(launcher.emoji));
         
-        batchCommands.push(createBindCommand(launcher.apps));
         batchCommands.push(createBindCommand(launcher.tmux));
         batchCommands.push(createBindCommand(launcher.clipboard));
         batchCommands.push(createBindCommand(launcher.emoji));
