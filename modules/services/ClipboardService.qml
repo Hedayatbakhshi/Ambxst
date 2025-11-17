@@ -343,8 +343,9 @@ QtObject {
         if (!_initialized) return;
         _operationInProgress = true;
         // Use JSON mode for reliable parsing, with timeout to avoid locks
+        // ORDER BY updated_at to show most recently used items first
         listProcess.command = ["sh", "-c", 
-            "sqlite3 '" + dbPath + "' <<'EOSQL'\n.timeout 5000\n.mode json\nSELECT id, mime_type, preview, is_image, binary_path, content_hash, created_at FROM clipboard_items ORDER BY created_at DESC LIMIT 100;\nEOSQL"
+            "sqlite3 '" + dbPath + "' <<'EOSQL'\n.timeout 5000\n.mode json\nSELECT id, mime_type, preview, is_image, binary_path, content_hash, created_at FROM clipboard_items ORDER BY updated_at DESC LIMIT 100;\nEOSQL"
         ];
         listProcess.running = true;
     }
