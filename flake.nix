@@ -79,6 +79,9 @@
         ddcutil
         wl-clipboard
         cliphist
+        
+        # Clipboard manager dependencies
+        sqlite
       ] ++ (if isNixOS then [ 
         ambxst-auth
         power-profiles-daemon 
