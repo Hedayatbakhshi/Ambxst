@@ -389,6 +389,10 @@ Item {
                         openProcess.command = ["xdg-open", filePath];
                         openProcess.running = true;
                     }
+                } else if (item.isImage && item.binaryPath) {
+                    // Open image from clipboard with xdg-open
+                    openProcess.command = ["xdg-open", item.binaryPath];
+                    openProcess.running = true;
                 } else if (ClipboardUtils.isUrl(content)) {
                     // Open URL in browser
                     openProcess.command = ["xdg-open", content.trim()];
@@ -536,7 +540,7 @@ Item {
                                 ];
                                 
                                 // Add Open if applicable
-                                if (item.isFile || ClipboardUtils.isUrl(item.preview)) {
+                                if (item.isFile || item.isImage || ClipboardUtils.isUrl(item.preview)) {
                                     options.push(function() { root.openItem(item.id); });
                                 }
                                 
@@ -636,7 +640,7 @@ Item {
                             let item = root.allItems[root.expandedItemIndex];
                             if (item) {
                                 let maxOptions = 4; // Base: Copy, Pin, Alias, Delete
-                                if (item.isFile || ClipboardUtils.isUrl(item.preview)) {
+                                if (item.isFile || item.isImage || ClipboardUtils.isUrl(item.preview)) {
                                     maxOptions++; // Add Open
                                 }
                                 if (root.selectedOptionIndex < maxOptions - 1) {
@@ -824,7 +828,7 @@ Item {
                             let baseHeight = 48;
                             if (index === root.expandedItemIndex && !isInDeleteMode && !isInAliasMode) {
                                 var optionsCount = 4; // Base: Copy, Pin, Alias, Delete
-                                if (modelData.isFile || ClipboardUtils.isUrl(modelData.preview)) {
+                                if (modelData.isFile || modelData.isImage || ClipboardUtils.isUrl(modelData.preview)) {
                                     optionsCount++; // Add Open
                                 }
                                 var listHeight = 36 * Math.min(3, optionsCount);
@@ -1400,8 +1404,8 @@ Item {
                                             }
                                         ];
                                         
-                                        // Add Open option only for files and URLs
-                                        if (modelData.isFile || ClipboardUtils.isUrl(modelData.preview)) {
+                                        // Add Open option for files, images, and URLs
+                                        if (modelData.isFile || modelData.isImage || ClipboardUtils.isUrl(modelData.preview)) {
                                             options.push({
                                                 text: "Open",
                                                 icon: Icons.popOpen,
@@ -1607,7 +1611,7 @@ Item {
                                 Layout.preferredWidth: 8
                                 Layout.preferredHeight: {
                                     var count = 4;
-                                    if (modelData.isFile || ClipboardUtils.isUrl(modelData.preview)) {
+                                    if (modelData.isFile || modelData.isImage || ClipboardUtils.isUrl(modelData.preview)) {
                                         count++;
                                     }
                                     var listHeight = 36 * Math.min(3, count);
@@ -1617,7 +1621,7 @@ Item {
                                 orientation: Qt.Vertical
                                 visible: {
                                     var count = 4;
-                                    if (modelData.isFile || ClipboardUtils.isUrl(modelData.preview)) {
+                                    if (modelData.isFile || modelData.isImage || ClipboardUtils.isUrl(modelData.preview)) {
                                         count++;
                                     }
                                     return count > 3;
@@ -2893,7 +2897,7 @@ Item {
                             spacing: 4
                             visible: previewPanel.currentItem !== null
 
-                            // Open button (only for files and URLs)
+                            // Open button (for files, images, and URLs)
                             Rectangle {
                                 width: 48
                                 height: 36
@@ -2901,7 +2905,8 @@ Item {
                                 radius: Config.roundness
                                 visible: {
                                     if (!previewPanel.currentItem) return false;
-                                    return previewPanel.currentItem.isFile || ClipboardUtils.isUrl(root.currentFullContent || previewPanel.currentItem.preview);
+                                    var item = previewPanel.currentItem;
+                                    return item.isFile || item.isImage || ClipboardUtils.isUrl(root.currentFullContent || item.preview);
                                 }
                                 
                                 Behavior on color {
