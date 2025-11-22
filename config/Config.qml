@@ -197,12 +197,12 @@ Singleton {
 
         adapter: JsonAdapter {
             property JsonObject ambxst: JsonObject {
-                property JsonObject launcher: JsonObject {
-                    property JsonObject tmux: JsonObject {
+                property JsonObject dashboard: JsonObject {
+                    property JsonObject widgets: JsonObject {
                         property list<string> modifiers: ["SUPER"]
-                        property string key: "T"
+                        property string key: "R"
                         property string dispatcher: "global"
-                        property string argument: "ambxst:dashboard-tmux"
+                        property string argument: "ambxst:dashboard-widgets"
                     }
                     property JsonObject clipboard: JsonObject {
                         property list<string> modifiers: ["SUPER"]
@@ -216,19 +216,11 @@ Singleton {
                         property string dispatcher: "global"
                         property string argument: "ambxst:dashboard-emoji"
                     }
-                }
-                property JsonObject dashboard: JsonObject {
-                    property JsonObject widgets: JsonObject {
+                    property JsonObject tmux: JsonObject {
                         property list<string> modifiers: ["SUPER"]
-                        property string key: "R"
+                        property string key: "T"
                         property string dispatcher: "global"
-                        property string argument: "ambxst:dashboard-widgets"
-                    }
-                    property JsonObject pins: JsonObject {
-                        property list<string> modifiers: ["SUPER"]
-                        property string key: "Q"
-                        property string dispatcher: "global"
-                        property string argument: "ambxst:dashboard-pins"
+                        property string argument: "ambxst:dashboard-tmux"
                     }
                     property JsonObject kanban: JsonObject {
                         property list<string> modifiers: ["SUPER"]

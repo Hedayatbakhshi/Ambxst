@@ -70,50 +70,10 @@ Item {
 
     GlobalShortcut {
         appid: root.appId
-        name: "dashboard-pins"
-        description: "Open dashboard pins tab"
-
-        onPressed: toggleDashboardTab(1)
-    }
-
-    GlobalShortcut {
-        appid: root.appId
-        name: "dashboard-kanban"
-        description: "Open dashboard kanban tab"
-
-        onPressed: toggleDashboardTab(2)
-    }
-
-    GlobalShortcut {
-        appid: root.appId
-        name: "dashboard-wallpapers"
-        description: "Open dashboard wallpapers tab"
-
-        onPressed: toggleDashboardTab(3)
-    }
-
-    GlobalShortcut {
-        appid: root.appId
-        name: "dashboard-assistant"
-        description: "Open dashboard assistant tab"
-
-        onPressed: toggleDashboardTab(4)
-    }
-
-    GlobalShortcut {
-        appid: root.appId
-        name: "dashboard-tmux"
-        description: "Open dashboard tmux sessions tab"
-
-        onPressed: toggleDashboardTab(5)
-    }
-
-    GlobalShortcut {
-        appid: root.appId
         name: "dashboard-clipboard"
         description: "Open dashboard clipboard tab"
 
-        onPressed: toggleDashboardTab(6)
+        onPressed: toggleDashboardTab(1)
     }
 
     GlobalShortcut {
@@ -121,7 +81,39 @@ Item {
         name: "dashboard-emoji"
         description: "Open dashboard emoji tab"
 
-        onPressed: toggleDashboardTab(7)
+        onPressed: toggleDashboardTab(2)
+    }
+
+    GlobalShortcut {
+        appid: root.appId
+        name: "dashboard-tmux"
+        description: "Open dashboard tmux sessions tab"
+
+        onPressed: toggleDashboardTab(3)
+    }
+
+    GlobalShortcut {
+        appid: root.appId
+        name: "dashboard-kanban"
+        description: "Open dashboard kanban tab"
+
+        onPressed: toggleDashboardTab(4)
+    }
+
+    GlobalShortcut {
+        appid: root.appId
+        name: "dashboard-wallpapers"
+        description: "Open dashboard wallpapers tab"
+
+        onPressed: toggleDashboardTab(5)
+    }
+
+    GlobalShortcut {
+        appid: root.appId
+        name: "dashboard-assistant"
+        description: "Open dashboard assistant tab"
+
+        onPressed: toggleDashboardTab(6)
     }
 
     // Media player shortcuts

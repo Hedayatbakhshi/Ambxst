@@ -64,26 +64,20 @@ QtObject {
         // Procesar Ambxst keybinds
         const ambxst = Config.keybindsLoader.adapter.ambxst;
         
-        // Launcher keybinds (dashboard quick access)
-        const launcher = ambxst.launcher;
-        unbindCommands.push(createUnbindCommand(launcher.tmux));
-        unbindCommands.push(createUnbindCommand(launcher.clipboard));
-        unbindCommands.push(createUnbindCommand(launcher.emoji));
-        
-        batchCommands.push(createBindCommand(launcher.tmux));
-        batchCommands.push(createBindCommand(launcher.clipboard));
-        batchCommands.push(createBindCommand(launcher.emoji));
-
         // Dashboard keybinds
         const dashboard = ambxst.dashboard;
         unbindCommands.push(createUnbindCommand(dashboard.widgets));
-        unbindCommands.push(createUnbindCommand(dashboard.pins));
+        unbindCommands.push(createUnbindCommand(dashboard.clipboard));
+        unbindCommands.push(createUnbindCommand(dashboard.emoji));
+        unbindCommands.push(createUnbindCommand(dashboard.tmux));
         unbindCommands.push(createUnbindCommand(dashboard.kanban));
         unbindCommands.push(createUnbindCommand(dashboard.wallpapers));
         unbindCommands.push(createUnbindCommand(dashboard.assistant));
         
         batchCommands.push(createBindCommand(dashboard.widgets));
-        batchCommands.push(createBindCommand(dashboard.pins));
+        batchCommands.push(createBindCommand(dashboard.clipboard));
+        batchCommands.push(createBindCommand(dashboard.emoji));
+        batchCommands.push(createBindCommand(dashboard.tmux));
         batchCommands.push(createBindCommand(dashboard.kanban));
         batchCommands.push(createBindCommand(dashboard.wallpapers));
         batchCommands.push(createBindCommand(dashboard.assistant));
