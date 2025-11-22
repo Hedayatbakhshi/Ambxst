@@ -2760,8 +2760,8 @@ Item {
 
                         Column {
                             width: {
-                                var buttonsVisible = previewPanel.currentItem && (previewPanel.currentItem.isFile || ClipboardUtils.isUrl(root.currentFullContent || previewPanel.currentItem.preview));
-                                return parent.width - (buttonsVisible ? 56 : 0);
+                                // Always reserve space for buttons if there's an item
+                                return parent.width - (previewPanel.currentItem ? 56 : 0);
                             }
                             height: parent.height
                             spacing: 4
@@ -2891,7 +2891,7 @@ Item {
                             width: 48
                             height: parent.height
                             spacing: 4
-                            visible: previewPanel.currentItem
+                            visible: previewPanel.currentItem !== null
 
                             // Open button (only for files and URLs)
                             Rectangle {
@@ -2899,7 +2899,10 @@ Item {
                                 height: 36
                                 color: metadataOpenButtonMouseArea.containsMouse ? Colors.surfaceBright : Colors.surface
                                 radius: Config.roundness
-                                visible: previewPanel.currentItem && (previewPanel.currentItem.isFile || ClipboardUtils.isUrl(root.currentFullContent || previewPanel.currentItem.preview))
+                                visible: {
+                                    if (!previewPanel.currentItem) return false;
+                                    return previewPanel.currentItem.isFile || ClipboardUtils.isUrl(root.currentFullContent || previewPanel.currentItem.preview);
+                                }
                                 
                                 Behavior on color {
                                     enabled: Config.animDuration > 0
