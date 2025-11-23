@@ -22,7 +22,7 @@ Rectangle {
 
     property int currentTab: 0  // 0=launcher, 1=clip, 2=emoji, 3=tmux, 4=wall
     property bool prefixDisabled: false  // Flag to prevent re-activation after backspace
-    
+
     // Function to focus app search when tab becomes active
     function focusAppSearch() {
         Qt.callLater(() => {
@@ -50,8 +50,7 @@ Rectangle {
             if (text === "clip " || text === "emoji " || text === "tmux " || text === "wall ") {
                 // Still at exact prefix - keep disabled
                 return 0;
-            } else if (!text.startsWith("clip ") && !text.startsWith("emoji ") && 
-                       !text.startsWith("tmux ") && !text.startsWith("wall ")) {
+            } else if (!text.startsWith("clip ") && !text.startsWith("emoji ") && !text.startsWith("tmux ") && !text.startsWith("wall ")) {
                 // User deleted the prefix - re-enable detection
                 prefixDisabled = false;
                 return 0;
@@ -60,7 +59,7 @@ Rectangle {
                 return 0;
             }
         }
-        
+
         // Normal prefix detection - only activate if exactly "prefix " (nothing after)
         if (text === "clip ") {
             return 1;
@@ -114,20 +113,24 @@ Rectangle {
                     } else {
                         // Switch to prefix tab
                         currentTab = detectedTab;
-                        
+
                         // Extract the text after the prefix
                         let prefixLength = 0;
-                        if (searchText.startsWith("clip ")) prefixLength = 5;
-                        else if (searchText.startsWith("emoji ")) prefixLength = 6;
-                        else if (searchText.startsWith("tmux ")) prefixLength = 5;
-                        else if (searchText.startsWith("wall ")) prefixLength = 5;
-                        
+                        if (searchText.startsWith("clip "))
+                            prefixLength = 5;
+                        else if (searchText.startsWith("emoji "))
+                            prefixLength = 6;
+                        else if (searchText.startsWith("tmux "))
+                            prefixLength = 5;
+                        else if (searchText.startsWith("wall "))
+                            prefixLength = 5;
+
                         let remainingText = searchText.substring(prefixLength);
-                        
+
                         // Focus the new tab after a brief delay to ensure it's loaded
                         Qt.callLater(() => {
                             let targetItem = null;
-                            
+
                             if (detectedTab === 1 && clipboardLoader.item) {
                                 targetItem = clipboardLoader.item;
                             } else if (detectedTab === 2 && emojiLoader.item) {
@@ -137,7 +140,7 @@ Rectangle {
                             } else if (detectedTab === 4 && wallpapersLoader.item) {
                                 targetItem = wallpapersLoader.item;
                             }
-                            
+
                             if (targetItem) {
                                 // Set the search text in the new tab
                                 if (targetItem.searchText !== undefined) {
@@ -384,17 +387,9 @@ Rectangle {
                                             let timestamp = Date.now();
                                             let fileName = modelData.id + "-" + timestamp + ".desktop";
                                             let filePath = desktopDir + "/" + fileName;
-                                            
-                                            let desktopContent = "[Desktop Entry]\n" +
-                                                "Version=1.0\n" +
-                                                "Type=Application\n" +
-                                                "Name=" + modelData.name + "\n" +
-                                                "Exec=" + modelData.execString + "\n" +
-                                                "Icon=" + modelData.icon + "\n" +
-                                                (modelData.comment ? "Comment=" + modelData.comment + "\n" : "") +
-                                                (modelData.categories.length > 0 ? "Categories=" + modelData.categories.join(";") + ";\n" : "") +
-                                                (modelData.runInTerminal ? "Terminal=true\n" : "Terminal=false\n");
-                                            
+
+                                            let desktopContent = "[Desktop Entry]\n" + "Version=1.0\n" + "Type=Application\n" + "Name=" + modelData.name + "\n" + "Exec=" + modelData.execString + "\n" + "Icon=" + modelData.icon + "\n" + (modelData.comment ? "Comment=" + modelData.comment + "\n" : "") + (modelData.categories.length > 0 ? "Categories=" + modelData.categories.join(";") + ";\n" : "") + (modelData.runInTerminal ? "Terminal=true\n" : "Terminal=false\n");
+
                                             let writeCmd = "printf '%s' '" + desktopContent.replace(/'/g, "'\\''") + "' > \"" + filePath + "\" && chmod 755 \"" + filePath + "\" && gio set \"" + filePath + "\" metadata::trusted true";
                                             copyProcess.command = ["sh", "-c", writeCmd];
                                             copyProcess.running = true;
@@ -512,8 +507,7 @@ Rectangle {
                 id: copyProcess
                 running: false
 
-                onExited: function (code) {
-                }
+                onExited: function (code) {}
             }
         }
 
@@ -587,58 +581,58 @@ Rectangle {
             }
         }
 
-    // Separator (only visible when in launcher tab)
-    Separator {
-        Layout.preferredWidth: 2
-        Layout.fillHeight: true
-        vert: true
-        gradient: null
-        color: Colors.surface
-        visible: currentTab === 0
-    }
+        // Separator (only visible when in launcher tab)
+        Separator {
+            Layout.preferredWidth: 2
+            Layout.fillHeight: true
+            vert: true
+            gradient: null
+            color: Colors.surface
+            visible: currentTab === 0
+        }
 
-    // Widgets column (only visible when in launcher tab)
-    ClippingRectangle {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-        color: "transparent"
-        visible: currentTab === 0
+        // Widgets column (only visible when in launcher tab)
+        ClippingRectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+            color: "transparent"
+            visible: currentTab === 0
 
-        Flickable {
-            anchors.fill: parent
-            contentWidth: width
-            contentHeight: columnLayout.implicitHeight
-            clip: true
+            Flickable {
+                anchors.fill: parent
+                contentWidth: width
+                contentHeight: columnLayout.implicitHeight
+                clip: true
 
-            ColumnLayout {
-                id: columnLayout
-                width: parent.width
-                spacing: 8
+                ColumnLayout {
+                    id: columnLayout
+                    width: parent.width
+                    spacing: 8
 
-                FullPlayer {
-                    Layout.fillWidth: true
-                }
+                    FullPlayer {
+                        Layout.fillWidth: true
+                    }
 
-                Calendar {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: width
-                }
+                    Calendar {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: width
+                    }
 
-                PaneRect {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 150
+                    PaneRect {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 150
+                    }
                 }
             }
         }
-    }
 
-    // Notification History (only visible when in launcher tab)
-    NotificationHistory {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        visible: currentTab === 0
-    }
+        // Notification History (only visible when in launcher tab)
+        NotificationHistory {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: currentTab === 0
+        }
     }
 
     Component.onCompleted: {
