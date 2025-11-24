@@ -25,6 +25,23 @@ Item {
         updateSelectedIndex();
         keyboardNavigationActive = true;
         schemeButton.forceActiveFocus();
+        // Posicionar el ListView en el item seleccionado después de que se expanda
+        positionTimer.restart();
+    }
+    
+    function positionAtSelectedScheme() {
+        if (selectedSchemeIndex >= 0 && selectedSchemeIndex < schemeInternalNames.length) {
+            schemeListView.positionViewAtIndex(selectedSchemeIndex, ListView.Center);
+        }
+    }
+    
+    Timer {
+        id: positionTimer
+        interval: 50
+        repeat: false
+        onTriggered: {
+            positionAtSelectedScheme();
+        }
     }
 
     function closeAndSignal() {
@@ -77,16 +94,14 @@ Item {
     }
 
     Rectangle {
-        color: Colors.surface
+        color: keyboardNavigationActive && schemeButton.activeFocus ? Colors.surfaceBright : Colors.surface
         radius: Config.roundness > 0 ? Config.roundness + 4 : 0
         anchors.fill: parent
-        border.color: Colors.outline
-        border.width: keyboardNavigationActive && schemeButton.activeFocus ? 2 : 0
 
-        Behavior on border.width {
+        Behavior on color {
             enabled: Config.animDuration > 0
-            NumberAnimation {
-                duration: Config.animDuration / 3
+            ColorAnimation {
+                duration: Config.animDuration / 2
                 easing.type: Easing.OutQuart
             }
         }
@@ -123,6 +138,7 @@ Item {
                         schemeListExpanded = !schemeListExpanded;
                         if (schemeListExpanded) {
                             updateSelectedIndex();
+                            positionTimer.restart();
                         }
                     }
 
@@ -144,6 +160,7 @@ Item {
                             schemeListExpanded = !schemeListExpanded;
                             if (schemeListExpanded) {
                                 updateSelectedIndex();
+                                positionTimer.restart();
                             }
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Left) {

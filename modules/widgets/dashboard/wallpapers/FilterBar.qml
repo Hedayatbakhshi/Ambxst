@@ -229,23 +229,13 @@ FocusScope {
                     // Ancho dinámico: incluye icono solo cuando está activo
                     width: filterText.width + 24 + (isActive ? filterIcon.width + 4 : 0)
                     height: 32
-                    color: isActive ? Colors.surfaceBright : Colors.surface
+                    color: hasFocus ? Colors.surfaceBright : (isActive ? Colors.surfaceBright : Colors.surface)
                     radius: isActive ? (Config.roundness > 0 ? Config.roundness / 2 : 0) : Config.roundness
-                    border.color: Colors.outline
-                    border.width: hasFocus ? 2 : 0
 
                     Behavior on radius {
                         enabled: Config.animDuration > 0
                         NumberAnimation {
                             duration: Config.animDuration / 2
-                            easing.type: Easing.OutQuart
-                        }
-                    }
-
-                    Behavior on border.width {
-                        enabled: Config.animDuration > 0
-                        NumberAnimation {
-                            duration: Config.animDuration / 3
                             easing.type: Easing.OutQuart
                         }
                     }
