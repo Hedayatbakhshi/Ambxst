@@ -225,6 +225,26 @@ Singleton {
         function decrement() {
             onPressed: root.decreaseBrightness();
         }
+
+        function set(value: real, monitorName: string) {
+            if (!monitorName || monitorName === "") {
+                // Set all monitors
+                for (let i = 0; i < root.monitors.length; ++i) {
+                    const mon = root.monitors[i];
+                    if (mon && mon.ready) {
+                        mon.setBrightness(value);
+                    }
+                }
+            } else {
+                // Set specific monitor
+                const monitor = root.monitors.find(m => m.screen.name === monitorName);
+                if (monitor && monitor.ready) {
+                    monitor.setBrightness(value);
+                } else {
+                    console.warn("Monitor not found or not ready:", monitorName);
+                }
+            }
+        }
     }
 
     GlobalShortcut {
