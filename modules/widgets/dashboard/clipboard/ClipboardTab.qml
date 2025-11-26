@@ -842,6 +842,19 @@ Item {
                         property bool isSelected: root.selectedIndex === index
                         property bool isExpanded: index === root.expandedItemIndex
                         property bool isDraggingForReorder: false
+                        property color textColor: {
+                            if (isInDeleteMode) {
+                                return Config.resolveColor(Config.theme.itemError);
+                            } else if (isInAliasMode) {
+                                return Config.resolveColor(Config.theme.itemSecondary);
+                            } else if (isExpanded) {
+                                return Config.resolveColor(Config.theme.itemCommon);
+                            } else if (isSelected) {
+                                return Config.resolveColor(Config.theme.itemPrimary);
+                            } else {
+                                return Config.resolveColor(Config.theme.itemCommon);
+                            }
+                        }
                         property string displayText: {
                             if (isInDeleteMode) {
                                 let preview = modelData.alias || modelData.preview || "";
@@ -1654,32 +1667,25 @@ Item {
                                 }
                             }
 
-                            Rectangle {
+                            StyledRect {
+                                id: iconBackground
                                 Layout.preferredWidth: 32
                                 Layout.preferredHeight: 32
                                 Layout.alignment: Qt.AlignTop
-                                color: {
+                                variant: {
                                     if (isInDeleteMode) {
-                                        return Colors.overError;
+                                        return "overerror";
                                     } else if (isInAliasMode) {
-                                        return Colors.overSecondary;
+                                        return "oversecondary";
                                     } else if (isExpanded) {
-                                        return Colors.primary;
+                                        return "primary";
                                     } else if (isSelected) {
-                                        return Colors.overPrimary;
+                                        return "overprimary";
                                     } else {
-                                        return Colors.surface;
+                                        return "common";
                                     }
                                 }
                                 radius: Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
 
                                 property string iconType: {
                                     if (isInDeleteMode) {
@@ -1734,19 +1740,7 @@ Item {
                                             return Icons.clip; // Fallback for failed favicon
                                         return Icons.clip;
                                     }
-                                    color: {
-                                        if (isInDeleteMode) {
-                                            return Colors.error;
-                                        } else if (isInAliasMode) {
-                                            return Colors.secondary;
-                                        } else if (isExpanded) {
-                                            return Colors.overPrimary;
-                                        } else if (isSelected) {
-                                            return Colors.primary;
-                                        } else {
-                                            return Colors.overBackground;
-                                        }
-                                    }
+                                    color: iconBackground.itemColor
                                     font.family: {
                                         var iconStr = parent.iconType;
                                         // Use Nerd Font for file icons
@@ -1757,14 +1751,6 @@ Item {
                                     }
                                     font.pixelSize: 16
                                     textFormat: Text.RichText
-
-                                    Behavior on color {
-                                        enabled: Config.animDuration > 0
-                                        ColorAnimation {
-                                            duration: Config.animDuration / 2
-                                            easing.type: Easing.OutQuart
-                                        }
-                                    }
                                 }
 
                                 // Pin indicator badge
@@ -1810,31 +1796,13 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: displayText
-                                        color: {
-                                            if (isInDeleteMode) {
-                                                return Colors.overError;
-                                            } else if (isExpanded) {
-                                                return Colors.overBackground;
-                                            } else if (isSelected) {
-                                                return Colors.overPrimary;
-                                            } else {
-                                                return Colors.overBackground;
-                                            }
-                                        }
+                                        color: textColor
                                         font.family: Config.theme.font
                                         font.pixelSize: Config.theme.fontSize
                                         font.weight: Font.Bold
                                         elide: Text.ElideRight
                                         maximumLineCount: 1
                                         wrapMode: Text.NoWrap
-
-                                        Behavior on color {
-                                            enabled: Config.animDuration > 0
-                                            ColorAnimation {
-                                                duration: Config.animDuration / 2
-                                                easing.type: Easing.OutQuart
-                                            }
-                                        }
                                     }
                                 }
 

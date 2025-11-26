@@ -669,6 +669,17 @@ Item {
 
                 property bool isInDeleteMode: root.deleteMode && modelData.name === root.sessionToDelete
                 property bool isInRenameMode: root.renameMode && modelData.name === root.sessionToRename
+                property color textColor: {
+                    if (isInDeleteMode) {
+                        return Config.resolveColor(Config.theme.itemError);
+                    } else if (isInRenameMode) {
+                        return Config.resolveColor(Config.theme.itemSecondary);
+                    } else if (root.selectedIndex === index) {
+                        return Config.resolveColor(Config.theme.itemPrimary);
+                    } else {
+                        return Config.resolveColor(Config.theme.itemCommon);
+                    }
+                }
 
                 MouseArea {
                     id: mouseArea
@@ -995,31 +1006,24 @@ Item {
                             }
                         }
 
-                        Rectangle {
+                        StyledRect {
+                        id: iconBackground
                         Layout.preferredWidth: 32
                         Layout.preferredHeight: 32
-                        color: {
+                        variant: {
                             if (isInDeleteMode) {
-                                return Colors.overError;
+                                return "overerror";
                             } else if (isInRenameMode) {
-                                return Colors.overSecondary;
+                                return "oversecondary";
                             } else if (root.selectedIndex === index) {
-                                return Colors.overPrimary;
+                                return "overprimary";
                             } else if (modelData.isCreateButton) {
-                                return Colors.primary;
+                                return "primary";
                             } else {
-                                return Colors.surface;
+                                return "common";
                             }
                         }
                         radius: Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0
-
-                        Behavior on color {
-                            enabled: Config.animDuration > 0
-                            ColorAnimation {
-                                duration: Config.animDuration / 2
-                                easing.type: Easing.OutQuart
-                            }
-                        }
 
                         Text {
                             anchors.centerIn: parent
@@ -1034,30 +1038,10 @@ Item {
                                     return Icons.terminalWindow;
                                 }
                             }
-                            color: {
-                                if (isInDeleteMode) {
-                                    return Colors.error;
-                                } else if (isInRenameMode) {
-                                    return Colors.secondary;
-                                } else if (root.selectedIndex === index) {
-                                    return Colors.primary;
-                                } else if (modelData.isCreateButton) {
-                                    return Colors.background;
-                                } else {
-                                    return Colors.overSurface;
-                                }
-                            }
+                            color: iconBackground.itemColor
                             font.family: Icons.font
                             font.pixelSize: 16
                             textFormat: Text.RichText
-
-                            Behavior on color {
-                                enabled: Config.animDuration > 0
-                                ColorAnimation {
-                                    duration: Config.animDuration / 2
-                                    easing.type: Easing.OutQuart
-                                }
-                            }
                         }
                         }
 
@@ -1086,19 +1070,11 @@ Item {
                                         return modelData.name;
                                     }
                                 }
-                                color: isInDeleteMode ? Colors.overError : (root.selectedIndex === index ? Colors.overPrimary : Colors.overBackground)
+                                color: textColor
                                 font.family: Config.theme.font
                                 font.pixelSize: Config.theme.fontSize
                                 font.weight: isInDeleteMode ? Font.Bold : (modelData.isCreateButton ? Font.Medium : Font.Bold)
                                 elide: Text.ElideRight
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
                             }
                         }
 

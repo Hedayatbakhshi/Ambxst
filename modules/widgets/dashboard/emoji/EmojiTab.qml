@@ -580,6 +580,14 @@ Rectangle {
                         height: 48
                         color: "transparent"
                         radius: 16
+                        
+                        property color textColor: {
+                            if (root.selectedIndex === index && !root.isRecentFocused) {
+                                return Config.resolveColor(Config.theme.itemPrimary);
+                            } else {
+                                return Config.resolveColor(Config.theme.itemCommon);
+                            }
+                        }
 
                         MouseArea {
                             anchors.fill: parent
@@ -607,24 +615,17 @@ Rectangle {
                             anchors.margins: 8
                             spacing: 8
 
-                            Rectangle {
+                            StyledRect {
+                                id: emojiIconBackground
                                 width: emojiIcon.implicitWidth + 6 // Ancho variable basado en el emoji
                                 height: 32
                                 radius: Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0
-                                color: root.selectedIndex === index && !root.isRecentFocused ? Colors.overPrimary : Colors.surface
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
+                                variant: root.selectedIndex === index && !root.isRecentFocused ? "overprimary" : "common"
 
                                 Text {
                                     id: emojiIcon
                                     anchors.centerIn: parent
-                                    color: root.selectedIndex === index && !root.isRecentFocused ? Colors.overPrimary : Colors.overBackground
+                                    color: emojiIconBackground.itemColor
                                     text: modelData.emoji
                                     font.pixelSize: 24
                                     horizontalAlignment: Text.AlignHCenter
@@ -635,19 +636,11 @@ Rectangle {
                             Text {
                                 width: parent.width - emojiIcon.implicitWidth - 6 - parent.spacing - 16
                                 text: modelData.search
-                                color: root.selectedIndex === index && !root.isRecentFocused ? Colors.overPrimary : Colors.overBackground
+                                color: textColor
                                 font.family: Config.theme.font
                                 font.weight: Font.Bold
                                 font.pixelSize: Config.theme.fontSize
                                 elide: Text.ElideRight
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
                             }
                         }
                     }
@@ -704,6 +697,14 @@ Rectangle {
                         height: 48
                         color: "transparent"
                         radius: Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0
+                        
+                        property color textColor: {
+                            if (root.selectedRecentIndex === index && root.isRecentFocused) {
+                                return Config.resolveColor(Config.theme.itemPrimary);
+                            } else {
+                                return Config.resolveColor(Config.theme.itemCommon);
+                            }
+                        }
 
                         Behavior on color {
                             enabled: Config.animDuration > 0
@@ -740,24 +741,17 @@ Rectangle {
                             anchors.margins: 8
                             spacing: 8
 
-                            Rectangle {
+                            StyledRect {
+                                id: recentEmojiIconBackground
                                 width: recentEmojiIcon.implicitWidth + 6
                                 height: 32
                                 radius: Config.roundness > 0 ? Math.max(Config.roundness - 4, 0) : 0
-                                color: root.selectedRecentIndex === index && root.isRecentFocused ? Colors.overPrimary : Colors.surface
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
+                                variant: root.selectedRecentIndex === index && root.isRecentFocused ? "overprimary" : "common"
 
                                 Text {
                                     id: recentEmojiIcon
                                     anchors.centerIn: parent
-                                    color: root.selectedRecentIndex === index && root.isRecentFocused ? Colors.overPrimary : Colors.overBackground
+                                    color: recentEmojiIconBackground.itemColor
                                     text: modelData.emoji
                                     font.pixelSize: 24
                                     horizontalAlignment: Text.AlignHCenter
@@ -768,19 +762,11 @@ Rectangle {
                             Text {
                                 width: parent.width - recentEmojiIcon.implicitWidth - 6 - parent.spacing - 16
                                 text: modelData.search
-                                color: root.selectedRecentIndex === index && root.isRecentFocused ? Colors.overPrimary : Colors.overBackground
+                                color: textColor
                                 font.family: Config.theme.font
                                 font.weight: Font.Bold
                                 font.pixelSize: Config.theme.fontSize
                                 elide: Text.ElideRight
-
-                                Behavior on color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
                             }
                         }
                     }
