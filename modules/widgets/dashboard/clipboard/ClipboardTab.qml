@@ -1679,33 +1679,45 @@ Item {
                                 property string faviconUrl: {
                                     if (iconType !== "link") return "";
                                     var url = root.getFaviconUrl(modelData);
-                                    return (url !== undefined && url !== null) ? url : "";
+                                    return (url && url !== "") ? url : "";
                                 }
+                                
+                                property bool faviconLoaded: false
 
                                 // Favicon for URLs
-                                Loader {
-                                    id: faviconLoader
+                                Image {
+                                    id: faviconImage
                                     anchors.centerIn: parent
-                                    active: parent.iconType === "link" && parent.faviconUrl !== ""
-                                    sourceComponent: Image {
-                                        width: 20
-                                        height: 20
-                                        source: parent.parent.faviconUrl
-                                        fillMode: Image.PreserveAspectFit
-                                        asynchronous: true
-                                        cache: true
+                                    width: 20
+                                    height: 20
+                                    visible: iconBackground.iconType === "link" && iconBackground.faviconLoaded && status === Image.Ready
+                                    fillMode: Image.PreserveAspectFit
+                                    asynchronous: true
+                                    cache: true
 
-                                        onStatusChanged: {
-                                            if (status === Image.Error) {
-                                                faviconLoader.active = false;
-                                            }
+                                    onStatusChanged: {
+                                        if (status === Image.Ready) {
+                                            iconBackground.faviconLoaded = true;
+                                        } else if (status === Image.Error || status === Image.Null) {
+                                            iconBackground.faviconLoaded = false;
+                                        }
+                                    }
+                                }
+                                
+                                Timer {
+                                    id: faviconLoader
+                                    interval: 1
+                                    running: iconBackground.iconType === "link" && iconBackground.faviconUrl !== ""
+                                    onTriggered: {
+                                        if (iconBackground.faviconUrl !== "") {
+                                            faviconImage.source = iconBackground.faviconUrl;
                                         }
                                     }
                                 }
 
                                 Text {
                                     anchors.centerIn: parent
-                                    visible: parent.iconType !== "link" || parent.faviconUrl === "" || !faviconLoader.active
+                                    visible: (iconBackground.iconType !== "link") || (iconBackground.iconType === "link" && !iconBackground.faviconLoaded)
                                     text: {
                                         if (isInDeleteMode) {
                                             return Icons.trash;
@@ -1723,7 +1735,7 @@ Item {
                                         if (iconStr === "file")
                                             return Icons.file;
                                         if (iconStr === "link")
-                                            return Icons.clip; // Fallback for failed favicon
+                                            return Icons.globe; // Fallback for URLs (failed favicon or no favicon)
                                         return Icons.clip;
                                     }
                                     color: iconBackground.itemColor
