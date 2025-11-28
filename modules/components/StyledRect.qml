@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Shapes
 import Quickshell.Widgets
-import qs.modules.theme
 import qs.config
 
 ClippingRectangle {
@@ -16,6 +15,7 @@ ClippingRectangle {
 
     property string gradientOrientation: "vertical"
     property bool enableShadow: false
+    property bool enableBorder: true
 
     readonly property var variantConfig: {
         switch (variant) {
@@ -214,7 +214,7 @@ ClippingRectangle {
     ShaderEffect {
         anchors.fill: parent
         visible: gradientType === "halftone"
-        
+
         property real angle: gradientAngle
         property real dotMinSize: halftoneDotMin
         property real dotMaxSize: halftoneDotMax
@@ -253,5 +253,6 @@ ClippingRectangle {
         color: "transparent"
         border.color: Config.resolveColor(borderData[0])
         border.width: borderData[1]
+        visible: root.enableBorder
     }
 }

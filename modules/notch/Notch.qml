@@ -59,9 +59,8 @@ Item {
         anchors.centerIn: parent
         width: parent.implicitWidth
         height: parent.implicitHeight
-        radius: 0
-        border.width: 0
         enabled: false // No interactuable
+        enableBorder: false // No usar border de StyledRect, el Canvas se encarga
 
         property int defaultRadius: Config.roundness > 0 ? (screenNotchOpen || hasActiveNotifications ? Config.roundness + 20 : Config.roundness + 4) : 0
 
@@ -170,16 +169,54 @@ Item {
             visible: Config.notchTheme === "island"
             anchors.fill: parent
             layer.enabled: false
-            radius: 0
-            border.width: Config.theme.borderSize
+            clip: false // Desactivar clip para que no corte el border
+            enableBorder: true // En island sí usar border de StyledRect
+            
+            // Usar el islandRadius como radius base también
+            radius: parent.islandRadius
 
             topLeftRadius: parent.topLeftRadius
             topRightRadius: parent.topRightRadius
             bottomLeftRadius: parent.bottomLeftRadius
             bottomRightRadius: parent.bottomRightRadius
-            clip: true
-
+            
             Behavior on radius {
+                enabled: Config.animDuration > 0
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: screenNotchOpen || hasActiveNotifications ? Easing.OutBack : Easing.OutQuart
+                    easing.overshoot: screenNotchOpen || hasActiveNotifications ? 1.2 : 1.0
+                }
+            }
+
+            Behavior on topLeftRadius {
+                enabled: Config.animDuration > 0
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: screenNotchOpen || hasActiveNotifications ? Easing.OutBack : Easing.OutQuart
+                    easing.overshoot: screenNotchOpen || hasActiveNotifications ? 1.2 : 1.0
+                }
+            }
+
+            Behavior on topRightRadius {
+                enabled: Config.animDuration > 0
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: screenNotchOpen || hasActiveNotifications ? Easing.OutBack : Easing.OutQuart
+                    easing.overshoot: screenNotchOpen || hasActiveNotifications ? 1.2 : 1.0
+                }
+            }
+
+            Behavior on bottomLeftRadius {
+                enabled: Config.animDuration > 0
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: screenNotchOpen || hasActiveNotifications ? Easing.OutBack : Easing.OutQuart
+                    easing.overshoot: screenNotchOpen || hasActiveNotifications ? 1.2 : 1.0
+                }
+            }
+
+            Behavior on bottomRightRadius {
                 enabled: Config.animDuration > 0
                 NumberAnimation {
                     duration: Config.animDuration
@@ -369,19 +406,24 @@ Item {
         height: parent.implicitHeight
         z: 5000
         antialiasing: true
-        visible: Config.notchTheme === "default" && Config.theme.borderSize > 0
+        
+        readonly property var borderData: Config.theme.srBg.border
+        readonly property int borderWidth: borderData[1]
+        readonly property color borderColor: Config.resolveColor(borderData[0])
+        
+        visible: Config.notchTheme === "default" && borderWidth > 0
+        
         onPaint: {
             if (Config.notchTheme !== "default")
                 return; // Only draw for default theme
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
-            // Resolve dynamic border color from config (HEX or named color)
-            var colorKey = Config.theme.borderColor || "primary";
-            var strokeColor = Config.resolveColor(colorKey);
-            if (Config.theme.borderSize <= 0)
-                return; // No outline when borderSize is 0
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = Config.theme.borderSize;
+            
+            if (borderWidth <= 0)
+                return; // No outline when borderWidth is 0
+            
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
             ctx.lineJoin = "round";
             ctx.lineCap = "round";
 
@@ -420,11 +462,8 @@ Item {
             }
         }
         Connections {
-            target: Config.theme
-            function onBorderSizeChanged() {
-                outlineCanvas.requestPaint();
-            }
-            function onBorderColorChanged() {
+            target: Config.theme.srBg
+            function onBorderChanged() {
                 outlineCanvas.requestPaint();
             }
         }
