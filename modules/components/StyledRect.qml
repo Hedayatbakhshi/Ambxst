@@ -21,6 +21,8 @@ ClippingRectangle {
         switch (variant) {
         case "bg":
             return Config.theme.srBg;
+        case "internalbg":
+            return Config.theme.srInternalBg;
         case "pane":
             return Config.theme.srPane;
         case "common":

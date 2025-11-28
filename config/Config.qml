@@ -106,6 +106,23 @@ Singleton {
                     property string itemColor: "overBackground"
                 }
 
+                // SR: Internal Background variant (same as bg, but for internal components)
+                property JsonObject srInternalBg: JsonObject {
+                    property list<var> gradient: [["background", 0.0]]
+                    property string gradientType: "linear"
+                    property int gradientAngle: 0
+                    property real gradientCenterX: 0.5
+                    property real gradientCenterY: 0.5
+                    property real halftoneDotMin: 2.0
+                    property real halftoneDotMax: 8.0
+                    property real halftoneStart: 0.0
+                    property real halftoneEnd: 1.0
+                    property string halftoneDotColor: "primary"
+                    property string halftoneBackgroundColor: "surface"
+                    property list<var> border: ["surfaceBright", 0]
+                    property string itemColor: "overBackground"
+                }
+
                 // SR: Pane variant
                 property JsonObject srPane: JsonObject {
                     property list<var> gradient: [["surface", 0.0]]

@@ -140,7 +140,7 @@ Item {
 
     StyledRect {
         id: background
-        variant: "bg"
+        variant: "internalbg"
         anchors.left: parent.left
         width: parent.width
         color: Colors.background
