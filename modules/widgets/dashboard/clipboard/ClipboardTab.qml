@@ -1031,9 +1031,9 @@ Item {
                         property bool isDraggingForReorder: false
                         property color textColor: {
                             if (isInDeleteMode) {
-                                return Colors.overError;
+                                return Config.resolveColor(Config.theme.srError.itemColor);
                             } else if (isExpanded) {
-                                return Colors.overBackground;
+                                return Config.resolveColor(Config.theme.srPane.itemColor);
                             } else if (isSelected) {
                                 return Config.resolveColor(Config.theme.srPrimary.itemColor);
                             } else {
@@ -1587,7 +1587,7 @@ Item {
                                                 text: "Copy",
                                                 icon: Icons.copy,
                                                 highlightColor: Colors.primary,
-                                                textColor: Colors.overPrimary,
+                                                textColor: Config.resolveColor(Config.theme.srPrimary.itemColor),
                                                 action: function () {
                                                     root.copyToClipboard(modelData.id);
                                                     Visibilities.setActiveModule("");
@@ -1601,7 +1601,7 @@ Item {
                                                 text: "Open",
                                                 icon: Icons.popOpen,
                                                 highlightColor: Colors.primary,
-                                                textColor: Colors.overPrimary,
+                                                textColor: Config.resolveColor(Config.theme.srPrimary.itemColor),
                                                 action: function () {
                                                     root.openItem(modelData.id);
                                                 }
@@ -1612,7 +1612,7 @@ Item {
                                             text: modelData.pinned ? "Unpin" : "Pin",
                                             icon: modelData.pinned ? Icons.unpin : Icons.pin,
                                             highlightColor: Colors.primary,
-                                            textColor: Colors.overPrimary,
+                                            textColor: Config.resolveColor(Config.theme.srPrimary.itemColor),
                                             action: function () {
                                                 root.pendingItemIdToSelect = modelData.id;
                                                 ClipboardService.togglePin(modelData.id);
@@ -1622,7 +1622,7 @@ Item {
                                             text: "Alias",
                                             icon: Icons.edit,
                                             highlightColor: Colors.secondary,
-                                            textColor: Colors.overSecondary,
+                                            textColor: Config.resolveColor(Config.theme.srSecondary.itemColor),
                                             action: function () {
                                                 root.enterAliasMode(modelData.id);
                                                 root.expandedItemIndex = -1;
@@ -1631,7 +1631,7 @@ Item {
                                             text: "Delete",
                                             icon: Icons.trash,
                                             highlightColor: Colors.error,
-                                            textColor: Colors.overError,
+                                            textColor: Config.resolveColor(Config.theme.srError.itemColor),
                                             action: function () {
                                                 root.enterDeleteMode(modelData.id);
                                                 root.expandedItemIndex = -1;
@@ -2083,7 +2083,7 @@ Item {
                                         } else if (isExpanded) {
                                             return Colors.overBackground;
                                         } else if (isSelected) {
-                                            return Colors.overPrimary;
+                                            return Config.resolveColor(Config.theme.srPrimary.itemColor);
                                         } else {
                                             return Colors.outline;
                                         }

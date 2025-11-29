@@ -318,7 +318,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: selectedSchemeIndex === index ? Colors.overPrimary : Colors.overSurface
+                                color: selectedSchemeIndex === index ? Config.resolveColor(Config.theme.srPrimary.itemColor) : Colors.overSurface
                                 font.family: Config.theme.font
                                 font.pixelSize: Config.theme.fontSize
                                 font.weight: selectedSchemeIndex === index ? Font.Bold : Font.Normal

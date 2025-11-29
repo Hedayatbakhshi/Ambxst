@@ -909,11 +909,11 @@ Item {
                 property bool isExpanded: index === root.expandedItemIndex
                 property color textColor: {
                     if (isInDeleteMode) {
-                        return Colors.overError;
+                        return Config.resolveColor(Config.theme.srError.itemColor);
                     } else if (isInRenameMode) {
-                        return Colors.overSecondary;
+                        return Config.resolveColor(Config.theme.srSecondary.itemColor);
                     } else if (isExpanded) {
-                        return Colors.overBackground;
+                        return Config.resolveColor(Config.theme.srPane.itemColor);
                     } else if (root.selectedIndex === index) {
                         return Config.resolveColor(Config.theme.srPrimary.itemColor);
                     } else {
@@ -1083,7 +1083,7 @@ Item {
                                         text: "Open",
                                         icon: Icons.popOpen,
                                         highlightColor: Colors.primary,
-                                        textColor: Colors.overPrimary,
+                                        textColor: Config.resolveColor(Config.theme.srPrimary.itemColor),
                                         action: function() {
                                             root.attachToSession(modelData.name);
                                         }
@@ -1092,7 +1092,7 @@ Item {
                                         text: "Rename",
                                         icon: Icons.edit,
                                         highlightColor: Colors.secondary,
-                                        textColor: Colors.overSecondary,
+                                        textColor: Config.resolveColor(Config.theme.srSecondary.itemColor),
                                         action: function() {
                                             root.enterRenameMode(modelData.name);
                                             root.expandedItemIndex = -1;
@@ -1102,7 +1102,7 @@ Item {
                                         text: "Quit",
                                         icon: Icons.alert,
                                         highlightColor: Colors.error,
-                                        textColor: Colors.overError,
+                                        textColor: Config.resolveColor(Config.theme.srError.itemColor),
                                         action: function() {
                                             root.enterDeleteMode(modelData.name);
                                             root.expandedItemIndex = -1;

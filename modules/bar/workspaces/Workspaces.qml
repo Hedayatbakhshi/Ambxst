@@ -442,7 +442,7 @@ Item {
                         font.pixelSize: workspaceLabelFontSize(text)
                         text: `${button.workspaceValue}`
                         elide: Text.ElideRight
-                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Colors.background : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Config.resolveColor(Config.theme.srPrimary.itemColor) : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -459,7 +459,7 @@ Item {
                         width: workspaceButtonWidth * 0.2
                         height: width
                         radius: width / 2
-                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Colors.background : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Config.resolveColor(Config.theme.srPrimary.itemColor) : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -571,7 +571,7 @@ Item {
                         font.pixelSize: workspaceLabelFontSize(text)
                         text: `${buttonVert.workspaceValue}`
                         elide: Text.ElideRight
-                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Colors.background : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Config.resolveColor(Config.theme.srPrimary.itemColor) : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -588,7 +588,7 @@ Item {
                         width: workspaceButtonWidth * 0.2
                         height: width
                         radius: width / 2
-                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Colors.background : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Config.resolveColor(Config.theme.srPrimary.itemColor) : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0

@@ -182,7 +182,7 @@ FocusScope {
                         textFormat: Text.RichText
                         font.family: Icons.font
                         font.pixelSize: root.iconSize
-                        color: actionButton.pressed ? Colors.primary : (index === root.currentIndex ? Colors.overPrimary : Colors.overBackground)
+                        color: actionButton.pressed ? Colors.primary : (index === root.currentIndex ? Config.resolveColor(Config.theme.srPrimary.itemColor) : Colors.overBackground)
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
 
