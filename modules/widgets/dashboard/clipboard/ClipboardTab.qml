@@ -327,6 +327,8 @@ Item {
         }
 
         allItems = newItems;
+        resultsList.enableScrollAnimation = false;
+        resultsList.contentY = 0;
         updateAnimatedModel(newItems);
 
         // If we have a pending item to select (after pin/alias operations), find it
@@ -336,6 +338,7 @@ Item {
                     selectedIndex = i;
                     resultsList.currentIndex = i;
                     pendingItemIdToSelect = "";
+                    Qt.callLater(() => { resultsList.enableScrollAnimation = true; });
                     return;
                 }
             }
@@ -345,18 +348,14 @@ Item {
 
         // Default behavior when no pending item
         if (searchText.length > 0 && allItems.length > 0) {
-            resultsList.enableScrollAnimation = false;
             selectedIndex = 0;
             resultsList.currentIndex = 0;
-            resultsList.contentY = 0;
             Qt.callLater(() => { resultsList.enableScrollAnimation = true; });
         } else if (searchText.length === 0) {
             // When clearing search, only reset if we haven't navigated or if list is empty
             if (!hasNavigatedFromSearch || allItems.length === 0) {
-                resultsList.enableScrollAnimation = false;
                 selectedIndex = -1;
                 resultsList.currentIndex = -1;
-                resultsList.contentY = 0;
                 Qt.callLater(() => { resultsList.enableScrollAnimation = true; });
             } else {
                 // Keep current selection valid, or default to first item

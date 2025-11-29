@@ -176,20 +176,18 @@ Item {
         }
 
         filteredSessions = newFilteredSessions;
+        resultsList.enableScrollAnimation = false;
+        resultsList.contentY = 0;
         updateAnimatedSessionsModel(newFilteredSessions);
 
         if (!deleteMode && !renameMode) {
             if (searchText.length > 0 && newFilteredSessions.length > 0) {
-                resultsList.enableScrollAnimation = false;
                 selectedIndex = 0;
                 resultsList.currentIndex = 0;
-                resultsList.contentY = 0;
                 Qt.callLater(() => { resultsList.enableScrollAnimation = true; });
             } else if (searchText.length === 0) {
-                resultsList.enableScrollAnimation = false;
                 selectedIndex = -1;
                 resultsList.currentIndex = -1;
-                resultsList.contentY = 0;
                 Qt.callLater(() => { resultsList.enableScrollAnimation = true; });
             }
         }

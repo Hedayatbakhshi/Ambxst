@@ -139,19 +139,17 @@ Rectangle {
         }
 
         filteredEmojis = filtered;
+        emojiList.enableScrollAnimation = false;
+        emojiList.contentY = 0;
         updateAnimatedEmojisModel(filtered);
 
         if (searchText.length > 0 && filteredEmojis.length > 0 && !isRecentFocused) {
-            emojiList.enableScrollAnimation = false;
             selectedIndex = 0;
             emojiList.currentIndex = 0;
-            emojiList.contentY = 0;
             Qt.callLater(() => { emojiList.enableScrollAnimation = true; });
         } else if (searchText.length === 0 && !hasNavigatedFromSearch) {
-            emojiList.enableScrollAnimation = false;
             selectedIndex = -1;
             selectedRecentIndex = -1;
-            emojiList.contentY = 0;
             Qt.callLater(() => { emojiList.enableScrollAnimation = true; });
         }
     }
