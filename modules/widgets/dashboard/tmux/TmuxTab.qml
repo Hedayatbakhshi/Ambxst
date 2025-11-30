@@ -602,15 +602,15 @@ Item {
         }
     }
 
-    Row {
+    RowLayout {
         id: mainLayout
         anchors.fill: parent
         spacing: 8
 
         // Columna izquierda: Search + Lista
         Column {
-            width: LayoutMetrics.calculateLeftPanelWidth(parent.width, parent.height, parent.spacing)
-            height: parent.height
+            Layout.preferredWidth: 300
+            Layout.fillHeight: true
             spacing: 8
 
         // Search input
@@ -1843,8 +1843,8 @@ Item {
 
         // Separator
         Rectangle {
-            width: 2
-            height: parent.height
+            Layout.preferredWidth: 2
+            Layout.fillHeight: true
             radius: Config.roundness
             color: Colors.surface
         }
@@ -1852,8 +1852,8 @@ Item {
         // Preview panel
         Item {
             id: previewPanel
-            width: LayoutMetrics.calculateRightPanelWidth(parent.width)
-            height: parent.height
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             property var currentSession: root.selectedIndex >= 0 && root.selectedIndex < root.filteredSessions.length ? root.filteredSessions[root.selectedIndex] : null
 

@@ -494,21 +494,19 @@ Rectangle {
         running: false
     }
 
-    Row {
+    Item {
         id: mainLayout
         anchors.fill: parent
-        spacing: 8
-
+        
         // Contenedor de listas de emojis (layout horizontal)
-        Row {
-            width: parent.width
-            height: parent.height
+        RowLayout {
+            anchors.fill: parent
             spacing: 8
 
             // Columna izquierda: Search + Lista normal de emojis
             Column {
-                width: LayoutMetrics.calculateLeftPanelWidth(parent.width, parent.height, parent.spacing)
-                height: parent.height
+                Layout.preferredWidth: 300
+                Layout.fillHeight: true
                 spacing: 8
 
                 // Barra de búsqueda con botón de limpiar
@@ -905,17 +903,21 @@ Rectangle {
 
             // Separator
             Rectangle {
-                width: 2
-                height: parent.height
+                Layout.preferredWidth: 2
+                Layout.fillHeight: true
                 radius: Config.roundness
                 color: Colors.surface
             }
 
-            // Recent emojis vertical list
+            // Right Panel Container
             Item {
-                width: LayoutMetrics.calculateRightPanelWidth(parent.width)
-                height: parent.height
-                visible: recentEmojis.length > 0 && searchText.length === 0
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                // Recent emojis vertical list
+                Item {
+                    anchors.fill: parent
+                    visible: recentEmojis.length > 0 && searchText.length === 0
 
                 ListView {
                     id: recentList
@@ -1122,11 +1124,10 @@ Rectangle {
                 }
             }
 
-            // Placeholder cuando no hay recientes
-            Item {
-                width: LayoutMetrics.calculateRightPanelWidth(parent.width)
-                height: parent.height
-                visible: recentEmojis.length === 0 && searchText.length === 0
+                // Placeholder cuando no hay recientes
+                Item {
+                    anchors.fill: parent
+                    visible: recentEmojis.length === 0 && searchText.length === 0
 
                 Column {
                     anchors.centerIn: parent
@@ -1152,6 +1153,7 @@ Rectangle {
                 }
             }
         }
+    }
     }
 
     Keys.onPressed: event => {
