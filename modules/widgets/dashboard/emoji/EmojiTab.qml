@@ -175,23 +175,17 @@ Rectangle {
             }
             return;
         }
-        
-        // Create a unique ID for each emoji (using search term as ID)
-        var newItemsById = {};
-        for (var i = 0; i < newItems.length; i++) {
-            newItemsById[newItems[i].search] = i;
-        }
 
-        // Create map of current items for faster lookup
-        var currentItemsById = {};
-        for (var i = 0; i < animatedEmojisModel.count; i++) {
-            currentItemsById[animatedEmojisModel.get(i).emojiId] = i;
+        // Build set of new item IDs for fast lookup
+        var newIds = {};
+        for (var i = 0; i < newItems.length; i++) {
+            newIds[newItems[i].search] = true;
         }
 
         // Remove items that are no longer in the filtered list
         for (var i = animatedEmojisModel.count - 1; i >= 0; i--) {
             var item = animatedEmojisModel.get(i);
-            if (!(item.emojiId in newItemsById)) {
+            if (!newIds[item.emojiId]) {
                 animatedEmojisModel.remove(i);
             }
         }
@@ -199,12 +193,21 @@ Rectangle {
         // Add new items and reorder existing ones
         for (var i = 0; i < newItems.length; i++) {
             var newItem = newItems[i];
-            var currentIndex = currentItemsById[newItem.search];
+            var newItemId = newItem.search;
+            
+            // Find current index of the item dynamically
+            var currentIndex = -1;
+            for (var j = 0; j < animatedEmojisModel.count; j++) {
+                if (animatedEmojisModel.get(j).emojiId === newItemId) {
+                    currentIndex = j;
+                    break;
+                }
+            }
 
-            if (currentIndex === undefined) {
+            if (currentIndex === -1) {
                 // Item doesn't exist, insert it
                 animatedEmojisModel.insert(i, {
-                    emojiId: newItem.search,
+                    emojiId: newItemId,
                     emojiData: newItem
                 });
             } else if (currentIndex !== i) {
@@ -337,25 +340,24 @@ Rectangle {
                 isRecentFocused = false;
                 selectedRecentIndex = -1;
                 recentList.currentIndex = -1;
-                if (selectedIndex === -1) {
-                    selectedIndex = 0;
-                    emojiList.currentIndex = 0;
-                }
             }
-        } else {
-            // Ya navegamos desde search, ahora navegamos dentro de la lista normal
-            if (!isRecentFocused && emojiList.count > 0 && selectedIndex >= 0) {
-                if (selectedIndex < emojiList.count - 1) {
-                    selectedIndex++;
-                    emojiList.currentIndex = selectedIndex;
-                }
-            } else if (isRecentFocused && recentEmojis.length > 0) {
-                // Navegamos en la lista vertical de recientes
-                if (selectedRecentIndex < recentEmojis.length - 1) {
-                    selectedRecentIndex++;
-                    recentList.currentIndex = selectedRecentIndex;
-                    lastSelectedRecentIndex = selectedRecentIndex;
-                }
+        }
+
+        // Navigation logic - unified for both first and subsequent presses
+        if (!isRecentFocused && emojiList.count > 0) {
+            if (selectedIndex === -1) {
+                selectedIndex = 0;
+                emojiList.currentIndex = 0;
+            } else if (selectedIndex < emojiList.count - 1) {
+                selectedIndex++;
+                emojiList.currentIndex = selectedIndex;
+            }
+        } else if (isRecentFocused && recentEmojis.length > 0) {
+            // Navegamos en la lista vertical de recientes
+            if (selectedRecentIndex < recentEmojis.length - 1) {
+                selectedRecentIndex++;
+                recentList.currentIndex = selectedRecentIndex;
+                lastSelectedRecentIndex = selectedRecentIndex;
             }
         }
     }
