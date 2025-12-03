@@ -238,7 +238,7 @@ Singleton {
     Process {
         id: diskTypeDetector
         running: false
-        command: ["sh", "-c", "df -P " + root.validDisks.join(" ") + " 2>/dev/null | tail -n +2 | while read line; do dev=$(echo \"$line\" | awk '{print $1}'); mount=$(echo \"$line\" | awk '{print $6}'); base=$(echo \"$dev\" | sed 's|/dev/||' | sed 's/[0-9]*$//'); if [ -b \"/dev/$base\" ]; then rota=$(lsblk -d -n -o ROTA \"/dev/$base\" 2>/dev/null); echo \"$mount:$rota\"; fi; done"]
+        command: ["sh", "-c", "df -P " + root.validDisks.join(" ") + " 2>/dev/null | tail -n +2 | while read line; do dev=$(echo \"$line\" | awk '{print $1}'); mount=$(echo \"$line\" | awk '{print $6}'); base=$(echo \"$dev\" | sed 's|/dev/||' | sed 's/p\\?[0-9]*$//'); if [ -b \"/dev/$base\" ]; then rota=$(lsblk -d -n -o ROTA \"/dev/$base\" 2>/dev/null); echo \"$mount:$rota\"; fi; done"]
         
         stdout: StdioCollector {
             waitForEnd: true
