@@ -23,10 +23,16 @@ Singleton {
     property real ramUsed: 0
     property real ramAvailable: 0
 
-    // GPU metrics
-    property real gpuUsage: 0.0
-    property string gpuVendor: "unknown"
+    // GPU metrics - supports multiple GPUs
+    property var gpuUsages: []          // Array of usage percentages
+    property var gpuVendors: []         // Array of vendor strings
+    property var gpuNames: []           // Array of GPU names
+    property int gpuCount: 0
     property bool gpuDetected: false
+    
+    // Legacy single GPU properties (for backward compatibility)
+    property real gpuUsage: gpuUsages.length > 0 ? gpuUsages[0] : 0.0
+    property string gpuVendor: gpuVendors.length > 0 ? gpuVendors[0] : "unknown"
 
     // Disk metrics - map of mountpoint to usage percentage
     property var diskUsage: ({})
@@ -40,7 +46,7 @@ Singleton {
     // History data for charts (max 50 points)
     property var cpuHistory: []
     property var ramHistory: []
-    property var gpuHistory: []
+    property var gpuHistories: []       // Array of arrays - one history per GPU
     property int maxHistoryPoints: 50
     
     // Total data points collected (continues incrementing forever)
@@ -111,14 +117,26 @@ Singleton {
         }
         ramHistory = newRamHistory;
 
-        // Add GPU history if detected
-        if (gpuDetected) {
-            let newGpuHistory = gpuHistory.slice();
-            newGpuHistory.push(gpuUsage / 100);
-            if (newGpuHistory.length > maxHistoryPoints) {
-                newGpuHistory.shift();
+        // Add GPU histories if detected
+        if (gpuDetected && gpuCount > 0) {
+            let newGpuHistories = gpuHistories.slice();
+            
+            // Initialize histories array if needed
+            while (newGpuHistories.length < gpuCount) {
+                newGpuHistories.push([]);
             }
-            gpuHistory = newGpuHistory;
+            
+            // Update each GPU's history
+            for (let i = 0; i < gpuCount; i++) {
+                let gpuHist = newGpuHistories[i].slice();
+                gpuHist.push((gpuUsages[i] || 0) / 100);
+                if (gpuHist.length > maxHistoryPoints) {
+                    gpuHist.shift();
+                }
+                newGpuHistories[i] = gpuHist;
+            }
+            
+            gpuHistories = newGpuHistories;
         }
     }
 
@@ -133,12 +151,13 @@ Singleton {
             diskReader.running = true;
             
             // Only query GPU if detected
-            if (root.gpuDetected) {
-                if (root.gpuVendor === "nvidia") {
+            if (root.gpuDetected && root.gpuCount > 0) {
+                const vendor = root.gpuVendors[0] || root.gpuVendor;
+                if (vendor === "nvidia") {
                     gpuReaderNvidia.running = true;
-                } else if (root.gpuVendor === "amd") {
+                } else if (vendor === "amd") {
                     gpuReaderAMD.running = true;
-                } else if (root.gpuVendor === "intel") {
+                } else if (vendor === "intel") {
                     gpuReaderIntel.running = true;
                 }
             }
@@ -159,17 +178,95 @@ Singleton {
             onStreamFinished: {
                 const vendor = text.trim();
                 if (vendor === "nvidia" || vendor === "amd" || vendor === "intel") {
-                    root.gpuVendor = vendor;
+                    // Initialize arrays for detected vendor
+                    root.gpuVendors = [vendor];
                     root.gpuDetected = true;
+                    
+                    // Trigger GPU enumeration
+                    if (vendor === "nvidia") {
+                        gpuEnumeratorNvidia.running = true;
+                    } else if (vendor === "amd") {
+                        gpuEnumeratorAMD.running = true;
+                    } else if (vendor === "intel") {
+                        gpuEnumeratorIntel.running = true;
+                    }
                 } else {
-                    root.gpuVendor = "unknown";
+                    root.gpuVendors = [];
+                    root.gpuNames = [];
+                    root.gpuUsages = [];
+                    root.gpuCount = 0;
                     root.gpuDetected = false;
                 }
             }
         }
     }
+    
+    // NVIDIA GPU enumeration
+    Process {
+        id: gpuEnumeratorNvidia
+        running: false
+        command: ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"]
+        
+        stdout: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: {
+                const raw = text.trim();
+                if (!raw) return;
+                
+                const lines = raw.split('\n').filter(line => line.trim());
+                const count = lines.length;
+                
+                root.gpuCount = count;
+                root.gpuNames = lines.map(name => name.trim());
+                root.gpuUsages = Array(count).fill(0);
+                root.gpuVendors = Array(count).fill("nvidia");
+            }
+        }
+    }
+    
+    // AMD GPU enumeration
+    Process {
+        id: gpuEnumeratorAMD
+        running: false
+        command: ["sh", "-c", "ls -1 /sys/class/drm/card*/device/gpu_busy_percent 2>/dev/null | wc -l"]
+        
+        stdout: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: {
+                const raw = text.trim();
+                const count = parseInt(raw) || 0;
+                
+                if (count > 0) {
+                    root.gpuCount = count;
+                    root.gpuNames = Array.from({length: count}, (_, i) => `AMD GPU ${i}`);
+                    root.gpuUsages = Array(count).fill(0);
+                    root.gpuVendors = Array(count).fill("amd");
+                }
+            }
+        }
+    }
+    
+    // Intel GPU enumeration
+    Process {
+        id: gpuEnumeratorIntel
+        running: false
+        command: ["sh", "-c", "intel_gpu_top -J -s 100 2>/dev/null | grep -o '\"Render/3D/[0-9]*\"' | wc -l || echo 1"]
+        
+        stdout: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: {
+                const raw = text.trim();
+                const count = Math.max(1, parseInt(raw) || 1);
+                
+                root.gpuCount = count;
+                root.gpuNames = Array.from({length: count}, (_, i) => `Intel GPU ${i}`);
+                root.gpuUsages = Array(count).fill(0);
+                root.gpuVendors = Array(count).fill("intel");
+            }
+        }
+    }
 
-    // NVIDIA GPU usage reader
+    // NVIDIA GPU usage reader - supports multiple GPUs
     Process {
         id: gpuReaderNvidia
         running: false
@@ -181,26 +278,30 @@ Singleton {
                 const raw = text.trim();
                 if (!raw) return;
                 
-                const lines = raw.split('\n');
-                if (lines.length > 0) {
-                    const usage = parseFloat(lines[0]) || 0;
-                    root.gpuUsage = Math.max(0, Math.min(100, usage));
+                const lines = raw.split('\n').filter(line => line.trim());
+                let newUsages = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const usage = parseFloat(lines[i]) || 0;
+                    newUsages.push(Math.max(0, Math.min(100, usage)));
                 }
+                
+                root.gpuUsages = newUsages;
             }
         }
 
         onExited: (code, status) => {
             if (code !== 0) {
-                root.gpuUsage = 0;
+                root.gpuUsages = Array(root.gpuCount).fill(0);
             }
         }
     }
 
-    // AMD GPU usage reader
+    // AMD GPU usage reader - supports multiple GPUs
     Process {
         id: gpuReaderAMD
         running: false
-        command: ["sh", "-c", "cat /sys/class/drm/card0/device/gpu_busy_percent 2>/dev/null || echo 0"]
+        command: ["sh", "-c", "for card in /sys/class/drm/card*/device/gpu_busy_percent; do [ -f \"$card\" ] && cat \"$card\" 2>/dev/null || echo 0; done"]
         
         stdout: StdioCollector {
             waitForEnd: true
@@ -208,23 +309,30 @@ Singleton {
                 const raw = text.trim();
                 if (!raw) return;
                 
-                const usage = parseFloat(raw) || 0;
-                root.gpuUsage = Math.max(0, Math.min(100, usage));
+                const lines = raw.split('\n').filter(line => line.trim());
+                let newUsages = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const usage = parseFloat(lines[i]) || 0;
+                    newUsages.push(Math.max(0, Math.min(100, usage)));
+                }
+                
+                root.gpuUsages = newUsages;
             }
         }
 
         onExited: (code, status) => {
             if (code !== 0) {
-                root.gpuUsage = 0;
+                root.gpuUsages = Array(root.gpuCount).fill(0);
             }
         }
     }
 
-    // Intel GPU usage reader
+    // Intel GPU usage reader - supports multiple GPUs
     Process {
         id: gpuReaderIntel
         running: false
-        command: ["sh", "-c", "intel_gpu_top -J -s 100 2>/dev/null | grep -oP '\"Render/3D/0\".*?\"busy\":\\K[0-9.]+' | head -n1 || echo 0"]
+        command: ["sh", "-c", "intel_gpu_top -J -s 100 2>/dev/null | grep -oP '\"Render/3D/[0-9]*\".*?\"busy\":\\K[0-9.]+' || echo 0"]
         
         stdout: StdioCollector {
             waitForEnd: true
@@ -232,14 +340,26 @@ Singleton {
                 const raw = text.trim();
                 if (!raw) return;
                 
-                const usage = parseFloat(raw) || 0;
-                root.gpuUsage = Math.max(0, Math.min(100, usage));
+                const lines = raw.split('\n').filter(line => line.trim());
+                let newUsages = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const usage = parseFloat(lines[i]) || 0;
+                    newUsages.push(Math.max(0, Math.min(100, usage)));
+                }
+                
+                // Ensure at least one GPU if we got data
+                if (newUsages.length === 0 && lines.length > 0) {
+                    newUsages.push(parseFloat(raw) || 0);
+                }
+                
+                root.gpuUsages = newUsages;
             }
         }
 
         onExited: (code, status) => {
             if (code !== 0) {
-                root.gpuUsage = 0;
+                root.gpuUsages = Array(root.gpuCount).fill(0);
             }
         }
     }

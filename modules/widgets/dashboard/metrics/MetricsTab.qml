@@ -169,17 +169,45 @@ Rectangle {
                             icon: Icons.ram
                             label: "RAM"
                             value: SystemResources.ramUsage / 100
-                            barColor: Colors.blue
+                            barColor: Colors.cyan
                         }
 
-                        // GPU (if detected)
-                        ResourceItem {
-                            width: parent.width
-                            visible: SystemResources.gpuDetected
-                            icon: Icons.gpu
-                            label: "GPU"
-                            value: SystemResources.gpuUsage / 100
-                            barColor: Colors.green
+                        // GPUs (if detected) - show one bar per GPU
+                        Repeater {
+                            id: gpuRepeater
+                            model: SystemResources.gpuDetected ? SystemResources.gpuCount : 0
+
+                            ResourceItem {
+                                required property int index
+                                width: parent.width
+                                icon: Icons.gpu
+                                label: {
+                                    const name = SystemResources.gpuNames[index] || "";
+                                    const vendor = SystemResources.gpuVendors[index] || "";
+                                    
+                                    // If we have a descriptive name, use it
+                                    if (name && name !== `${vendor.toUpperCase()} GPU ${index}`) {
+                                        return name;
+                                    }
+                                    // Otherwise show GPU index if multiple, or just "GPU" if single
+                                    return SystemResources.gpuCount > 1 ? `GPU ${index}` : "GPU";
+                                }
+                                value: (SystemResources.gpuUsages[index] || 0) / 100
+                                barColor: {
+                                    // Color based on vendor
+                                    const vendor = SystemResources.gpuVendors[index] || "";
+                                    switch (vendor.toLowerCase()) {
+                                        case "nvidia":
+                                            return Colors.green;
+                                        case "amd":
+                                            return Colors.red;
+                                        case "intel":
+                                            return Colors.blue;
+                                        default:
+                                            return Colors.magenta;
+                                    }
+                                }
+                            }
                         }
 
                         // Separator before disks
@@ -399,12 +427,33 @@ Rectangle {
                             // Draw CPU line (red)
                             drawLine(SystemResources.cpuHistory, Colors.red);
 
-                            // Draw RAM line (blue)
-                            drawLine(SystemResources.ramHistory, Colors.blue);
+                            // Draw RAM line (cyan)
+                            drawLine(SystemResources.ramHistory, Colors.cyan);
 
-                            // Draw GPU line (green) if available
-                            if (SystemResources.gpuDetected && SystemResources.gpuHistory.length > 0) {
-                                drawLine(SystemResources.gpuHistory, Colors.green);
+                            // Draw GPU lines (color based on vendor)
+                            if (SystemResources.gpuDetected && SystemResources.gpuCount > 0) {
+                                for (let i = 0; i < SystemResources.gpuCount; i++) {
+                                    if (SystemResources.gpuHistories[i] && SystemResources.gpuHistories[i].length > 0) {
+                                        // Get vendor-specific color
+                                        const vendor = SystemResources.gpuVendors[i] || "";
+                                        let color;
+                                        switch (vendor.toLowerCase()) {
+                                            case "nvidia":
+                                                color = Colors.green;
+                                                break;
+                                            case "amd":
+                                                color = Colors.red;
+                                                break;
+                                            case "intel":
+                                                color = Colors.blue;
+                                                break;
+                                            default:
+                                                color = Colors.magenta;
+                                                break;
+                                        }
+                                        drawLine(SystemResources.gpuHistories[i], color);
+                                    }
+                                }
                             }
                         }
                     }
