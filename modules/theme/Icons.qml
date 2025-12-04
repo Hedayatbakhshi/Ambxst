@@ -176,4 +176,5 @@ QtObject {
     readonly property string countdown: ""
     readonly property string sync: ""
     readonly property string cube: ""
+    readonly property string picker: ""
 }

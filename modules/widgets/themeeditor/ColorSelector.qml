@@ -46,7 +46,8 @@ Item {
 
             model: ["Custom"].concat(root.colorNames)
             currentIndex: {
-                if (root.isHexColor) return 0; // "Custom"
+                if (root.isHexColor)
+                    return 0; // "Custom"
                 const idx = root.colorNames.indexOf(root.currentValueStr);
                 return idx >= 0 ? idx + 1 : 0;
             }
@@ -154,7 +155,8 @@ Item {
                         Layout.preferredHeight: 22
                         radius: Styling.radius(-12)
                         color: {
-                            if (delegateItem.index === 0) return "transparent";
+                            if (delegateItem.index === 0)
+                                return "transparent";
                             return Colors[root.colorNames[delegateItem.index - 1]] || "transparent";
                         }
                         border.color: Colors.outline
@@ -224,7 +226,8 @@ Item {
                     }
 
                     Keys.onReturnPressed: {
-                        if (!root.isHexColor) return;
+                        if (!root.isHexColor)
+                            return;
                         let hex = text.trim();
                         if (hex.length >= 6) {
                             root.colorChanged("#" + hex);
@@ -232,7 +235,8 @@ Item {
                     }
 
                     Keys.onEnterPressed: {
-                        if (!root.isHexColor) return;
+                        if (!root.isHexColor)
+                            return;
                         let hex = text.trim();
                         if (hex.length >= 6) {
                             root.colorChanged("#" + hex);
@@ -240,7 +244,8 @@ Item {
                     }
 
                     onEditingFinished: {
-                        if (!root.isHexColor) return;
+                        if (!root.isHexColor)
+                            return;
                         let hex = text.trim();
                         if (hex.length >= 6) {
                             root.colorChanged("#" + hex);
@@ -248,7 +253,8 @@ Item {
                     }
 
                     onTextChanged: {
-                        if (!root.isHexColor) return;
+                        if (!root.isHexColor)
+                            return;
                         // Auto-apply when 6 or 8 characters
                         if (text.length === 6 || text.length === 8) {
                             applyTimer.restart();
@@ -279,7 +285,7 @@ Item {
             }
 
             contentItem: Text {
-                text: Icons.xeyes
+                text: Icons.picker
                 font.family: Icons.font
                 font.pixelSize: 18
                 color: Colors.overBackground
