@@ -52,7 +52,7 @@ GroupBox {
     label: Text {
         text: parent.title
         font.family: Styling.defaultFont
-        font.pixelSize: Config.theme.fontSize
+        font.pixelSize: Styling.fontSize(0)
         font.bold: true
         color: Colors.primary
         leftPadding: 10
@@ -385,7 +385,7 @@ GroupBox {
                 Text {
                     text: "Stop " + (root.selectedStopIndex + 1)
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -397,7 +397,7 @@ GroupBox {
                 Text {
                     text: "Position:"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     color: Colors.overBackground
                     opacity: 0.7
                 }
@@ -418,7 +418,7 @@ GroupBox {
                         text: currentStop ? displayPosition.toFixed(3) : ""
 
                         font.family: "monospace"
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -526,7 +526,7 @@ GroupBox {
                     contentItem: Text {
                         text: stopEditor.isHex ? "Custom" : stopEditor.colorStr
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
@@ -538,7 +538,7 @@ GroupBox {
                         anchors.verticalCenter: parent.verticalCenter
                         text: Icons.caretDown
                         font.family: Icons.font
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                     }
 
@@ -599,7 +599,7 @@ GroupBox {
                             Text {
                                 text: colorDelegate.modelData
                                 font.family: Styling.defaultFont
-                                font.pixelSize: Config.theme.fontSize
+                                font.pixelSize: Styling.fontSize(0)
                                 color: Colors.overBackground
                                 elide: Text.ElideRight
                                 Layout.fillWidth: true
@@ -646,7 +646,7 @@ GroupBox {
                 Text {
                     text: "HEX:"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     color: Colors.overBackground
                     opacity: 0.7
                 }
@@ -664,7 +664,7 @@ GroupBox {
                         Text {
                             text: "#"
                             font.family: "monospace"
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.6
                         }
@@ -677,7 +677,7 @@ GroupBox {
                             text: stopEditor.displayHex.replace("#", "").toUpperCase()
 
                             font.family: "monospace"
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             verticalAlignment: Text.AlignVCenter
                             selectByMouse: true
@@ -733,7 +733,7 @@ GroupBox {
             Text {
                 text: "Click a stop to edit"
                 font.family: Styling.defaultFont
-                font.pixelSize: Config.theme.fontSize
+                font.pixelSize: Styling.fontSize(0)
                 color: Colors.overBackground
                 opacity: 0.5
                 Layout.alignment: Qt.AlignHCenter
@@ -742,7 +742,7 @@ GroupBox {
             Text {
                 text: "Double-click bar to add\nRight/middle-click stop to delete"
                 font.family: Styling.defaultFont
-                font.pixelSize: Config.theme.fontSize - 2
+                font.pixelSize: Styling.fontSize(-2)
                 color: Colors.overBackground
                 opacity: 0.4
                 horizontalAlignment: Text.AlignHCenter

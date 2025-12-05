@@ -13,7 +13,7 @@ Item {
     required property string variantLabel
     property bool isSelected: false
 
-    signal clicked()
+    signal clicked
 
     width: 72
     height: 88
@@ -42,7 +42,9 @@ Item {
 
                 Behavior on border.width {
                     enabled: (Config.animDuration ?? 0) > 0
-                    NumberAnimation { duration: (Config.animDuration ?? 0) / 2 }
+                    NumberAnimation {
+                        duration: (Config.animDuration ?? 0) / 2
+                    }
                 }
             }
 
@@ -75,7 +77,9 @@ Item {
 
                 Behavior on opacity {
                     enabled: (Config.animDuration ?? 0) > 0
-                    NumberAnimation { duration: (Config.animDuration ?? 0) / 2 }
+                    NumberAnimation {
+                        duration: (Config.animDuration ?? 0) / 2
+                    }
                 }
             }
         }
@@ -84,7 +88,7 @@ Item {
         Text {
             text: root.variantLabel
             font.family: Styling.defaultFont
-            font.pixelSize: Config.theme.fontSize
+            font.pixelSize: Styling.fontSize(0)
             color: root.isSelected ? Colors.primary : Colors.overBackground
             horizontalAlignment: Text.AlignHCenter
             elide: Text.ElideRight
@@ -93,7 +97,9 @@ Item {
 
             Behavior on color {
                 enabled: (Config.animDuration ?? 0) > 0
-                ColorAnimation { duration: (Config.animDuration ?? 0) / 2 }
+                ColorAnimation {
+                    duration: (Config.animDuration ?? 0) / 2
+                }
             }
         }
     }

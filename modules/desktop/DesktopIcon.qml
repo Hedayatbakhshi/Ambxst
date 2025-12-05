@@ -129,7 +129,7 @@ Item {
             text: root.itemName
             color: Config.resolveColor(Config.desktop.textColor)
             font.family: Config.defaultFont
-            font.pixelSize: Config.theme.fontSize
+            font.pixelSize: Styling.fontSize(0)
             font.weight: Font.Bold
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap

@@ -1933,7 +1933,7 @@ Item {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: modelData.width + "×" + modelData.height
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         color: Colors.outline
                                         opacity: 0.7
                                         visible: parent.parent.height > 70

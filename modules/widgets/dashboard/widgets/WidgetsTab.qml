@@ -699,7 +699,7 @@ Rectangle {
                                         }
                                     }
                                     font.family: Config.theme.font
-                                    font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                    font.pixelSize: Styling.fontSize(-2)
                                     elide: Text.ElideRight
                                     visible: text !== ""
 

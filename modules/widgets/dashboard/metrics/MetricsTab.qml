@@ -314,7 +314,7 @@ Rectangle {
                     Text {
                         text: "System"
                         font.family: Config.theme.font
-                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                        font.pixelSize: Styling.fontSize(-2)
                         color: Colors.overBackground
                     }
 
@@ -360,7 +360,7 @@ Rectangle {
                                 Text {
                                     text: SystemResources.cpuModel || "CPU"
                                     font.family: Config.theme.font
-                                    font.pixelSize: Config.theme.fontSize - 2
+                                    font.pixelSize: Styling.fontSize(-2)
                                     color: Colors.overBackground
                                     elide: Text.ElideMiddle
                                 }
@@ -375,7 +375,7 @@ Rectangle {
                                 Text {
                                     text: `${Math.round(SystemResources.cpuUsage)}%`
                                     font.family: Config.theme.font
-                                    font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                    font.pixelSize: Styling.fontSize(-2)
                                     font.weight: Font.Medium
                                     color: Colors.overBackground
                                 }
@@ -406,7 +406,7 @@ Rectangle {
                                         return `${usedGB} GB / ${totalGB} GB`;
                                     }
                                     font.family: Config.theme.font
-                                    font.pixelSize: Config.theme.fontSize - 2
+                                    font.pixelSize: Styling.fontSize(-2)
                                     color: Colors.overBackground
                                     elide: Text.ElideMiddle
                                 }
@@ -421,7 +421,7 @@ Rectangle {
                                 Text {
                                     text: `${Math.round(SystemResources.ramUsage)}%`
                                     font.family: Config.theme.font
-                                    font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                    font.pixelSize: Styling.fontSize(-2)
                                     font.weight: Font.Medium
                                     color: Colors.overBackground
                                 }
@@ -479,7 +479,7 @@ Rectangle {
                                             return name || "GPU";
                                         }
                                         font.family: Config.theme.font
-                                        font.pixelSize: Config.theme.fontSize - 2
+                                        font.pixelSize: Styling.fontSize(-2)
                                         color: Colors.overBackground
                                         elide: Text.ElideMiddle
                                     }
@@ -494,7 +494,7 @@ Rectangle {
                                     Text {
                                         text: `${Math.round(SystemResources.gpuUsages[index] || 0)}%`
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.overBackground
                                     }
@@ -537,7 +537,7 @@ Rectangle {
                                     Text {
                                         text: modelData
                                         font.family: Config.theme.font
-                                        font.pixelSize: Config.theme.fontSize - 2
+                                        font.pixelSize: Styling.fontSize(-2)
                                         color: Colors.overBackground
                                         elide: Text.ElideMiddle
                                     }
@@ -552,7 +552,7 @@ Rectangle {
                                     Text {
                                         text: `${Math.round((SystemResources.diskUsage[modelData] || 0))}%`
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.overBackground
                                     }

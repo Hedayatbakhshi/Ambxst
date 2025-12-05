@@ -358,8 +358,8 @@ WlSessionLockSurface {
 
         // Password input with avatar
         StyledRect {
-            variant: "bg"
             id: passwordInputBox
+            variant: "bg"
             anchors.centerIn: parent
             width: parent.width
             height: 96
@@ -488,7 +488,7 @@ WlSessionLockSurface {
                             placeholderText: usernameCollector.text.trim()
                             placeholderTextColor: passwordInputBox.showError ? Qt.rgba(Colors.overError.r, Colors.overError.g, Colors.overError.b, 0.5) : Colors.outline
                             font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: passwordInputBox.showError ? Colors.overError : Colors.overBackground
                             background: null
                             echoMode: TextInput.Password

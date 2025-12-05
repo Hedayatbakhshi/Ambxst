@@ -71,7 +71,7 @@ Menu {
     TextMetrics {
         id: textMetrics
         font.family: Config.theme.font
-        font.pixelSize: Config.theme.fontSize
+        font.pixelSize: Styling.fontSize(0)
         font.weight: Font.Bold
 
         function measureText(text) {
@@ -286,7 +286,7 @@ Menu {
                             return root.normalTextColor;
                         }
                         font.family: Config.theme.font
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         font.weight: Font.Bold
                         anchors.verticalCenter: parent.verticalCenter
                         elide: Text.ElideRight

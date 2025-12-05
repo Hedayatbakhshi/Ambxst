@@ -85,7 +85,7 @@ Item {
                 Text {
                     text: root.isHexColor ? "Custom" : root.currentValueStr
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     color: Colors.overBackground
                     elide: Text.ElideRight
                     Layout.fillWidth: true
@@ -176,7 +176,7 @@ Item {
                     Text {
                         text: delegateItem.modelData
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         Layout.fillWidth: true
                     }
@@ -202,7 +202,7 @@ Item {
                 Text {
                     text: "#"
                     font.family: "monospace"
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     color: Colors.overBackground
                     opacity: 0.6
                 }
@@ -214,7 +214,7 @@ Item {
 
                     text: root.displayHex.replace("#", "").toUpperCase()
                     font.family: "monospace"
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     color: Colors.overBackground
                     verticalAlignment: Text.AlignVCenter
                     selectByMouse: true

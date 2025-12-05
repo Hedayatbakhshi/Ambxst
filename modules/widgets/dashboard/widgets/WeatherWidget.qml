@@ -6,8 +6,8 @@ import qs.modules.components
 import qs.config
 
 StyledRect {
-    variant: "pane"
     id: root
+    variant: "pane"
     Layout.fillHeight: true
     implicitWidth: parent.width
     color: Colors.surface
@@ -103,7 +103,7 @@ StyledRect {
                 text: Math.round(WeatherService.windSpeed) + " km/h"
                 color: Colors.outline
                 font.family: Config.theme.font
-                font.pixelSize: Config.theme.fontSize - 2
+                font.pixelSize: Styling.fontSize(-2)
             }
         }
 

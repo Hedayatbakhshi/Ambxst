@@ -211,7 +211,7 @@ FloatingWindow {
                     Text {
                         text: "Theme Editor"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize + 2
+                        font.pixelSize: Styling.fontSize(0) + 2
                         font.bold: true
                         color: Colors.primary
                         Layout.fillWidth: true
@@ -222,7 +222,7 @@ FloatingWindow {
                         visible: root.hasChanges
                         text: "Unsaved changes"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         font.italic: true
                         color: Colors.error
                         opacity: 0.8
@@ -253,7 +253,7 @@ FloatingWindow {
                             Text {
                                 text: "Discard"
                                 font.family: Styling.defaultFont
-                                font.pixelSize: Config.theme.fontSize
+                                font.pixelSize: Styling.fontSize(0)
                                 font.bold: true
                                 color: Colors.overError
                                 Layout.alignment: Qt.AlignVCenter
@@ -292,7 +292,7 @@ FloatingWindow {
                             Text {
                                 text: "Apply"
                                 font.family: Styling.defaultFont
-                                font.pixelSize: Config.theme.fontSize
+                                font.pixelSize: Styling.fontSize(0)
                                 font.bold: true
                                 color: root.hasChanges ? Colors.overPrimary : Colors.overBackground
                                 Layout.alignment: Qt.AlignVCenter
@@ -356,7 +356,7 @@ FloatingWindow {
                         Text {
                             text: "Settings"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             font.bold: true
                             color: Colors.primary
                             Layout.alignment: Qt.AlignHCenter
@@ -414,7 +414,7 @@ FloatingWindow {
                                     Text {
                                         text: tabButton.modelData.name
                                         font.family: Styling.defaultFont
-                                        font.pixelSize: Config.theme.fontSize
+                                        font.pixelSize: Styling.fontSize(0)
                                         color: tabButton.isSelected ? Colors.overPrimary : Colors.overBackground
                                         Layout.fillWidth: true
                                         Layout.alignment: Qt.AlignVCenter
@@ -454,7 +454,7 @@ FloatingWindow {
                             anchors.centerIn: parent
                             text: "Bar Settings (Coming Soon)"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                         }
                     }
@@ -467,7 +467,7 @@ FloatingWindow {
                             anchors.centerIn: parent
                             text: "Hyprland Settings (Coming Soon)"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                         }
                     }

@@ -74,7 +74,7 @@ Item {
                 text: `${Quickshell.env("USER")}@${hostnameCollector.text.trim()}`
                 color: userHostArea.pressed ? Colors.overBackground : (userHostArea.containsMouse ? Colors.primary : Colors.overBackground)
                 font.family: Config.theme.font
-                font.pixelSize: Config.theme.fontSize
+                font.pixelSize: Styling.fontSize(0)
                 font.weight: Font.Bold
                 elide: Text.ElideRight
                 width: Math.min(implicitWidth, 180 - avatarClip.width - 8)

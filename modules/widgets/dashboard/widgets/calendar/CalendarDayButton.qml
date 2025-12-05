@@ -33,7 +33,7 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.weight: Font.Bold
-            font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+            font.pixelSize: Styling.fontSize(-2)
             font.family: Config.defaultFont
             color: {
                 if (isToday === 1)

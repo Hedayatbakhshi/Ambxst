@@ -241,7 +241,7 @@ PanelWindow {
             text: "Loading desktop..."
             color: "white"
             font.family: Config.defaultFont
-            font.pixelSize: Config.theme.fontSize
+            font.pixelSize: Styling.fontSize(0)
         }
     }
 }

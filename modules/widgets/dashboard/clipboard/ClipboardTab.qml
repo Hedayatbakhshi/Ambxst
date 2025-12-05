@@ -332,7 +332,7 @@ Item {
         allItems = newItems;
         resultsList.enableScrollAnimation = false;
         resultsList.contentY = 0;
-        
+
         itemsModel.clear();
         for (var i = 0; i < newItems.length; i++) {
             itemsModel.append({
@@ -846,7 +846,7 @@ Item {
                     currentIndex: root.selectedIndex
 
                     property bool enableScrollAnimation: true
-                    
+
                     Behavior on contentY {
                         enabled: Config.animDuration > 0 && resultsList.enableScrollAnimation && !resultsList.moving
                         NumberAnimation {
@@ -916,7 +916,7 @@ Item {
                             }
                             return baseHeight;
                         }
-                        
+
                         // Calculate Y position based on index, not item position
                         y: {
                             var yPos = 0;
@@ -935,7 +935,7 @@ Item {
                             }
                             return yPos;
                         }
-                        
+
                         Behavior on y {
                             enabled: Config.animDuration > 0
                             NumberAnimation {
@@ -951,7 +951,7 @@ Item {
                                 easing.type: Easing.OutQuart
                             }
                         }
-                        
+
                         onHeightChanged: {
                             if (root.expandedItemIndex >= 0 && height > 48) {
                                 Qt.callLater(() => {
@@ -959,7 +959,7 @@ Item {
                                 });
                             }
                         }
-                        
+
                         StyledRect {
                             anchors.fill: parent
                             variant: {
@@ -2096,7 +2096,7 @@ Item {
                                         }
                                     }
                                     font.family: Config.theme.font
-                                    font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                    font.pixelSize: Styling.fontSize(-2)
                                     elide: Text.ElideRight
                                     maximumLineCount: 1
                                     wrapMode: Text.NoWrap
@@ -2199,7 +2199,7 @@ Item {
                     Text {
                         text: "Copy something to get started"
                         font.family: Config.theme.font
-                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                        font.pixelSize: Styling.fontSize(-2)
                         color: Colors.outline
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
@@ -2470,7 +2470,7 @@ Item {
                                         Text {
                                             text: root.linkPreviewData ? root.linkPreviewData.site_name : ""
                                             font.family: Config.theme.font
-                                            font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                            font.pixelSize: Styling.fontSize(-2)
                                             font.weight: Font.Medium
                                             color: Colors.outline
                                             elide: Text.ElideRight
@@ -2612,7 +2612,7 @@ Item {
                                             Text {
                                                 text: root.linkPreviewData ? root.linkPreviewData.site_name : ""
                                                 font.family: Config.theme.font
-                                                font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                                font.pixelSize: Styling.fontSize(-2)
                                                 font.weight: Font.Medium
                                                 color: Colors.outline
                                                 elide: Text.ElideRight
@@ -3005,7 +3005,7 @@ Item {
                                     Text {
                                         text: "MIME Type"
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.outline
                                     }
@@ -3028,7 +3028,7 @@ Item {
                                     Text {
                                         text: "Size"
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.outline
                                     }
@@ -3064,7 +3064,7 @@ Item {
                                     Text {
                                         text: "Date"
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.outline
                                     }
@@ -3090,7 +3090,7 @@ Item {
                                     Text {
                                         text: "Checksum"
                                         font.family: Config.theme.font
-                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
+                                        font.pixelSize: Styling.fontSize(-2)
                                         font.weight: Font.Medium
                                         color: Colors.outline
                                     }

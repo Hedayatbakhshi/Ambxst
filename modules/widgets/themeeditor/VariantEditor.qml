@@ -133,7 +133,7 @@ StyledRect {
                 Text {
                     text: "Gradient Type"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -149,7 +149,8 @@ StyledRect {
                     readonly property int padding: 2
 
                     readonly property int currentIndex: {
-                        if (!root.variantConfig) return 0;
+                        if (!root.variantConfig)
+                            return 0;
                         const idx = root.gradientTypes.indexOf(root.variantConfig.gradientType);
                         return idx >= 0 ? idx : 0;
                     }
@@ -204,7 +205,7 @@ StyledRect {
                                         anchors.centerIn: parent
                                         text: typeButton.modelData.charAt(0).toUpperCase() + typeButton.modelData.slice(1)
                                         font.family: Styling.defaultFont
-                                        font.pixelSize: Config.theme.fontSize
+                                        font.pixelSize: Styling.fontSize(0)
                                         color: typeButton.isSelected ? Colors.overPrimary : Colors.overBackground
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -238,7 +239,7 @@ StyledRect {
                 Text {
                     text: "Item Color"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -259,7 +260,7 @@ StyledRect {
                 Text {
                     text: "Opacity"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -288,7 +289,7 @@ StyledRect {
                     Text {
                         text: root.variantConfig ? (root.variantConfig.opacity * 100).toFixed(0) + "%" : "100%"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         Layout.preferredWidth: 40
                         horizontalAlignment: Text.AlignRight
@@ -304,7 +305,7 @@ StyledRect {
                 Text {
                     text: "Border"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -330,7 +331,7 @@ StyledRect {
                     Text {
                         text: "Width:"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         opacity: 0.7
                     }
@@ -357,7 +358,7 @@ StyledRect {
                     Text {
                         text: root.variantConfig ? root.variantConfig.border[1] + "px" : "0px"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         Layout.preferredWidth: 35
                         horizontalAlignment: Text.AlignRight
@@ -386,7 +387,7 @@ StyledRect {
                 Text {
                     text: "Angle"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -417,7 +418,7 @@ StyledRect {
                     Text {
                         text: root.variantConfig ? root.variantConfig.gradientAngle + "°" : "0°"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         Layout.preferredWidth: 40
                         horizontalAlignment: Text.AlignRight
@@ -434,7 +435,7 @@ StyledRect {
                 Text {
                     text: "Center Position"
                     font.family: Styling.defaultFont
-                    font.pixelSize: Config.theme.fontSize
+                    font.pixelSize: Styling.fontSize(0)
                     font.bold: true
                     color: Colors.primary
                 }
@@ -450,7 +451,7 @@ StyledRect {
                         Text {
                             text: "X:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -474,7 +475,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.gradientCenterX.toFixed(2) : "0.50"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 35
                         }
@@ -487,7 +488,7 @@ StyledRect {
                         Text {
                             text: "Y:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -511,7 +512,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.gradientCenterY.toFixed(2) : "0.50"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 35
                         }
@@ -537,7 +538,7 @@ StyledRect {
                         Text {
                             text: "Dot Color"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             font.bold: true
                             color: Colors.primary
                         }
@@ -557,7 +558,7 @@ StyledRect {
                         Text {
                             text: "Background"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             font.bold: true
                             color: Colors.primary
                         }
@@ -579,7 +580,7 @@ StyledRect {
                     Text {
                         text: "Angle:"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         opacity: 0.7
                         Layout.preferredWidth: 50
@@ -607,7 +608,7 @@ StyledRect {
                     Text {
                         text: root.variantConfig ? root.variantConfig.gradientAngle + "°" : "0°"
                         font.family: Styling.defaultFont
-                        font.pixelSize: Config.theme.fontSize
+                        font.pixelSize: Styling.fontSize(0)
                         color: Colors.overBackground
                         Layout.preferredWidth: 40
                         horizontalAlignment: Text.AlignRight
@@ -626,7 +627,7 @@ StyledRect {
                         Text {
                             text: "Dot Min:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -653,7 +654,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.halftoneDotMin.toFixed(1) : "2.0"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 30
                         }
@@ -666,7 +667,7 @@ StyledRect {
                         Text {
                             text: "Dot Max:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -693,7 +694,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.halftoneDotMax.toFixed(1) : "8.0"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 30
                         }
@@ -712,7 +713,7 @@ StyledRect {
                         Text {
                             text: "Start:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -736,7 +737,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.halftoneStart.toFixed(2) : "0.00"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 35
                         }
@@ -749,7 +750,7 @@ StyledRect {
                         Text {
                             text: "End:"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             opacity: 0.7
                         }
@@ -773,7 +774,7 @@ StyledRect {
                         Text {
                             text: root.variantConfig ? root.variantConfig.halftoneEnd.toFixed(2) : "1.00"
                             font.family: Styling.defaultFont
-                            font.pixelSize: Config.theme.fontSize
+                            font.pixelSize: Styling.fontSize(0)
                             color: Colors.overBackground
                             Layout.preferredWidth: 35
                         }
