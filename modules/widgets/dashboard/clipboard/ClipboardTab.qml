@@ -842,6 +842,9 @@ Item {
                     reuseItems: false
                     boundsBehavior: Flickable.StopAtBounds
 
+                    // Propiedad para detectar si está en movimiento (drag o flick)
+                    property bool isScrolling: dragging || flicking
+
                     model: itemsModel
                     currentIndex: root.selectedIndex
 
@@ -1064,7 +1067,7 @@ Item {
                             anchors.right: parent.right
                             anchors.top: parent.top
                             height: isExpanded ? 48 : parent.height
-                            hoverEnabled: !isDraggingForReorder
+                            hoverEnabled: !isDraggingForReorder && !resultsList.isScrolling
                             enabled: !root.deleteMode && !root.aliasMode
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
@@ -1075,8 +1078,8 @@ Item {
                             property bool isVerticalDrag: false
 
                             onEntered: {
-                                // Don't change selection if there's an expanded menu open or dragging
-                                if (!root.deleteMode && root.expandedItemIndex === -1 && !isDraggingForReorder) {
+                                // Don't change selection if there's an expanded menu open or dragging or scrolling
+                                if (!root.deleteMode && root.expandedItemIndex === -1 && !isDraggingForReorder && !resultsList.isScrolling) {
                                     root.selectedIndex = index;
                                     resultsList.currentIndex = index;
                                 }
@@ -1588,6 +1591,10 @@ Item {
                                     clip: true
                                     interactive: true
                                     boundsBehavior: Flickable.StopAtBounds
+
+                                    // Propiedad para detectar si está en movimiento
+                                    property bool isScrolling: dragging || flicking
+
                                     model: {
                                         var options = [
                                             {
@@ -1757,16 +1764,18 @@ Item {
 
                                             MouseArea {
                                                 anchors.fill: parent
-                                                hoverEnabled: true
+                                                hoverEnabled: !optionsListView.isScrolling
                                                 cursorShape: Qt.PointingHandCursor
 
                                                 onEntered: {
+                                                    if (optionsListView.isScrolling) return;
                                                     optionsListView.currentIndex = index;
                                                     root.selectedOptionIndex = index;
                                                     root.keyboardNavigation = false;
                                                 }
 
                                                 onClicked: {
+                                                    if (optionsListView.isScrolling) return;
                                                     if (modelData && modelData.action) {
                                                         modelData.action();
                                                     }

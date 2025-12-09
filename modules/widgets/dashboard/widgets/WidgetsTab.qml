@@ -482,6 +482,9 @@ Rectangle {
                     cacheBuffer: 96
                     reuseItems: false
 
+                    // Propiedad para detectar si está en movimiento (drag o flick)
+                    property bool isScrolling: dragging || flicking
+
                     model: appsModel
                     currentIndex: appLauncher.selectedIndex
 
@@ -570,10 +573,11 @@ Rectangle {
                             anchors.right: parent.right
                             anchors.top: parent.top
                             height: isExpanded ? 48 : parent.height
-                            hoverEnabled: true
+                            hoverEnabled: !resultsList.isScrolling
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                             onEntered: {
+                                if (resultsList.isScrolling) return;
                                 if (appLauncher.expandedItemIndex === -1) {
                                     GlobalStates.launcherSelectedIndex = index;
                                     appLauncher.selectedIndex = index;

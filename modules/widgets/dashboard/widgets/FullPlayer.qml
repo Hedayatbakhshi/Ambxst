@@ -482,11 +482,14 @@ StyledRect {
                     model: MprisController.filteredPlayers
                     interactive: true
                     boundsBehavior: Flickable.StopAtBounds
-                    highlightFollowsCurrentItem: true
+                    highlightFollowsCurrentItem: !isScrolling
                     highlightRangeMode: ListView.ApplyRange
                     preferredHighlightBegin: 0
                     preferredHighlightEnd: height
                     currentIndex: -1
+
+                    // Propiedad para detectar si está en movimiento
+                    property bool isScrolling: dragging || flicking
 
                     function getPlayerIcon(player) {
                         if (!player)
@@ -579,8 +582,9 @@ StyledRect {
 
                             HoverHandler {
                                 id: playerItemHover
+                                enabled: !playersListView.isScrolling
                                 onHoveredChanged: {
-                                    if (hovered) {
+                                    if (hovered && !playersListView.isScrolling) {
                                         playersListView.currentIndex = index;
                                     }
                                 }
@@ -589,8 +593,9 @@ StyledRect {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                hoverEnabled: true
+                                hoverEnabled: !playersListView.isScrolling
                                 onClicked: {
+                                    if (playersListView.isScrolling) return;
                                     MprisController.setActivePlayer(modelData);
                                     player.playersListExpanded = false;
                                 }

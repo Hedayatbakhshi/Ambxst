@@ -287,10 +287,13 @@ Item {
                         currentIndex: selectedSchemeIndex
                         interactive: true
                         boundsBehavior: Flickable.StopAtBounds
-                        highlightFollowsCurrentItem: true
+                        highlightFollowsCurrentItem: !isScrolling
                         highlightRangeMode: ListView.ApplyRange
                         preferredHighlightBegin: 0
                         preferredHighlightEnd: height
+
+                        // Propiedad para detectar si está en movimiento
+                        property bool isScrolling: dragging || flicking
 
                         onCurrentIndexChanged: {
                             if (currentIndex !== selectedSchemeIndex) {
@@ -337,12 +340,14 @@ Item {
 
                             MouseArea {
                                 anchors.fill: parent
-                                hoverEnabled: true
+                                hoverEnabled: !schemeListView.isScrolling
                                 onEntered: {
+                                    if (schemeListView.isScrolling) return;
                                     selectedSchemeIndex = index;
                                     schemeListView.currentIndex = index;
                                 }
                                 onClicked: {
+                                    if (schemeListView.isScrolling) return;
                                     if (GlobalStates.wallpaperManager) {
                                         GlobalStates.wallpaperManager.setMatugenScheme(modelData);
                                         schemeListExpanded = false;

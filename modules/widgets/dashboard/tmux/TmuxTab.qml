@@ -759,6 +759,9 @@ Item {
                 cacheBuffer: 96
                 reuseItems: false
 
+                // Propiedad para detectar si está en movimiento (drag o flick)
+                property bool isScrolling: dragging || flicking
+
                 model: sessionsModel
                 currentIndex: root.selectedIndex
 
@@ -867,7 +870,7 @@ Item {
                         anchors.right: parent.right
                         anchors.top: parent.top
                         height: isExpanded ? 48 : parent.height
-                        hoverEnabled: true
+                        hoverEnabled: !resultsList.isScrolling
                         enabled: !isInDeleteMode && !isInRenameMode
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
@@ -877,6 +880,7 @@ Item {
                         property bool longPressTriggered: false
 
                         onEntered: {
+                            if (resultsList.isScrolling) return;
                             if (!root.deleteMode && !root.renameMode && root.expandedItemIndex === -1) {
                                 root.selectedIndex = index;
                                 resultsList.currentIndex = index;
