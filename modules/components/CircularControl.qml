@@ -6,6 +6,10 @@ import qs.config
 StyledRect {
     id: root
     variant: "pane"
+    backgroundOpacity: showBackground ? -1 : 0
+    enableBorder: showBackground
+
+    property bool showBackground: true
 
     required property string icon
     required property real value

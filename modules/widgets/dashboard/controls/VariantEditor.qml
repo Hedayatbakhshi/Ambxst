@@ -207,6 +207,7 @@ Item {
                             accentColor: Colors.primary
                             isToggleable: false
                             isToggled: false
+                            showBackground: false
                             onControlValueChanged: newValue => root.updateProp("opacity", newValue)
                         }
 
@@ -261,9 +262,10 @@ Item {
                                 anchors.fill: parent
                                 icon: ""
                                 value: root.variantConfig ? root.variantConfig.border[1] / 16 : 0
-                                accentColor: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
+                                accentColor: root.variantConfig ? Config.resolveColor(root.variantConfig.border[0]) : Colors.outline
                                 isToggleable: false
                                 isToggled: false
+                                showBackground: false
                                 onControlValueChanged: newValue => {
                                     if (root.variantConfig) {
                                         const newWidth = Math.round(newValue * 16);
@@ -279,7 +281,7 @@ Item {
                                 width: 20
                                 height: 20
                                 radius: width / 2
-                                color: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
+                                color: root.variantConfig ? Config.resolveColor(root.variantConfig.border[0]) : Colors.outline
                                 border.width: 2
                                 border.color: Colors.overBackground
 
