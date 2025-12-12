@@ -52,14 +52,14 @@ Singleton {
         const focusedName = Hyprland.focusedMonitor.name;
         const monitor = monitors.find(m => focusedName === m.screen.name);
         if (monitor)
-            monitor.setBrightness(monitor.brightness + 0.05);
+            monitor.setBrightness(monitor.brightness + 0.05, false);
     }
 
     function decreaseBrightness(): void {
         const focusedName = Hyprland.focusedMonitor.name;
         const monitor = monitors.find(m => focusedName === m.screen.name);
         if (monitor)
-            monitor.setBrightness(monitor.brightness - 0.05);
+            monitor.setBrightness(monitor.brightness - 0.05, false);
     }
 
     reloadableId: "brightness"
@@ -209,10 +209,14 @@ Singleton {
             setProc.startDetached();
         }
 
-        function setBrightness(value: real): void {
+        function setBrightness(value: real, immediate: bool): void {
             value = Math.max(0.01, Math.min(1, value));
             monitor.brightness = value;
-            setTimer.restart();
+            if (immediate) {
+                syncBrightness();
+            } else {
+                setTimer.restart();
+            }
         }
 
         Component.onCompleted: {
@@ -247,14 +251,14 @@ Singleton {
                 for (let i = 0; i < root.monitors.length; ++i) {
                     const mon = root.monitors[i];
                     if (mon && mon.ready) {
-                        mon.setBrightness(value);
+                        mon.setBrightness(value, true);
                     }
                 }
             } else {
                 // Set specific monitor
                 const monitor = root.monitors.find(m => m.screen.name === monitorName);
                 if (monitor && monitor.ready) {
-                    monitor.setBrightness(value);
+                    monitor.setBrightness(value, true);
                 } else {
                     console.warn("Monitor not found or not ready:", monitorName);
                 }
@@ -267,14 +271,14 @@ Singleton {
                 for (let i = 0; i < root.monitors.length; ++i) {
                     const mon = root.monitors[i];
                     if (mon && mon.ready) {
-                        mon.setBrightness(mon.brightness + delta);
+                        mon.setBrightness(mon.brightness + delta, true);
                     }
                 }
             } else {
                 // Adjust specific monitor
                 const monitor = root.monitors.find(m => m.screen.name === monitorName);
                 if (monitor && monitor.ready) {
-                    monitor.setBrightness(monitor.brightness + delta);
+                    monitor.setBrightness(monitor.brightness + delta, true);
                 } else {
                     console.warn("Monitor not found or not ready:", monitorName);
                 }

@@ -147,7 +147,7 @@ Item {
 
             onValueChanged: {
                 if (currentMonitor && currentMonitor.ready) {
-                    currentMonitor.setBrightness(value);
+                    currentMonitor.setBrightness(value, false);
                 }
             }
 

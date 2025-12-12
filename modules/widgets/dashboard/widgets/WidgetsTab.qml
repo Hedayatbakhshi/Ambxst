@@ -1438,13 +1438,13 @@ Rectangle {
                                 for (let i = 0; i < Brightness.monitors.length; i++) {
                                     let mon = Brightness.monitors[i];
                                     if (mon && mon.ready) {
-                                        mon.setBrightness(value);
+                                        mon.setBrightness(value, false);
                                     }
                                 }
                             } else {
                                 // Only current monitor
                                 if (currentMonitor && currentMonitor.ready) {
-                                    currentMonitor.setBrightness(value);
+                                    currentMonitor.setBrightness(value, false);
                                 }
                             }
                         }
