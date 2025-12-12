@@ -17,6 +17,8 @@ Item {
     signal updateStops(var newStops)
     signal openColorPickerRequested(var colorNames, string currentColor, string dialogTitle, var callback)
 
+    implicitHeight: contentColumn.implicitHeight
+
     // Currently selected stop index for editing (default to first stop)
     property int selectedStopIndex: 0
 
@@ -64,6 +66,7 @@ Item {
     }
 
     ColumnLayout {
+        id: contentColumn
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top

@@ -331,7 +331,6 @@ Item {
         // === GRADIENT STOPS (for linear/radial) ===
         GradientStopsEditor {
             Layout.fillWidth: true
-            Layout.preferredHeight: 220
             colorNames: root.colorNames
             stops: root.variantConfig ? root.variantConfig.gradient : []
             variantId: root.variantId
