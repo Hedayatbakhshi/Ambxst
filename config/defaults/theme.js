@@ -60,7 +60,7 @@ var data = {
         "halftoneBackgroundColor": "surfaceDim",
         "border": ["surfaceBright", 0],
         "itemColor": "overBackground",
-        "opacity": 1.0
+        "opacity": 0.0
     },
     "srPane": {
         "gradient": [["surface", 0.0]],

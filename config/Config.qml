@@ -162,7 +162,7 @@ Singleton {
                 property string halftoneBackgroundColor: "surfaceDim"
                 property list<var> border: ["surfaceBright", 0]
                 property string itemColor: "overBackground"
-                property real opacity: 1.0
+                property real opacity: 0.0
             }
 
             property JsonObject srPane: JsonObject {
@@ -467,12 +467,9 @@ Singleton {
             property bool launcherIconTint: true
             property bool launcherIconFullTint: true
             property int launcherIconSize: 24
-            property bool showBackground: false
-            property real bgOpacity: 0.5
             property list<string> screenList: []
             property bool enableFirefoxPlayer: false
             property list<var> barColor: [["surface", 0.0]]
-            property string barOrientation: "vertical"
         }
     }
 
@@ -1491,7 +1488,7 @@ Singleton {
 
     // Bar configuration
     property QtObject bar: barLoader.adapter
-    property real bgOpacity: Math.min(Math.max(bar.bgOpacity, 0.1), 1.0)
+    property bool showBackground: theme.srBarBg.opacity > 0
 
     // Workspace configuration
     property QtObject workspaces: workspacesLoader.adapter

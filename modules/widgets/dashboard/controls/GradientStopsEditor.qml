@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import qs.modules.theme
 import qs.modules.components
 import qs.config
-import "../../../../config/ConfigDefaults.js" as ConfigDefaults
+import "../../../../config/defaults/theme.js" as ThemeDefaults
 
 Item {
     id: root
@@ -58,11 +58,11 @@ Item {
             "overerror": "srOverError"
         };
         const variantKey = variantKeyMap[variantId] || "srCommon";
-        // Guard against undefined ConfigDefaults.data or ConfigDefaults.data.theme
-        if (!ConfigDefaults.data || !ConfigDefaults.data.theme) {
+        // Guard against undefined ThemeDefaults.data
+        if (!ThemeDefaults.data) {
             return [["surface", 0.0]];
         }
-        const defaults = ConfigDefaults.data.theme[variantKey];
+        const defaults = ThemeDefaults.data[variantKey];
         if (defaults && defaults.gradient) {
             return defaults.gradient;
         }

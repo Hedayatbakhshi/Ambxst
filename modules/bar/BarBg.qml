@@ -9,7 +9,7 @@ Item {
     id: root
     required property string position
 
-    visible: Config.bar.showBackground
+    visible: Config.showBackground
 
     readonly property int cornerSize: Config.theme.enableCorners ? Styling.radius(4) : 0
     readonly property bool isHorizontal: position === "top" || position === "bottom"

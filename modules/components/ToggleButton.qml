@@ -26,7 +26,7 @@ Button {
 
     background: StyledRect {
         variant: "bg"
-        enableShadow: root.enableShadow && Config.bar.showBackground
+        enableShadow: root.enableShadow && Config.showBackground
         Rectangle {
             anchors.fill: parent
             color: Colors.primary

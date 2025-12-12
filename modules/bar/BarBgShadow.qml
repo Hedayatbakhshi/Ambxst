@@ -8,7 +8,7 @@ Rectangle {
     id: root
     required property string position
     
-    visible: Config.bar.showBackground
+    visible: Config.showBackground
     color: "black"
 
     layer.enabled: true

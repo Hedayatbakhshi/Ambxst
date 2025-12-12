@@ -37,7 +37,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.layer: WlrLayer.Top
 
-    exclusiveZone: Config.bar.showBackground ? 44 : 40
+    exclusiveZone: Config.showBackground ? 44 : 40
     exclusionMode: ExclusionMode.Ignore
 
     // Altura implícita incluye espacio extra para animaciones / futuros elementos.
@@ -163,7 +163,7 @@ PanelWindow {
                     Layout.preferredHeight: 36
                     color: "transparent"
                     radius: Styling.radius(0)
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                     layer.effect: Shadow {}
 
                     Flickable {
@@ -224,7 +224,7 @@ PanelWindow {
                     Layout.preferredHeight: 36
                     color: "transparent"
                     radius: Styling.radius(0)
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                     layer.effect: Shadow {}
 
                     Flickable {
@@ -287,13 +287,13 @@ PanelWindow {
 
                 SysTray {
                     bar: panel
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                 }
 
                 Clock {
                     id: clockComponent
                     bar: panel
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                 }
             }
 
@@ -329,7 +329,7 @@ PanelWindow {
                     Layout.preferredWidth: 36
                     color: "transparent"
                     radius: Styling.radius(0)
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                     layer.effect: Shadow {}
 
                     Flickable {
@@ -391,7 +391,7 @@ PanelWindow {
                     Layout.preferredWidth: 36
                     color: "transparent"
                     radius: Styling.radius(0)
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                     layer.effect: Shadow {}
 
                     Flickable {
@@ -454,13 +454,13 @@ PanelWindow {
 
                 SysTray {
                     bar: panel
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                 }
 
                 Clock {
                     id: clockComponentVert
                     bar: panel
-                    layer.enabled: Config.bar.showBackground
+                    layer.enabled: Config.showBackground
                 }
             }
 

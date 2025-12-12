@@ -38,7 +38,7 @@ Item {
     readonly property var toplevels: ToplevelManager.toplevels
 
     readonly property string barPosition: Config.bar.position
-    readonly property int barReserved: (Config.bar.showBackground ? 44 : 40)
+    readonly property int barReserved: (Config.showBackground ? 44 : 40)
 
     property real workspaceImplicitWidth: {
         const isRotated = (monitorData?.transform % 2 === 1);

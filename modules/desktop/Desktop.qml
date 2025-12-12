@@ -10,7 +10,7 @@ import qs.config
 PanelWindow {
     id: desktop
 
-    property int barSize: Config.bar.showBackground ? 44 : 40
+    property int barSize: Config.showBackground ? 44 : 40
     property int bottomTextMargin: 32
     property string barPosition: ["top", "bottom", "left", "right"].includes(Config.bar.position) ? Config.bar.position : "top"
 
