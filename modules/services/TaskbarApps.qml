@@ -64,8 +64,34 @@ Singleton {
             }
         }
 
-        // Add separator if there are pinned apps
-        if (pinnedApps.length > 0) {
+        // Collect running apps that are not pinned
+        var unpinnedRunningApps = [];
+        for (const toplevel of ToplevelManager.toplevels.values) {
+            // Skip ignored apps
+            if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
+            
+            const key = toplevel.appId.toLowerCase();
+            
+            // Check if this app is already in map (pinned)
+            if (map.has(key)) {
+                // Add toplevel to existing pinned app
+                map.get(key).toplevels.push(toplevel);
+            } else {
+                // Track as unpinned running app
+                if (!unpinnedRunningApps.find(app => app.key === key)) {
+                    unpinnedRunningApps.push({
+                        key: key,
+                        appId: toplevel.appId,
+                        toplevels: [toplevel]
+                    });
+                } else {
+                    unpinnedRunningApps.find(app => app.key === key).toplevels.push(toplevel);
+                }
+            }
+        }
+
+        // Add separator only if there are pinned apps AND unpinned running apps
+        if (pinnedApps.length > 0 && unpinnedRunningApps.length > 0) {
             map.set("SEPARATOR", { 
                 appId: "SEPARATOR", 
                 pinned: false, 
@@ -73,22 +99,13 @@ Singleton {
             });
         }
 
-        // Add running apps from ToplevelManager
-        for (const toplevel of ToplevelManager.toplevels.values) {
-            // Skip ignored apps
-            if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
-            
-            const key = toplevel.appId.toLowerCase();
-            
-            if (!map.has(key)) {
-                map.set(key, {
-                    appId: toplevel.appId,
-                    pinned: false,
-                    toplevels: []
-                });
-            }
-            
-            map.get(key).toplevels.push(toplevel);
+        // Add unpinned running apps to map
+        for (const app of unpinnedRunningApps) {
+            map.set(app.key, {
+                appId: app.appId,
+                pinned: false,
+                toplevels: app.toplevels
+            });
         }
 
         // Convert to list of TaskbarAppEntry objects

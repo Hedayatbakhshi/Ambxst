@@ -253,8 +253,8 @@ Rectangle {
                     itemY += 48; // All items before are collapsed (base height)
                 }
 
-                // Calculate expanded item height - always 2 options (Launch, Create Shortcut)
-                var listHeight = 36 * 2;
+                            // Calculate expanded item height - always 3 options (Launch, Pin/Unpin, Create Shortcut)
+                            var listHeight = 36 * 3;
                 var expandedHeight = 48 + 4 + listHeight + 8;
 
                 // Calculate max valid scroll position
@@ -333,6 +333,10 @@ Rectangle {
                                         appLauncher.executeApp(selectedApp.appId);
                                         Visibilities.setActiveModule("");
                                     }, function () {
+                                        // Pin/Unpin from dock
+                                        TaskbarApps.togglePin(selectedApp.appId);
+                                        appLauncher.expandedItemIndex = -1;
+                                    }, function () {
                                         // Create shortcut
                                         let desktopDir = Quickshell.env("XDG_DESKTOP_DIR") || Quickshell.env("HOME") + "/Desktop";
                                         let timestamp = Date.now();
@@ -389,8 +393,8 @@ Rectangle {
 
                     onDownPressed: {
                         if (appLauncher.expandedItemIndex >= 0) {
-                            // Navigate options when menu is expanded - always 2 options (Launch, Create Shortcut)
-                            if (appLauncher.selectedOptionIndex < 1) {
+                            // Navigate options when menu is expanded - always 3 options (Launch, Pin/Unpin, Create Shortcut)
+                            if (appLauncher.selectedOptionIndex < 2) {
                                 appLauncher.selectedOptionIndex++;
                                 appLauncher.keyboardNavigation = true;
                             }
@@ -510,7 +514,7 @@ Rectangle {
                             for (var i = 0; i < currentIndex && i < appsModel.count; i++) {
                                 var itemHeight = 48;
                                 if (i === appLauncher.expandedItemIndex) {
-                                    var listHeight = 36 * 2;
+                                    var listHeight = 36 * 3;
                                     itemHeight = 48 + 4 + listHeight + 8;
                                 }
                                 itemY += itemHeight;
@@ -518,7 +522,7 @@ Rectangle {
 
                             var currentItemHeight = 48;
                             if (currentIndex === appLauncher.expandedItemIndex) {
-                                var listHeight = 36 * 2;
+                                var listHeight = 36 * 3;
                                 currentItemHeight = 48 + 4 + listHeight + 8;
                             }
 
@@ -551,7 +555,7 @@ Rectangle {
                         height: {
                             let baseHeight = 48;
                             if (isExpanded) {
-                                var listHeight = 36 * 2; // Always 2 options: Launch, Create Shortcut
+                                var listHeight = 36 * 3; // Always 3 options: Launch, Pin/Unpin, Create Shortcut
                                 return baseHeight + 4 + listHeight + 8; // base + spacing + list + bottom margin
                             }
                             return baseHeight;
@@ -740,7 +744,7 @@ Rectangle {
 
                             ClippingRectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 36 * 2 // Always 2 options
+                                Layout.preferredHeight: 36 * 3 // Always 3 options
                                 color: Colors.background
                                 radius: Styling.radius(0)
 
@@ -759,6 +763,18 @@ Rectangle {
                                             action: function () {
                                                 appLauncher.executeApp(appId);
                                                 Visibilities.setActiveModule("");
+                                            }
+                                        },
+                                        {
+                                            text: TaskbarApps.isPinned(appId) ? "Unpin from Dock" : "Pin to Dock",
+                                            icon: TaskbarApps.isPinned(appId) ? Icons.unpin : Icons.pin,
+                                            highlightColor: TaskbarApps.isPinned(appId) ? Colors.error : Colors.tertiary,
+                                            textColor: TaskbarApps.isPinned(appId)
+                                                ? Config.resolveColor(Config.theme.srError.itemColor)
+                                                : Config.resolveColor(Config.theme.srTertiary.itemColor),
+                                            action: function () {
+                                                TaskbarApps.togglePin(appId);
+                                                appLauncher.expandedItemIndex = -1;
                                             }
                                         },
                                         {
@@ -794,6 +810,10 @@ Rectangle {
                                                 if (item && item.highlightColor) {
                                                     if (item.highlightColor === Colors.secondary)
                                                         return "secondary";
+                                                    if (item.highlightColor === Colors.tertiary)
+                                                        return "tertiary";
+                                                    if (item.highlightColor === Colors.error)
+                                                        return "error";
                                                     return "primary";
                                                 }
                                             }
@@ -901,7 +921,7 @@ Rectangle {
                         height: {
                             let baseHeight = 48;
                             if (resultsList.currentIndex === appLauncher.expandedItemIndex) {
-                                var listHeight = 36 * 2; // Always 2 options
+                                var listHeight = 36 * 3; // Always 3 options
                                 return baseHeight + 4 + listHeight + 8;
                             }
                             return baseHeight;
@@ -913,7 +933,7 @@ Rectangle {
                             for (var i = 0; i < resultsList.currentIndex && i < appsModel.count; i++) {
                                 var itemHeight = 48;
                                 if (i === appLauncher.expandedItemIndex) {
-                                    var listHeight = 36 * 2;
+                                    var listHeight = 36 * 3;
                                     itemHeight = 48 + 4 + listHeight + 8;
                                 }
                                 yPos += itemHeight;

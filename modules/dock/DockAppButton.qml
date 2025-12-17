@@ -25,6 +25,8 @@ Button {
     readonly property bool appIsActive: !isSeparator && appToplevel.toplevels.some(t => t.activated === true)
     readonly property bool appIsRunning: !isSeparator && appToplevel.toplevels.length > 0
 
+    readonly property bool showIndicators: !isSeparator && (Config.dock?.showRunningIndicators ?? true) && appIsRunning
+
     enabled: !isSeparator
     implicitWidth: isSeparator ? 2 : iconSize + 8
     implicitHeight: iconSize + 16
@@ -35,13 +37,26 @@ Button {
     leftPadding: 0
     rightPadding: 0
 
-    background: Rectangle {
-        radius: Styling.radius(-2)
-        color: root.isSeparator ? "transparent" : (root.pressed ? Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.3) : (root.hovered ? Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.15) : "transparent"))
-        
-        Behavior on color {
-            enabled: Config.animDuration > 0
-            ColorAnimation { duration: Config.animDuration / 2 }
+    background: Item {
+        StyledRect {
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: root.showIndicators ? 0 : 0
+            width: root.iconSize + 8
+            height: root.showIndicators ? root.iconSize + 16 : root.iconSize + 8
+            radius: Styling.radius(-2)
+            variant: "focus"
+            visible: !root.isSeparator && (root.hovered || root.pressed)
+            opacity: root.pressed ? 1 : 0.7
+            
+            Behavior on height {
+                enabled: Config.animDuration > 0
+                NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+            }
+            
+            Behavior on opacity {
+                enabled: Config.animDuration > 0
+                NumberAnimation { duration: Config.animDuration / 2 }
+            }
         }
     }
 
@@ -67,7 +82,8 @@ Button {
                 IconImage {
                     id: appIcon
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -4
+                    anchors.verticalCenterOffset: root.showIndicators ? -4 : 0
+                    
                     source: {
                         if (root.desktopEntry && root.desktopEntry.icon) {
                             return Quickshell.iconPath(root.desktopEntry.icon, "application-x-executable");
@@ -84,6 +100,11 @@ Button {
                         colorization: 0.8
                         colorizationColor: Colors.primary
                     }
+                    
+                    Behavior on anchors.verticalCenterOffset {
+                        enabled: Config.animDuration > 0
+                        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+                    }
                 }
 
                 // Running indicators
@@ -92,7 +113,7 @@ Button {
                     anchors.bottomMargin: 2
                     anchors.horizontalCenter: parent.horizontalCenter
                     spacing: 3
-                    visible: (Config.dock?.showRunningIndicators ?? true) && root.appIsRunning
+                    visible: root.showIndicators
 
                     Repeater {
                         model: Math.min(root.appToplevel.toplevels.length, 3)
