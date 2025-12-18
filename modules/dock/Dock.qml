@@ -669,6 +669,8 @@ Scope {
 
                             var offset = borderWidth / 2;
                             var cs = dockContainer.cornerSize;
+                            var hasFillets = cs > offset;
+                            var filletRadius = hasFillets ? cs - offset : 0;
                             
                             // Floating radii
                             var tl = dockBackground.topLeftRadius;
@@ -679,103 +681,121 @@ Scope {
                             ctx.beginPath();
                             
                             if (root.isBottom) {
-                                // Draw Left to Right (Start Bottom Left)
-                                ctx.moveTo(offset, height - offset);
-                                
-                                // Left Fillet (Bottom Edge -> Left Side)
-                                // Center (offset, height - cs).
-                                // Start 90 (Bottom). End 0 (Right). ACW.
-                                ctx.arc(offset, height - cs, cs - offset, Math.PI / 2, 0, true);
-                                
-                                // Line Up to Top Left Corner
-                                ctx.lineTo(cs, tl > 0 ? tl + offset : offset);
+                                if (hasFillets) {
+                                    // With fillets - Draw Left to Right (Start Bottom Left)
+                                    ctx.moveTo(offset, height - offset);
+                                    
+                                    // Left Fillet
+                                    ctx.arc(offset, height - cs, filletRadius, Math.PI / 2, 0, true);
+                                    
+                                    // Line Up to Top Left Corner
+                                    ctx.lineTo(cs, tl > 0 ? tl + offset : offset);
 
-                                // Top Left Corner
-                                if (tl > 0) ctx.arcTo(cs, offset, cs + tl, offset, tl - offset);
-                                else ctx.lineTo(cs, offset);
-                                
-                                // Line Right to Top Right Corner
-                                ctx.lineTo(width - cs - tr, offset);
-                                
-                                // Top Right Corner
-                                if (tr > 0) ctx.arcTo(width - cs, offset, width - cs, offset + tr, tr - offset);
-                                else ctx.lineTo(width - cs, offset);
-                                
-                                // Line Down to Right Fillet
-                                ctx.lineTo(width - cs, height - cs);
-                                
-                                // Right Fillet (Right Side -> Bottom Edge)
-                                // Center (width - offset, height - cs).
-                                // Start 180 (Left). End 90 (Bottom). ACW (Decreasing).
-                                ctx.arc(width - offset, height - cs, cs - offset, Math.PI, Math.PI / 2, true);
-                                
-                                // End at Bottom Right (width - offset, height - offset)
+                                    // Top Left Corner
+                                    if (tl > 0) ctx.arcTo(cs, offset, cs + tl, offset, tl - offset);
+                                    else ctx.lineTo(cs, offset);
+                                    
+                                    // Line Right to Top Right Corner
+                                    ctx.lineTo(width - cs - tr, offset);
+                                    
+                                    // Top Right Corner
+                                    if (tr > 0) ctx.arcTo(width - cs, offset, width - cs, offset + tr, tr - offset);
+                                    else ctx.lineTo(width - cs, offset);
+                                    
+                                    // Line Down to Right Fillet
+                                    ctx.lineTo(width - cs, height - cs);
+                                    
+                                    // Right Fillet
+                                    ctx.arc(width - offset, height - cs, filletRadius, Math.PI, Math.PI / 2, true);
+                                } else {
+                                    // No fillets - simple rectangle with rounded corners
+                                    ctx.moveTo(offset, height - offset);
+                                    ctx.lineTo(offset, tl > 0 ? tl + offset : offset);
+                                    if (tl > 0) ctx.arcTo(offset, offset, offset + tl, offset, tl - offset);
+                                    else ctx.lineTo(offset, offset);
+                                    ctx.lineTo(width - tr - offset, offset);
+                                    if (tr > 0) ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
+                                    else ctx.lineTo(width - offset, offset);
+                                    ctx.lineTo(width - offset, height - offset);
+                                }
                                 
                             } else if (root.isLeft) {
-                                // Mirror of right - Draw Top to Bottom (Start Top Left)
-                                ctx.moveTo(offset, offset);
-                                
-                                // Top Fillet (Left Edge -> Top Side)
-                                // Center (cs, offset).
-                                // Start 180 (Left). End 90 (Bottom). ACW (Decreasing).
-                                ctx.arc(cs, offset, cs - offset, Math.PI, Math.PI / 2, true);
-                                
-                                // Line Right to Top Right Corner
-                                ctx.lineTo(width - tr - offset, cs);
-                                
-                                // Top Right Corner
-                                if (tr > 0) ctx.arcTo(width - offset, cs, width - offset, cs + tr, tr - offset);
-                                else ctx.lineTo(width - offset, cs);
-                                
-                                // Line Down to Bottom Right Corner
-                                ctx.lineTo(width - offset, height - cs - br);
-                                
-                                // Bottom Right Corner
-                                if (br > 0) ctx.arcTo(width - offset, height - cs, width - offset - br, height - cs, br - offset);
-                                else ctx.lineTo(width - offset, height - cs);
-                                
-                                // Line Left to Bottom Fillet
-                                ctx.lineTo(cs, height - cs);
-                                
-                                // Bottom Fillet (Bottom Side -> Left Edge)
-                                // Center (cs, height - offset).
-                                // Start 270 (Top). End 180 (Left). ACW (Decreasing).
-                                ctx.arc(cs, height - offset, cs - offset, 3 * Math.PI / 2, Math.PI, true);
-                                
-                                // End at Bottom Left (offset, height - offset)
+                                if (hasFillets) {
+                                    // With fillets - Mirror of right
+                                    ctx.moveTo(offset, offset);
+                                    
+                                    // Top Fillet
+                                    ctx.arc(cs, offset, filletRadius, Math.PI, Math.PI / 2, true);
+                                    
+                                    // Line Right to Top Right Corner
+                                    ctx.lineTo(width - tr - offset, cs);
+                                    
+                                    // Top Right Corner
+                                    if (tr > 0) ctx.arcTo(width - offset, cs, width - offset, cs + tr, tr - offset);
+                                    else ctx.lineTo(width - offset, cs);
+                                    
+                                    // Line Down to Bottom Right Corner
+                                    ctx.lineTo(width - offset, height - cs - br);
+                                    
+                                    // Bottom Right Corner
+                                    if (br > 0) ctx.arcTo(width - offset, height - cs, width - offset - br, height - cs, br - offset);
+                                    else ctx.lineTo(width - offset, height - cs);
+                                    
+                                    // Line Left to Bottom Fillet
+                                    ctx.lineTo(cs, height - cs);
+                                    
+                                    // Bottom Fillet
+                                    ctx.arc(cs, height - offset, filletRadius, 3 * Math.PI / 2, Math.PI, true);
+                                } else {
+                                    // No fillets - simple rectangle with rounded corners
+                                    ctx.moveTo(offset, offset);
+                                    ctx.lineTo(width - tr - offset, offset);
+                                    if (tr > 0) ctx.arcTo(width - offset, offset, width - offset, offset + tr, tr - offset);
+                                    else ctx.lineTo(width - offset, offset);
+                                    ctx.lineTo(width - offset, height - br - offset);
+                                    if (br > 0) ctx.arcTo(width - offset, height - offset, width - offset - br, height - offset, br - offset);
+                                    else ctx.lineTo(width - offset, height - offset);
+                                    ctx.lineTo(offset, height - offset);
+                                }
                                 
                             } else if (root.isRight) {
-                                // Draw Top to Bottom (Start Top Right)
-                                ctx.moveTo(width - offset, offset);
-                                
-                                // Top Fillet (Right Edge -> Top Side)
-                                // Center (width - cs, offset).
-                                // Start 0 (Right). End 90 (Bottom). CW (Increasing).
-                                ctx.arc(width - cs, offset, cs - offset, 0, Math.PI / 2, false);
-                                
-                                // Line Left to Top Left
-                                ctx.lineTo(tl + offset, cs);
-                                
-                                // Top Left Corner
-                                if (tl > 0) ctx.arcTo(offset, cs, offset, cs + tl, tl - offset);
-                                else ctx.lineTo(offset, cs);
-                                
-                                // Line Down to Bottom Left
-                                ctx.lineTo(offset, height - cs - bl);
-                                
-                                // Bottom Left Corner
-                                if (bl > 0) ctx.arcTo(offset, height - cs, offset + bl, height - cs, bl - offset);
-                                else ctx.lineTo(offset, height - cs);
-                                
-                                // Line Right to Bottom Fillet
-                                ctx.lineTo(width - cs, height - cs);
-                                
-                                // Bottom Fillet (Bottom Side -> Right Edge)
-                                // Center (width - cs, height - offset).
-                                // Start 270 (Top). End 0 (Right). CW (Increasing).
-                                ctx.arc(width - cs, height - offset, cs - offset, 3 * Math.PI / 2, 2 * Math.PI, false);
-                                
-                                // End at Bottom Right (width - offset, height - offset)
+                                if (hasFillets) {
+                                    // With fillets
+                                    ctx.moveTo(width - offset, offset);
+                                    
+                                    // Top Fillet
+                                    ctx.arc(width - cs, offset, filletRadius, 0, Math.PI / 2, false);
+                                    
+                                    // Line Left to Top Left
+                                    ctx.lineTo(tl + offset, cs);
+                                    
+                                    // Top Left Corner
+                                    if (tl > 0) ctx.arcTo(offset, cs, offset, cs + tl, tl - offset);
+                                    else ctx.lineTo(offset, cs);
+                                    
+                                    // Line Down to Bottom Left
+                                    ctx.lineTo(offset, height - cs - bl);
+                                    
+                                    // Bottom Left Corner
+                                    if (bl > 0) ctx.arcTo(offset, height - cs, offset + bl, height - cs, bl - offset);
+                                    else ctx.lineTo(offset, height - cs);
+                                    
+                                    // Line Right to Bottom Fillet
+                                    ctx.lineTo(width - cs, height - cs);
+                                    
+                                    // Bottom Fillet
+                                    ctx.arc(width - cs, height - offset, filletRadius, 3 * Math.PI / 2, 2 * Math.PI, false);
+                                } else {
+                                    // No fillets - simple rectangle with rounded corners
+                                    ctx.moveTo(width - offset, offset);
+                                    ctx.lineTo(tl + offset, offset);
+                                    if (tl > 0) ctx.arcTo(offset, offset, offset, offset + tl, tl - offset);
+                                    else ctx.lineTo(offset, offset);
+                                    ctx.lineTo(offset, height - bl - offset);
+                                    if (bl > 0) ctx.arcTo(offset, height - offset, offset + bl, height - offset, bl - offset);
+                                    else ctx.lineTo(offset, height - offset);
+                                    ctx.lineTo(width - offset, height - offset);
+                                }
                             }
                             
                             ctx.stroke();
