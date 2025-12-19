@@ -44,7 +44,7 @@ Item {
     readonly property real targetWindowHeight: Math.round((windowData?.size[1] || 100) * scale)
     readonly property bool compactMode: targetWindowHeight < 60 || targetWindowWidth < 60
     readonly property string iconPath: AppSearch.guessIcon(windowData?.class || "")
-    readonly property int calculatedRadius: Styling.radius(-2) > 0 ? Math.max(Styling.radius(-2) - 8, 0) : 0
+    readonly property int calculatedRadius: Styling.radius(-2)
 
     signal dragStarted
     signal dragFinished(int targetWorkspace)
@@ -113,8 +113,8 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         color: pressed ? Colors.surfaceBright : hovered ? Colors.surface : Colors.background
-        border.color: hovered ? Colors.primary : Colors.surfaceContainerHighest
-        border.width: 2
+        border.color: Colors.primary
+        border.width: hovered ? 2 : 0
         visible: !windowPreview.hasContent || !Config.performance.windowPreview
 
         Behavior on color {
@@ -124,36 +124,17 @@ Item {
     }
 
     // Overlay content when preview is not available
-    Column {
+    Image {
+        id: windowIcon
+        readonly property real iconSize: Math.round(Math.min(root.targetWindowWidth, root.targetWindowHeight) * (root.compactMode ? 0.6 : 0.35))
         anchors.centerIn: parent
-        spacing: 4
+        width: iconSize
+        height: iconSize
+        source: Quickshell.iconPath(root.iconPath, "image-missing")
+        sourceSize: Qt.size(iconSize, iconSize)
+        asynchronous: true
         visible: !windowPreview.hasContent || !Config.performance.windowPreview
         z: 10
-
-        Image {
-            id: windowIcon
-            readonly property real iconSize: Math.round(Math.min(root.targetWindowWidth, root.targetWindowHeight) * (root.compactMode ? 0.6 : 0.35))
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: iconSize
-            height: iconSize
-            source: Quickshell.iconPath(root.iconPath, "image-missing")
-            sourceSize: Qt.size(iconSize, iconSize)
-            asynchronous: true
-        }
-
-        Text {
-            id: windowTitle
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: root.windowData?.title || ""
-            font.family: Config.theme.font
-            font.pixelSize: Math.max(8, Math.min(12, root.targetWindowHeight * 0.1))
-            font.weight: Font.Medium
-            color: Colors.overSurface
-            opacity: root.compactMode ? 0 : 0.8
-            width: Math.min(implicitWidth, root.targetWindowWidth - 8)
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignHCenter
-        }
     }
 
     // Overlay border and effects when preview is available
@@ -164,8 +145,8 @@ Item {
         color: pressed ? Qt.rgba(Colors.surfaceContainerHighest.r, Colors.surfaceContainerHighest.g, Colors.surfaceContainerHighest.b, 0.5) 
              : hovered ? Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.2) 
              : "transparent"
-        border.color: hovered ? Colors.primary : Colors.surfaceContainerHighest
-        border.width: 2
+        border.color: Colors.primary
+        border.width: hovered ? 2 : 0
         visible: windowPreview.hasContent && Config.performance.windowPreview
         z: 5
     }
