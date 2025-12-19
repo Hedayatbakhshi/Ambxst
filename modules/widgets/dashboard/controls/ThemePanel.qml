@@ -1321,7 +1321,7 @@ Item {
                                     Rectangle {
                                         anchors.fill: parent
                                         color: Colors.primary
-                                        radius: parent.radius
+                                        radius: shadowColorButton.radius ?? 0
                                         opacity: shadowColorButton.isHovered ? 0.15 : 0
 
                                         Behavior on opacity {
