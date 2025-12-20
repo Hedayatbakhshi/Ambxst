@@ -27,74 +27,6 @@ Rectangle {
         }
     }
 
-    // Loading/Error state indicator
-    Item {
-        id: loadingIndicator
-        anchors.fill: parent
-        visible: !WeatherService.dataAvailable
-        
-        Rectangle {
-            anchors.fill: parent
-            radius: root.cornerRadius
-            color: Colors.surface
-        }
-
-        Column {
-            anchors.centerIn: parent
-            spacing: 8
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: WeatherService.hasFailed ? Icons.alert : Icons.circleNotch
-                font.family: Icons.font
-                font.pixelSize: 24
-                color: WeatherService.hasFailed ? Colors.primary : Colors.onSurface
-
-                RotationAnimation on rotation {
-                    from: 0
-                    to: 360
-                    duration: 1000
-                    loops: Animation.Infinite
-                    running: WeatherService.isLoading && !WeatherService.hasFailed
-                }
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: WeatherService.hasFailed ? "Failed to load" : "Loading..."
-                font.family: Config.theme.font
-                font.pixelSize: Config.theme.fontSize - 2
-                color: Colors.onSurface
-                opacity: 0.7
-            }
-
-            // Retry button when failed
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                visible: WeatherService.hasFailed
-                width: retryText.width + 16
-                height: retryText.height + 8
-                radius: Styling.radius(2)
-                color: Colors.primary
-                
-                Text {
-                    id: retryText
-                    anchors.centerIn: parent
-                    text: "Retry"
-                    font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 2
-                    color: Colors.onPrimary
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: WeatherService.updateWeather()
-                }
-            }
-        }
-    }
-
     // Color blending helper function
     function blendColors(color1, color2, color3, blend) {
         var r = color1.r * blend.day + color2.r * blend.evening + color3.r * blend.night;
@@ -727,36 +659,49 @@ Rectangle {
         property real arcCenterX: width / 2
         property real arcCenterY: height - 12  // Position at bottom edge
 
-        // The arc path (upper half of ellipse only)
+        // The arc path (upper half of ellipse only) with gradient
         Canvas {
             id: arcCanvas
             anchors.fill: parent
 
+            // Arc color based on time of day
+            property color arcColor: WeatherService.effectiveIsDay ? 
+                Qt.rgba(1, 1, 1, 0.4) : Qt.rgba(1, 1, 1, 0.2)
+
             onPaint: {
                 var ctx = getContext("2d");
                 ctx.reset();
-                ctx.strokeStyle = WeatherService.effectiveIsDay ? 
-                    "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.15)";
-                ctx.lineWidth = 1.5;
                 
                 var cx = arcContainer.arcCenterX;
                 var cy = arcContainer.arcCenterY;
                 var rx = arcContainer.arcWidth / 2;
                 var ry = arcContainer.arcHeight;
+                var lineWidth = 3;
                 
-                // Draw only the upper half of the ellipse manually
+                // Create horizontal gradient for the arc (left to right)
+                var gradient = ctx.createLinearGradient(cx - rx, cy, cx + rx, cy);
+                gradient.addColorStop(0, Qt.rgba(arcColor.r, arcColor.g, arcColor.b, 0));
+                gradient.addColorStop(0.5, Qt.rgba(arcColor.r, arcColor.g, arcColor.b, arcColor.a));
+                gradient.addColorStop(1, Qt.rgba(arcColor.r, arcColor.g, arcColor.b, 0));
+                
+                // Draw the arc as a single continuous path
                 ctx.beginPath();
-                ctx.moveTo(cx - rx, cy);
-                
-                // Use quadratic bezier curves to approximate upper ellipse arc
-                var steps = 50;
+                var steps = 60;
                 for (var i = 0; i <= steps; i++) {
                     var angle = Math.PI - (Math.PI * i / steps);  // PI to 0
                     var x = cx + rx * Math.cos(angle);
-                    var y = cy - ry * Math.sin(angle);  // Subtract to go up
-                    ctx.lineTo(x, y);
+                    var y = cy - ry * Math.sin(angle);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
                 }
                 
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = lineWidth;
+                ctx.lineCap = "round";
                 ctx.stroke();
             }
 
@@ -769,15 +714,7 @@ Rectangle {
             
             onWidthChanged: requestPaint()
             onHeightChanged: requestPaint()
-        }
-
-        // Horizon line
-        Rectangle {
-            x: arcContainer.arcCenterX - arcContainer.arcWidth / 2 - 8
-            y: arcContainer.arcCenterY
-            width: arcContainer.arcWidth + 16
-            height: 1
-            color: Qt.rgba(1, 1, 1, 0.2)
+            onArcColorChanged: requestPaint()
         }
 
         // Sun/Moon indicator
@@ -860,18 +797,36 @@ Rectangle {
             id: textColumn
             spacing: 2
 
-            Text {
-                id: tempText
-                text: Math.round(WeatherService.currentTemp) + "°" + Config.weather.unit
-                color: "#FFFFFF"
-                font.family: "Noto Sans"
-                font.pixelSize: Config.theme.fontSize + 6
-                font.weight: Font.Bold
+            Row {
+                spacing: 4
+                
+                // Alert icon when no data
+                Text {
+                    visible: !WeatherService.dataAvailable
+                    text: Icons.alert
+                    font.family: Icons.font
+                    font.pixelSize: Config.theme.fontSize + 6
+                    color: "#FFFFFF"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                    id: tempText
+                    text: WeatherService.dataAvailable 
+                        ? Math.round(WeatherService.currentTemp) + "°" + Config.weather.unit
+                        : "--°" + Config.weather.unit
+                    color: "#FFFFFF"
+                    font.family: "Noto Sans"
+                    font.pixelSize: Config.theme.fontSize + 6
+                    font.weight: Font.Bold
+                }
             }
 
             Text {
                 id: descText
-                text: WeatherService.effectiveWeatherDescription
+                text: WeatherService.dataAvailable 
+                    ? WeatherService.effectiveWeatherDescription
+                    : "Error"
                 color: Qt.rgba(1, 1, 1, 0.85)
                 font.family: "Noto Sans"
                 font.pixelSize: Config.theme.fontSize - 2

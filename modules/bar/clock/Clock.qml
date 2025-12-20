@@ -157,12 +157,17 @@ Item {
         contentWidth: 300
         contentHeight: 100
 
+        onIsOpenChanged: {
+            if (isOpen && !WeatherService.dataAvailable && !WeatherService.isLoading) {
+                WeatherService.updateWeather();
+            }
+        }
+
         // Weather widget with sun arc
         Item {
             id: popupContent
             anchors.fill: parent
             anchors.margins: Config.theme.srPopup.border[1]
-            visible: root.weatherAvailable
 
             WeatherWidget {
                 anchors.fill: parent
