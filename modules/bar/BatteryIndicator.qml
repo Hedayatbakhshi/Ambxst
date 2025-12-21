@@ -24,8 +24,6 @@ Item {
     Layout.fillWidth: vertical
     Layout.fillHeight: !vertical
 
-    visible: Battery.available
-
     HoverHandler {
         onHoveredChanged: root.isHovered = hovered
     }
@@ -52,12 +50,13 @@ Item {
             }
         }
 
-        // Circular progress indicator
+        // Circular progress indicator (only if battery available)
         Item {
             id: progressCanvas
             anchors.centerIn: parent
             width: 32
             height: 32
+            visible: Battery.available
 
             property real angle: Battery.percentage * 360
             property real radius: 12
@@ -124,12 +123,12 @@ Item {
             }
         }
 
-        // Central icon
+        // Central icon (Lightning/Plug for battery, PowerProfile icon otherwise)
         Text {
             anchors.centerIn: parent
-            text: Battery.isCharging ? Icons.plug : Icons.lightning
+            text: Battery.available ? (Battery.isCharging ? Icons.plug : Icons.lightning) : PowerProfile.getProfileIcon(PowerProfile.currentProfile)
             font.family: Icons.font
-            font.pixelSize: 14
+            font.pixelSize: Battery.available ? 14 : 18
             color: root.popupOpen ? buttonBg.itemColor : Colors.overBackground
             
             Behavior on color {
@@ -146,7 +145,7 @@ Item {
 
         StyledToolTip {
             visible: root.isHovered && !root.popupOpen
-            tooltipText: "Battery: " + Math.round(Battery.percentage * 100) + "%" + (Battery.isCharging ? " (Charging)" : "")
+            tooltipText: Battery.available ? ("Battery: " + Math.round(Battery.percentage * 100) + "%" + (Battery.isCharging ? " (Charging)" : "")) : ("Power Profile: " + PowerProfile.getProfileDisplayName(PowerProfile.currentProfile))
         }
     }
 
@@ -156,76 +155,71 @@ Item {
         anchorItem: buttonBg
         bar: root.bar
 
-        contentWidth: Math.max(200, profilesRow.implicitWidth + batteryPopup.popupPadding * 2)
-        contentHeight: profilesRow.implicitHeight + batteryPopup.popupPadding * 2
+        contentWidth: profilesRow.implicitWidth + batteryPopup.popupPadding * 2
+        contentHeight: 36 + batteryPopup.popupPadding * 2
 
-        ColumnLayout {
+        Row {
+            id: profilesRow
             anchors.centerIn: parent
-            spacing: 8
+            spacing: 4
 
-            Text {
-                text: "Power Profiles"
-                font.family: Styling.defaultFont
-                font.pixelSize: Styling.fontSize(-1)
-                font.bold: true
-                color: Colors.overSurfaceVariant
-                Layout.alignment: Qt.AlignHCenter
-            }
+            Repeater {
+                model: PowerProfile.availableProfiles
 
-            Row {
-                id: profilesRow
-                spacing: 4
-                Layout.alignment: Qt.AlignHCenter
+                delegate: StyledRect {
+                    id: profileButton
+                    required property string modelData
+                    required property int index
 
-                Repeater {
-                    model: PowerProfile.availableProfiles
+                    readonly property bool isSelected: PowerProfile.currentProfile === modelData
+                    readonly property bool isFirst: index === 0
+                    readonly property bool isLast: index === PowerProfile.availableProfiles.length - 1
+                    property bool buttonHovered: false
 
-                    delegate: StyledRect {
-                        id: profileButton
-                        required property string modelData
-                        required property int index
+                    readonly property real defaultRadius: Styling.radius(0)
+                    readonly property real selectedRadius: Styling.radius(0) / 2
 
-                        readonly property bool isSelected: PowerProfile.currentProfile === modelData
-                        property bool buttonHovered: false
+                    variant: isSelected ? "primary" : (buttonHovered ? "focus" : "common")
+                    enableShadow: false
+                    width: profileLabel.implicitWidth + 48
+                    height: 36
+                    
+                    topLeftRadius: isSelected ? (isFirst ? defaultRadius : selectedRadius) : defaultRadius
+                    bottomLeftRadius: isSelected ? (isFirst ? defaultRadius : selectedRadius) : defaultRadius
+                    topRightRadius: isSelected ? (isLast ? defaultRadius : selectedRadius) : defaultRadius
+                    bottomRightRadius: isSelected ? (isLast ? defaultRadius : selectedRadius) : defaultRadius
 
-                        variant: isSelected ? "primary" : (buttonHovered ? "focus" : "common")
-                        enableShadow: false
-                        width: profileLabel.implicitWidth + 40
-                        height: 36
-                        radius: Styling.radius(0)
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 8
 
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 8
-
-                            Text {
-                                text: PowerProfile.getProfileIcon(profileButton.modelData)
-                                font.family: Icons.font
-                                font.pixelSize: 14
-                                color: profileButton.itemColor
-                            }
-
-                            Text {
-                                id: profileLabel
-                                text: PowerProfile.getProfileDisplayName(profileButton.modelData)
-                                font.family: Styling.defaultFont
-                                font.pixelSize: Styling.fontSize(0)
-                                font.bold: true
-                                color: profileButton.itemColor
-                            }
+                        Text {
+                            text: PowerProfile.getProfileIcon(profileButton.modelData)
+                            font.family: Icons.font
+                            font.pixelSize: 14
+                            color: profileButton.itemColor
                         }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
+                        Text {
+                            id: profileLabel
+                            text: PowerProfile.getProfileDisplayName(profileButton.modelData)
+                            font.family: Styling.defaultFont
+                            font.pixelSize: Styling.fontSize(0)
+                            font.bold: true
+                            color: profileButton.itemColor
+                        }
+                    }
 
-                            onEntered: profileButton.buttonHovered = true
-                            onExited: profileButton.buttonHovered = false
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
 
-                            onClicked: {
-                                PowerProfile.setProfile(profileButton.modelData);
-                            }
+                        onEntered: profileButton.buttonHovered = true
+                        onExited: profileButton.buttonHovered = false
+
+                        onClicked: {
+                            PowerProfile.setProfile(profileButton.modelData);
                         }
                     }
                 }
