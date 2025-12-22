@@ -241,7 +241,21 @@ Singleton {
                 }
                 return true;
             case "/help":
-                pushSystemMessage("Available commands:\n/clear - Start new chat\n/model [name] - Switch AI model\n/help - Show this help");
+                pushSystemMessage(
+                    "🤖 **Assistant Commands**\n\n" +
+                    "**`/clear`**\n" +
+                    "Resets the current session and starts a fresh conversation context.\n\n" +
+                    "**`/model [name]`**\n" +
+                    "Switches the active AI model.\n" +
+                    "• **List models:** Type `/model` without arguments.\n" +
+                    "• **Switch:** Type `/model gemini` or `/model mistral`.\n\n" +
+                    "**`/help`**\n" +
+                    "Shows this help message.\n\n" +
+                    "💡 **Tips:**\n" +
+                    "• **Edit:** Click the pen icon on any message to modify it.\n" +
+                    "• **Regenerate:** Click the refresh icon to get a new response.\n" +
+                    "• **Copy:** Use the copy button to grab code or text."
+                );
                 return true;
         }
         
