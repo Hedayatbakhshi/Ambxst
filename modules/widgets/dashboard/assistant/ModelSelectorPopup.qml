@@ -67,7 +67,7 @@ Popup {
 
     background: StyledRect {
         variant: "popup"
-        radius: Styling.radius(8)
+        radius: Styling.radius(20)
     }
     
     contentItem: ColumnLayout {
@@ -137,8 +137,8 @@ Popup {
                     }
                 }
                 
-                Layout.preferredWidth: confirming ? 96 : 32
-                Layout.preferredHeight: 32
+                Layout.preferredWidth: confirming ? 112 : 48
+                Layout.preferredHeight: 48
                 
                 Behavior on Layout.preferredWidth {
                     enabled: Config.animDuration > 0
@@ -157,7 +157,7 @@ Popup {
                     // Normal state content (Refresh Icon)
                     Item {
                         anchors.centerIn: parent
-                        width: 32; height: 32
+                        width: 48; height: 48
                         opacity: parent.parent.confirming ? 0 : 1
                         visible: opacity > 0
                         
@@ -170,7 +170,7 @@ Popup {
                             anchors.centerIn: parent
                             text: Icons.arrowCounterClockwise
                             font.family: Icons.font
-                            font.pixelSize: 16
+                            font.pixelSize: 20
                             color: Colors.primary
                             visible: !Ai.fetchingModels
                         }
@@ -178,18 +178,18 @@ Popup {
                         // Spinner
                         Rectangle {
                             anchors.centerIn: parent
-                            width: 14; height: 14
-                            radius: 7
+                            width: 20; height: 20
+                            radius: 10
                             color: "transparent"
                             border.width: 2
                             border.color: Colors.primary
                             visible: Ai.fetchingModels
                             
                             Rectangle {
-                                width: 6; height: 6
-                                radius: 3
+                                width: 8; height: 8
+                                radius: 4
                                 color: Colors.surface
-                                x: -1; y: -1
+                                x: -2; y: -2
                             }
                             
                             RotationAnimation on rotation {
@@ -251,6 +251,13 @@ Popup {
                 
                 Keys.onReturnPressed: clicked()
                 Keys.onEnterPressed: clicked()
+                Keys.onEscapePressed: {
+                    if (confirming) {
+                        confirming = false;
+                    } else {
+                        searchInput.forceActiveFocus();
+                    }
+                }
             }
         }
         
