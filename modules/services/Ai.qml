@@ -74,6 +74,19 @@ Singleton {
     // ============================================ 
     // TOOLS
     // ============================================
+    function regenerateResponse(index) {
+        if (index < 0 || index >= currentChat.length) return;
+        
+        // Remove this message and everything after it
+        let newChat = currentChat.slice(0, index);
+        currentChat = newChat;
+        
+        isLoading = true;
+        lastError = "";
+        
+        makeRequest();
+    }
+
     property var systemTools: [
         {
             name: "run_shell_command",

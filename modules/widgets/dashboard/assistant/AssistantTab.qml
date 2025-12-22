@@ -532,7 +532,7 @@ Item {
                                         }
                                         
                                         onClicked: {
-                                            // TODO: Regenerate logic
+                                            Ai.regenerateResponse(index)
                                         }
                                     }
                                 }
