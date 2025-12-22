@@ -369,6 +369,10 @@ Item {
                     displayMarginBeginning: 40
                     displayMarginEnd: 40
                     
+                    // Add bottom margin to avoid input overlap
+                    // Default height of input is around 48-150, plus margins. Safety buffer 180.
+                    bottomMargin: mainChatArea.isWelcome ? 0 : 180
+                    
                     // Auto scroll to bottom
                     onCountChanged: {
                         Qt.callLater(() => {
@@ -491,7 +495,7 @@ Item {
                 StyledRect {
                     anchors.fill: parent
                     variant: "pane"
-                    radius: Styling.radius(inputContainer.height / 2) // Pill shape
+                    radius: Styling.radius(4) // Constant radius as requested
                     enableShadow: true
                     
                     // Suggestions Popup
@@ -501,7 +505,8 @@ Item {
                         y: -height - 8
                         x: 0
                         width: parent.width
-                        height: Math.min(suggestionsList.contentHeight, 200)
+                        // Limit height to 3 items if welcome (approx 40px*3=120) or 5 items if chat active (200)
+                        height: Math.min(suggestionsList.contentHeight, mainChatArea.isWelcome ? 120 : 200)
                         padding: 0
                         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
                         visible: inputField.text.startsWith("/") && suggestionsModel.count > 0
@@ -512,16 +517,36 @@ Item {
                             enableShadow: true
                         }
                         
+                        function selectNext() {
+                            suggestionsList.currentIndex = (suggestionsList.currentIndex + 1) % suggestionsModel.count;
+                        }
+                        
+                        function selectPrevious() {
+                            suggestionsList.currentIndex = (suggestionsList.currentIndex - 1 + suggestionsModel.count) % suggestionsModel.count;
+                        }
+                        
+                        function executeSelection() {
+                            if (suggestionsList.currentIndex >= 0 && suggestionsList.currentIndex < suggestionsModel.count) {
+                                let item = suggestionsModel.get(suggestionsList.currentIndex);
+                                inputField.text = "/" + item.name + " ";
+                                inputField.cursorPosition = inputField.text.length;
+                                inputField.forceActiveFocus();
+                            }
+                        }
+                        
                         ListView {
                             id: suggestionsList
                             anchors.fill: parent
                             clip: true
                             model: ListModel { id: suggestionsModel }
+                            highlight: Rectangle { color: Colors.surface; opacity: 0.5 }
+                            highlightMoveDuration: 0
                             
                             delegate: Button {
                                 width: suggestionsList.width
                                 height: 40
                                 flat: true
+                                highlighted: ListView.isCurrentItem
                                 
                                 contentItem: RowLayout {
                                     anchors.fill: parent
@@ -533,27 +558,25 @@ Item {
                                         text: "/" + model.name
                                         font.family: Config.theme.font
                                         font.weight: Font.Bold
-                                        color: Colors.primary
+                                        color: highlighted ? Colors.primary : Colors.text
                                     }
                                     
                                     Text {
                                         text: model.description
                                         font.family: Config.theme.font
-                                        color: Colors.surfaceDim
+                                        color: highlighted ? Colors.text : Colors.surfaceDim
                                         Layout.fillWidth: true
                                         elide: Text.ElideRight
                                     }
                                 }
                                 
                                 background: Rectangle {
-                                    color: parent.hovered ? Colors.surfaceBright : "transparent"
+                                    color: (parent.highlighted || parent.hovered) ? Colors.surfaceBright : "transparent"
                                 }
                                 
                                 onClicked: {
-                                    // Auto-complete
-                                    inputField.text = "/" + model.name + " ";
-                                    inputField.cursorPosition = inputField.text.length;
-                                    inputField.forceActiveFocus();
+                                    suggestionsList.currentIndex = index;
+                                    suggestionsPopup.executeSelection();
                                 }
                             }
                         }
@@ -593,17 +616,33 @@ Item {
                                 
                                 background: null
                                 
-                                Keys.onReturnPressed: (event) => {
-                                    if (event.modifiers & Qt.ShiftModifier) {
-                                        event.accepted = false;
-                                    } else {
-                                        if (text.trim().length > 0) {
+                                Keys.onPressed: (event) => {
+                                    if (suggestionsPopup.visible) {
+                                        if (event.key === Qt.Key_Up) {
+                                            suggestionsPopup.selectPrevious();
+                                            event.accepted = true;
+                                            return;
+                                        } else if (event.key === Qt.Key_Down) {
+                                            suggestionsPopup.selectNext();
+                                            event.accepted = true;
+                                            return;
+                                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Tab) {
+                                            suggestionsPopup.executeSelection();
+                                            event.accepted = true;
+                                            return;
+                                        }
+                                    }
+                                    // Regular return behavior
+                                    if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && !(event.modifiers & Qt.ShiftModifier)) {
+                                         if (text.trim().length > 0) {
                                             Ai.sendMessage(text.trim());
                                             text = "";
                                         }
                                         event.accepted = true;
                                     }
                                 }
+
+                                Component.onCompleted: forceActiveFocus()
                             }
                         }
                         
