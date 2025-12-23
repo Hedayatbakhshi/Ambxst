@@ -381,6 +381,8 @@ Popup {
                             
                             layer.enabled: true
                             layer.effect: MultiEffect {
+                                brightness: 1.0
+                                contrast: 0.0
                                 colorization: 1.0
                                 colorizationColor: iconRect.itemColor
                             }
