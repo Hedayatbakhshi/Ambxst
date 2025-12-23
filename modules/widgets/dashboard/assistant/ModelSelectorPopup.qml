@@ -233,7 +233,7 @@ Popup {
                 
                 Keys.onReturnPressed: clicked()
                 Keys.onEnterPressed: clicked()
-                Keys.onEscapePressed: {
+                Keys.onEscapePressed: event => {
                     event.accepted = true;
                     // Focus back to search (losing focus will auto-collapse confirming state)
                     searchInput.focusInput();

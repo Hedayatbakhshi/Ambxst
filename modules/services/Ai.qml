@@ -329,6 +329,7 @@ Singleton {
             
             // Only include function call info if relevant and supported (though currently strategies might ignore)
             if (msg.functionCall) apiMsg.functionCall = msg.functionCall;
+            if (msg.geminiParts) apiMsg.geminiParts = msg.geminiParts; // Preserve Gemini parts
             if (msg.name) apiMsg.name = msg.name; // For function role
             
             messages.push(apiMsg);
@@ -603,6 +604,18 @@ Singleton {
             fetchProcessMistral.command = ["bash", "-c", "curl -s https://api.mistral.ai/v1/models -H 'Authorization: Bearer " + Quickshell.env("MISTRAL_API_KEY") + "'"];
             fetchProcessMistral.running = true;
         }
+
+        // OpenRouter
+        if (Quickshell.env("OPENROUTER_API_KEY")) {
+            pendingFetches++;
+            fetchProcessOpenRouter.command = ["bash", "-c", "curl -s https://openrouter.ai/api/v1/models -H 'Authorization: Bearer " + Quickshell.env("OPENROUTER_API_KEY") + "'"];
+            fetchProcessOpenRouter.running = true;
+        }
+
+        // Ollama (Local)
+        pendingFetches++;
+        fetchProcessOllama.command = ["bash", "-c", "curl -s http://127.0.0.1:11434/api/tags"];
+        fetchProcessOllama.running = true;
         
         if (pendingFetches === 0) {
             fetchingModels = false;
@@ -751,6 +764,72 @@ Singleton {
                         mergeModels(newModels);
                     }
                 } catch(e) { console.log("Mistral fetch error: " + e) }
+            }
+            checkFetchCompletion();
+        }
+    }
+
+    Process {
+        id: fetchProcessOpenRouter
+        stdout: StdioCollector { id: fetchOpenRouterOut }
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                try {
+                    let data = JSON.parse(fetchOpenRouterOut.text);
+                    if (data.data) {
+                        let newModels = [];
+                        // Sort by popularity or just take top ones? OpenRouter returns A LOT.
+                        // Let's filter or just take top 20 to avoid spamming the list
+                        let limit = 20;
+                        for (let i=0; i<Math.min(data.data.length, limit); i++) {
+                            let item = data.data[i];
+                            let id = item.id; // e.g. "anthropic/claude-3-opus"
+                            let m = aiModelFactory.createObject(root, {
+                                name: item.name || id,
+                                icon: "router",
+                                description: "OpenRouter: " + id,
+                                endpoint: "https://openrouter.ai/api/v1",
+                                model: id,
+                                api_format: "openai",
+                                requires_key: true,
+                                key_id: "OPENROUTER_API_KEY"
+                            });
+                            if (m) newModels.push(m);
+                        }
+                        mergeModels(newModels);
+                    }
+                } catch(e) { console.log("OpenRouter fetch error: " + e) }
+            }
+            checkFetchCompletion();
+        }
+    }
+
+    Process {
+        id: fetchProcessOllama
+        stdout: StdioCollector { id: fetchOllamaOut }
+        onExited: exitCode => {
+            if (exitCode === 0) {
+                try {
+                    let data = JSON.parse(fetchOllamaOut.text);
+                    if (data.models) {
+                        let newModels = [];
+                        for (let i=0; i<data.models.length; i++) {
+                            let item = data.models[i];
+                            // item.name is like "llama2:latest"
+                            let m = aiModelFactory.createObject(root, {
+                                name: item.name,
+                                icon: "hdd",
+                                description: "Local Ollama Model",
+                                endpoint: "http://127.0.0.1:11434/v1",
+                                model: item.name,
+                                api_format: "openai", // Ollama is OpenAI compatible
+                                requires_key: false
+                            });
+                            if (m) newModels.push(m);
+                        }
+                        mergeModels(newModels);
+                    }
+                } catch(e) { console.log("Ollama fetch error: " + e) }
             }
             checkFetchCompletion();
         }
