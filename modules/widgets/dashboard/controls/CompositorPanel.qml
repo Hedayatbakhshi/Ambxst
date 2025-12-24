@@ -129,6 +129,7 @@ Item {
 
         Layout.fillWidth: true
         spacing: 8
+        opacity: enabled ? 1.0 : 0.5
 
         Text {
             text: numberInputRowRoot.label
@@ -178,6 +179,77 @@ Item {
 
         Text {
             text: numberInputRowRoot.suffix
+            font.family: Config.theme.font
+            font.pixelSize: Styling.fontSize(0)
+            color: Colors.overSurfaceVariant
+            visible: suffix !== ""
+        }
+    }
+
+    // Inline component for decimal input rows
+    component DecimalInputRow: RowLayout {
+        id: decimalInputRowRoot
+        property string label: ""
+        property real value: 0.0
+        property real minValue: 0.0
+        property real maxValue: 1.0
+        property string suffix: ""
+        signal valueEdited(real newValue)
+
+        Layout.fillWidth: true
+        spacing: 8
+        opacity: enabled ? 1.0 : 0.5
+
+        Text {
+            text: decimalInputRowRoot.label
+            font.family: Config.theme.font
+            font.pixelSize: Styling.fontSize(0)
+            color: Colors.overBackground
+            Layout.fillWidth: true
+        }
+
+        StyledRect {
+            variant: "common"
+            Layout.preferredWidth: 60
+            Layout.preferredHeight: 32
+            radius: Styling.radius(-2)
+
+            TextInput {
+                id: decimalTextInput
+                anchors.fill: parent
+                anchors.margins: 8
+                font.family: Config.theme.font
+                font.pixelSize: Styling.fontSize(0)
+                color: Colors.overBackground
+                selectByMouse: true
+                clip: true
+                verticalAlignment: TextInput.AlignVCenter
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: DoubleValidator { bottom: decimalInputRowRoot.minValue; top: decimalInputRowRoot.maxValue; decimals: 2 }
+
+                // Sync text when external value changes
+                readonly property real configValue: decimalInputRowRoot.value
+                onConfigValueChanged: {
+                    if (!activeFocus) {
+                        // Check if roughly equal to avoid formatting loops
+                        if (Math.abs(parseFloat(text) - configValue) > 0.001 || text === "")
+                            text = configValue.toFixed(1); // Default format
+                    }
+                }
+                Component.onCompleted: text = configValue.toFixed(1)
+
+                onEditingFinished: {
+                    let newVal = parseFloat(text);
+                    if (!isNaN(newVal)) {
+                        newVal = Math.max(decimalInputRowRoot.minValue, Math.min(decimalInputRowRoot.maxValue, newVal));
+                        decimalInputRowRoot.valueEdited(newVal);
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: decimalInputRowRoot.suffix
             font.family: Config.theme.font
             font.pixelSize: Styling.fontSize(0)
             color: Colors.overSurfaceVariant
@@ -285,25 +357,62 @@ Item {
                             Layout.bottomMargin: -4
                         }
 
+                        // Layout Selector
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+                            Text {
+                                text: "Layout"
+                                font.family: Config.theme.font
+                                font.pixelSize: Styling.fontSize(0)
+                                color: Colors.overBackground
+                                Layout.fillWidth: true
+                            }
+                            SegmentedSwitch {
+                                options: [
+                                    { label: "Dwindle", value: "dwindle" },
+                                    { label: "Master", value: "master" }
+                                ]
+                                currentIndex: Config.hyprland.layout === "master" ? 1 : 0
+                                onIndexChanged: index => {
+                                    Config.hyprland.layout = index === 1 ? "master" : "dwindle";
+                                }
+                            }
+                        }
+
+                        ToggleRow {
+                            label: "Sync Border Size"
+                            checked: Config.hyprland.syncBorderWidth ?? false
+                            onToggled: value => Config.hyprland.syncBorderWidth = value
+                        }
+
                         NumberInputRow {
                             label: "Border Size"
-                            value: Config.hyprlandBorderSize ?? 2
+                            value: Config.hyprland.borderSize ?? 2
                             minValue: 0
                             maxValue: 10
                             suffix: "px"
+                            enabled: !Config.hyprland.syncBorderWidth
                             onValueEdited: newValue => {
-                                Config.hyprlandBorderSize = newValue;
+                                Config.hyprland.borderSize = newValue;
                             }
+                        }
+
+                        ToggleRow {
+                            label: "Sync Rounding"
+                            checked: Config.hyprland.syncRoundness ?? true
+                            onToggled: value => Config.hyprland.syncRoundness = value
                         }
 
                         NumberInputRow {
                             label: "Rounding"
-                            value: Config.hyprlandRounding ?? 10
+                            value: Config.hyprland.rounding ?? 16
                             minValue: 0
                             maxValue: 30
                             suffix: "px"
+                            enabled: !Config.hyprland.syncRoundness
                             onValueEdited: newValue => {
-                                Config.hyprlandRounding = newValue;
+                                Config.hyprland.rounding = newValue;
                             }
                         }
 
@@ -328,6 +437,24 @@ Item {
                                 Config.hyprland.gapsOut = newValue;
                             }
                         }
+
+                        NumberInputRow {
+                            label: "Border Angle"
+                            value: Config.hyprland.borderAngle ?? 45
+                            minValue: 0
+                            maxValue: 360
+                            suffix: "deg"
+                            onValueEdited: newValue => Config.hyprland.borderAngle = newValue
+                        }
+
+                        NumberInputRow {
+                            label: "Inactive Angle"
+                            value: Config.hyprland.inactiveBorderAngle ?? 45
+                            minValue: 0
+                            maxValue: 360
+                            suffix: "deg"
+                            onValueEdited: newValue => Config.hyprland.inactiveBorderAngle = newValue
+                        }
                     }
 
                     Separator { Layout.fillWidth: true }
@@ -346,10 +473,18 @@ Item {
                             Layout.bottomMargin: -4
                         }
 
+                        ToggleRow {
+                            label: "Sync Border Color"
+                            checked: Config.hyprland.syncBorderColor ?? false
+                            onToggled: value => Config.hyprland.syncBorderColor = value
+                        }
+
                         // Active Border Color
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 8
+                            enabled: !Config.hyprland.syncBorderColor
+                            opacity: enabled ? 1.0 : 0.5
 
                             Text {
                                 text: "Active Border"
@@ -429,6 +564,18 @@ Item {
                             }
                         }
 
+                        ToggleRow {
+                            label: "Sync Color"
+                            checked: Config.hyprland.syncShadowColor ?? false
+                            onToggled: value => Config.hyprland.syncShadowColor = value
+                        }
+
+                        ToggleRow {
+                            label: "Sync Opacity"
+                            checked: Config.hyprland.syncShadowOpacity ?? false
+                            onToggled: value => Config.hyprland.syncShadowOpacity = value
+                        }
+
                         NumberInputRow {
                             label: "Range"
                             value: Config.hyprland.shadowRange ?? 4
@@ -439,7 +586,46 @@ Item {
                                 Config.hyprland.shadowRange = newValue;
                             }
                         }
+
+                        NumberInputRow {
+                            label: "Render Power"
+                            value: Config.hyprland.shadowRenderPower ?? 3
+                            minValue: 1
+                            maxValue: 4
+                            onValueEdited: newValue => Config.hyprland.shadowRenderPower = newValue
+                        }
+
+                        DecimalInputRow {
+                            label: "Scale"
+                            value: Config.hyprland.shadowScale ?? 1.0
+                            minValue: 0.0
+                            maxValue: 1.0
+                            onValueEdited: newValue => Config.hyprland.shadowScale = newValue
+                        }
+
+                        DecimalInputRow {
+                            label: "Opacity"
+                            value: Config.hyprland.shadowOpacity ?? 0.5
+                            minValue: 0.0
+                            maxValue: 1.0
+                            enabled: !Config.hyprland.syncShadowOpacity
+                            onValueEdited: newValue => Config.hyprland.shadowOpacity = newValue
+                        }
+
+                        ToggleRow {
+                            label: "Sharp"
+                            checked: Config.hyprland.shadowSharp ?? false
+                            onToggled: value => Config.hyprland.shadowSharp = value
+                        }
+
+                        ToggleRow {
+                            label: "Ignore Window"
+                            checked: Config.hyprland.shadowIgnoreWindow ?? true
+                            onToggled: value => Config.hyprland.shadowIgnoreWindow = value
+                        }
                     }
+
+                    Separator { Layout.fillWidth: true }
 
                     // Blur Section
                     ColumnLayout {
@@ -481,6 +667,56 @@ Item {
                             onValueEdited: newValue => {
                                 Config.hyprland.blurPasses = newValue;
                             }
+                        }
+
+                        ToggleRow {
+                            label: "Xray"
+                            checked: Config.hyprland.blurXray ?? false
+                            onToggled: value => Config.hyprland.blurXray = value
+                        }
+
+                        ToggleRow {
+                            label: "New Optimizations"
+                            checked: Config.hyprland.blurNewOptimizations ?? true
+                            onToggled: value => Config.hyprland.blurNewOptimizations = value
+                        }
+
+                        ToggleRow {
+                            label: "Ignore Opacity"
+                            checked: Config.hyprland.blurIgnoreOpacity ?? true
+                            onToggled: value => Config.hyprland.blurIgnoreOpacity = value
+                        }
+
+                        DecimalInputRow {
+                            label: "Noise"
+                            value: Config.hyprland.blurNoise ?? 0.01
+                            minValue: 0.0
+                            maxValue: 1.0
+                            onValueEdited: newValue => Config.hyprland.blurNoise = newValue
+                        }
+
+                        DecimalInputRow {
+                            label: "Contrast"
+                            value: Config.hyprland.blurContrast ?? 0.89
+                            minValue: 0.0
+                            maxValue: 2.0
+                            onValueEdited: newValue => Config.hyprland.blurContrast = newValue
+                        }
+
+                        DecimalInputRow {
+                            label: "Brightness"
+                            value: Config.hyprland.blurBrightness ?? 0.81
+                            minValue: 0.0
+                            maxValue: 2.0
+                            onValueEdited: newValue => Config.hyprland.blurBrightness = newValue
+                        }
+                        
+                        DecimalInputRow {
+                            label: "Vibrancy"
+                            value: Config.hyprland.blurVibrancy ?? 0.17
+                            minValue: 0.0
+                            maxValue: 1.0
+                            onValueEdited: newValue => Config.hyprland.blurVibrancy = newValue
                         }
                     }
                     

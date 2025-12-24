@@ -64,7 +64,7 @@ QtObject {
     readonly property string hdd: ""
     readonly property string temperature: ""
     readonly property string at: ""
-    readonly property string gear: ""
+    readonly property string gear: ""
     readonly property string glassMinus: ""
     readonly property string glassPlus: ""
     readonly property string circuitry: ""
