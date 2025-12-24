@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 \"lock command\""
-  exit 1
-fi
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/Ambxst/config/system.json"
 
-COMMAND=$1
+get_lock_cmd() {
+    if [ -f "$CONFIG_FILE" ]; then
+        jq -r '.idle.general.lock_cmd // "ambxst lock"' "$CONFIG_FILE"
+    else
+        echo "ambxst lock"
+    fi
+}
 
 dbus-monitor --system "type='signal',interface='org.freedesktop.login1.Session',member='Lock'" |
   while read -r line; do
     if echo "$line" | grep -q "member=Lock"; then
-      eval "$COMMAND"
+      COMMAND=$(get_lock_cmd)
+      if [ ! -z "$COMMAND" ]; then
+          eval "$COMMAND" &
+      fi
     fi
   done

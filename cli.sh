@@ -78,48 +78,48 @@ refresh)
   echo "Refreshing Ambxst profile..."
   exec nix profile upgrade --impure Ambxst
   ;;
-  lock)
-    # Trigger lockscreen via quickshell-ipc
-    PID=$(find_ambxst_pid)
-    if [ -z "$PID" ]; then
-      echo "Error: Ambxst is not running"
-      exit 1
-    fi
-    qs ipc --pid "$PID" call lockscreen lock 2>/dev/null || {
-      echo "Error: Could not activate lockscreen"
-      exit 1
-    }
-    ;;
-  screen)
-    SUB="${2:-}"
-    if [ "$SUB" = "off" ]; then
-      if command -v hyprctl &>/dev/null; then
-        hyprctl dispatch dpms off
-      else
-        notify-send "Screen Off" "Not supported on this compositor yet"
-      fi
-    elif [ "$SUB" = "on" ]; then
-      if command -v hyprctl &>/dev/null; then
-        hyprctl dispatch dpms on
-      else
-        notify-send "Screen On" "Not supported on this compositor yet"
-      fi
+lock)
+  # Trigger lockscreen via quickshell-ipc
+  PID=$(find_ambxst_pid)
+  if [ -z "$PID" ]; then
+    echo "Error: Ambxst is not running"
+    exit 1
+  fi
+  qs ipc --pid "$PID" call lockscreen lock 2>/dev/null || {
+    echo "Error: Could not activate lockscreen"
+    exit 1
+  }
+  ;;
+screen)
+  SUB="${2:-}"
+  if [ "$SUB" = "off" ]; then
+    if command -v hyprctl &>/dev/null; then
+      hyprctl dispatch dpms off
     else
-      echo "Usage: ambxst screen [on|off]"
-      exit 1
+      notify-send "Screen Off" "Not supported on this compositor yet"
     fi
-    ;;
-  suspend)
-    if command -v systemctl &>/dev/null; then
-      systemctl suspend
-    elif command -v loginctl &>/dev/null; then
-      loginctl suspend
+  elif [ "$SUB" = "on" ]; then
+    if command -v hyprctl &>/dev/null; then
+      hyprctl dispatch dpms on
     else
-      # Fallback to D-Bus
-      dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.Suspend boolean:true
+      notify-send "Screen On" "Not supported on this compositor yet"
     fi
-    ;;
-  brightness)
+  else
+    echo "Usage: ambxst screen [on|off]"
+    exit 1
+  fi
+  ;;
+suspend)
+  if command -v systemctl &>/dev/null; then
+    systemctl suspend
+  elif command -v loginctl &>/dev/null; then
+    loginctl suspend
+  else
+    # Fallback to D-Bus
+    dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.Suspend boolean:true
+  fi
+  ;;
+brightness)
   PID=$(find_ambxst_pid)
   if [ -z "$PID" ]; then
     echo "Error: Ambxst is not running"
@@ -343,7 +343,7 @@ help | --help | -h)
   show_help
   ;;
 "")
-  # Run daemon priority script to kill conflicting processes and start hypridle
+  # Run daemon priority script
   bash "${SCRIPT_DIR}/scripts/daemon_priority.sh"
 
   # Kill any existing easyeffects and start it as a service

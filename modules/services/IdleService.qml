@@ -16,11 +16,11 @@ Singleton {
     property string afterSleepCmd: Config.system.idle.general.after_sleep_cmd ?? "ambxst screen on"
     
     // Login Lock Daemon
-    // Helper script that listens to Lock signal and executes lockCmd
+    // Helper script that listens to Lock signal and executes lockCmd from config
     Process {
         id: loginLockProc
         running: true
-        command: [Quickshell.env("HOME") + "/Repos/Axenide/Ambxst/scripts/loginlock.sh", root.lockCmd]
+        command: ["bash", Qt.resolvedUrl("../../scripts/loginlock.sh").toString().replace("file://", "")]
         onExited: exitCode => {
             if (exitCode !== 0) {
                 console.warn("loginlock.sh exited with code " + exitCode + ". Restarting...");
@@ -37,11 +37,11 @@ Singleton {
     }
 
     // Sleep Monitor Daemon
-    // Helper script that listens to PrepareForSleep signal
+    // Helper script that listens to PrepareForSleep signal and executes sleep commands from config
     Process {
         id: sleepMonitorProc
         running: true
-        command: [Quickshell.env("HOME") + "/Repos/Axenide/Ambxst/scripts/sleep_monitor.sh", root.beforeSleepCmd, root.afterSleepCmd]
+        command: ["bash", Qt.resolvedUrl("../../scripts/sleep_monitor.sh").toString().replace("file://", "")]
         onExited: exitCode => {
             if (exitCode !== 0) {
                 console.warn("sleep_monitor.sh exited with code " + exitCode + ". Restarting...");

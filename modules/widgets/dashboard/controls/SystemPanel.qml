@@ -5,6 +5,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs.modules.theme
 import qs.modules.components
+import qs.modules.globals
 import qs.config
 
 Item {
@@ -460,6 +461,200 @@ Item {
                         }
                     }
 
+                    // =====================
+                    // IDLE SECTION
+                    // =====================
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Idle"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(-1)
+                            font.weight: Font.Medium
+                            color: Colors.overSurfaceVariant
+                            Layout.bottomMargin: -4
+                        }
+
+                        TextInputRow {
+                            label: "Lock Cmd"
+                            value: Config.system.idle.general.lock_cmd ?? ""
+                            placeholder: "Command to lock screen"
+                            onValueEdited: newValue => {
+                                if (newValue !== Config.system.idle.general.lock_cmd) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.idle.general.lock_cmd = newValue;
+                                }
+                            }
+                        }
+
+                        TextInputRow {
+                            label: "Before Sleep"
+                            value: Config.system.idle.general.before_sleep_cmd ?? ""
+                            placeholder: "Command before sleep"
+                            onValueEdited: newValue => {
+                                if (newValue !== Config.system.idle.general.before_sleep_cmd) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.idle.general.before_sleep_cmd = newValue;
+                                }
+                            }
+                        }
+
+                        TextInputRow {
+                            label: "After Sleep"
+                            value: Config.system.idle.general.after_sleep_cmd ?? ""
+                            placeholder: "Command after sleep"
+                            onValueEdited: newValue => {
+                                if (newValue !== Config.system.idle.general.after_sleep_cmd) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.idle.general.after_sleep_cmd = newValue;
+                                }
+                            }
+                        }
+
+                        Text {
+                            text: "Listeners"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(0)
+                            color: Colors.overBackground
+                            Layout.topMargin: 8
+                        }
+
+                        Repeater {
+                            model: Config.system.idle.listeners
+
+                            delegate: ColumnLayout {
+                                required property var modelData
+                                required property int index
+
+                                Layout.fillWidth: true
+                                spacing: 4
+                                Layout.bottomMargin: 8
+
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    height: 1
+                                    color: Colors.surfaceBright
+                                    visible: index > 0
+                                }
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Text {
+                                        text: "Listener " + (index + 1)
+                                        font.family: Config.theme.font
+                                        font.pixelSize: Styling.fontSize(-1)
+                                        font.bold: true
+                                        color: Colors.primary
+                                    }
+                                    Item { Layout.fillWidth: true }
+                                    
+                                    StyledRect {
+                                        id: deleteListenerBtn
+                                        variant: "error"
+                                        Layout.preferredWidth: 24
+                                        Layout.preferredHeight: 24
+                                        radius: Styling.radius(-2)
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: Icons.trash
+                                            font.family: Icons.font
+                                            color: deleteListenerBtn.itemColor
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                // Create a copy of the list to ensure change detection
+                                                var list = [];
+                                                for(var i=0; i<Config.system.idle.listeners.length; i++) list.push(Config.system.idle.listeners[i]);
+                                                list.splice(index, 1);
+                                                Config.system.idle.listeners = list;
+                                                GlobalStates.markShellChanged();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                NumberInputRow {
+                                    label: "Timeout (s)"
+                                    value: modelData.timeout || 0
+                                    minValue: 1
+                                    maxValue: 7200
+                                    onValueEdited: val => {
+                                        var list = [];
+                                        for(var i=0; i<Config.system.idle.listeners.length; i++) list.push(Config.system.idle.listeners[i]);
+                                        list[index].timeout = val;
+                                        Config.system.idle.listeners = list;
+                                        GlobalStates.markShellChanged();
+                                    }
+                                }
+
+                                TextInputRow {
+                                    label: "On Timeout"
+                                    value: modelData.onTimeout || ""
+                                    onValueEdited: val => {
+                                        var list = [];
+                                        for(var i=0; i<Config.system.idle.listeners.length; i++) list.push(Config.system.idle.listeners[i]);
+                                        list[index].onTimeout = val;
+                                        Config.system.idle.listeners = list;
+                                        GlobalStates.markShellChanged();
+                                    }
+                                }
+
+                                TextInputRow {
+                                    label: "On Resume"
+                                    value: modelData.onResume || ""
+                                    onValueEdited: val => {
+                                        var list = [];
+                                        for(var i=0; i<Config.system.idle.listeners.length; i++) list.push(Config.system.idle.listeners[i]);
+                                        list[index].onResume = val;
+                                        Config.system.idle.listeners = list;
+                                        GlobalStates.markShellChanged();
+                                    }
+                                }
+                            }
+                        }
+
+                        StyledRect {
+                            id: addListenerBtn
+                            variant: "common"
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 32
+                            radius: Styling.radius(-2)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "Add Listener"
+                                font.family: Config.theme.font
+                                font.pixelSize: Styling.fontSize(0)
+                                font.bold: true
+                                color: addListenerBtn.itemColor
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    var list = [];
+                                    if(Config.system.idle.listeners) {
+                                        for(var i=0; i<Config.system.idle.listeners.length; i++) list.push(Config.system.idle.listeners[i]);
+                                    }
+                                    list.push({
+                                        "timeout": 60,
+                                        "onTimeout": "",
+                                        "onResume": ""
+                                    });
+                                    Config.system.idle.listeners = list;
+                                    GlobalStates.markShellChanged();
+                                }
+                            }
+                        }
+                    }
+
                     // Bottom spacing
                     Item {
                         Layout.fillWidth: true
@@ -473,6 +668,136 @@ Item {
     // =====================
     // HELPER COMPONENTS
     // =====================
+
+    // Inline component for number input rows
+    component NumberInputRow: RowLayout {
+        id: numberInputRowRoot
+        property string label: ""
+        property int value: 0
+        property int minValue: 0
+        property int maxValue: 100
+        property string suffix: ""
+        signal valueEdited(int newValue)
+
+        Layout.fillWidth: true
+        spacing: 8
+
+        Text {
+            text: numberInputRowRoot.label
+            font.family: Config.theme.font
+            font.pixelSize: Styling.fontSize(0)
+            color: Colors.overBackground
+            Layout.fillWidth: true
+        }
+
+        StyledRect {
+            variant: "common"
+            Layout.preferredWidth: 60
+            Layout.preferredHeight: 32
+            radius: Styling.radius(-2)
+
+            TextInput {
+                id: numberTextInput
+                anchors.fill: parent
+                anchors.margins: 8
+                font.family: Config.theme.font
+                font.pixelSize: Styling.fontSize(0)
+                color: Colors.overBackground
+                selectByMouse: true
+                clip: true
+                verticalAlignment: TextInput.AlignVCenter
+                horizontalAlignment: TextInput.AlignHCenter
+                validator: IntValidator { bottom: numberInputRowRoot.minValue; top: numberInputRowRoot.maxValue }
+
+                // Sync text when external value changes
+                readonly property int configValue: numberInputRowRoot.value
+                onConfigValueChanged: {
+                    if (!activeFocus && text !== configValue.toString()) {
+                        text = configValue.toString();
+                    }
+                }
+                Component.onCompleted: text = configValue.toString()
+
+                onEditingFinished: {
+                    let newVal = parseInt(text);
+                    if (!isNaN(newVal)) {
+                        newVal = Math.max(numberInputRowRoot.minValue, Math.min(numberInputRowRoot.maxValue, newVal));
+                        numberInputRowRoot.valueEdited(newVal);
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: numberInputRowRoot.suffix
+            font.family: Config.theme.font
+            font.pixelSize: Styling.fontSize(0)
+            color: Colors.overSurfaceVariant
+            visible: suffix !== ""
+        }
+    }
+
+    // Inline component for text input rows
+    component TextInputRow: RowLayout {
+        id: textInputRowRoot
+        property string label: ""
+        property string value: ""
+        property string placeholder: ""
+        signal valueEdited(string newValue)
+
+        Layout.fillWidth: true
+        spacing: 8
+
+        Text {
+            text: textInputRowRoot.label
+            font.family: Config.theme.font
+            font.pixelSize: Styling.fontSize(0)
+            color: Colors.overBackground
+            Layout.preferredWidth: 100
+        }
+
+        StyledRect {
+            variant: "common"
+            Layout.fillWidth: true
+            Layout.preferredHeight: 32
+            radius: Styling.radius(-2)
+
+            TextInput {
+                id: textInputField
+                anchors.fill: parent
+                anchors.margins: 8
+                font.family: Config.theme.font
+                font.pixelSize: Styling.fontSize(0)
+                color: Colors.overBackground
+                selectByMouse: true
+                clip: true
+                verticalAlignment: TextInput.AlignVCenter
+
+                // Sync text when external value changes
+                readonly property string configValue: textInputRowRoot.value
+                onConfigValueChanged: {
+                    if (!activeFocus && text !== configValue) {
+                        text = configValue;
+                    }
+                }
+                Component.onCompleted: text = configValue
+
+                Text {
+                    anchors.fill: parent
+                    verticalAlignment: Text.AlignVCenter
+                    text: textInputRowRoot.placeholder
+                    font.family: Config.theme.font
+                    font.pixelSize: Styling.fontSize(0)
+                    color: Colors.overSurfaceVariant
+                    visible: textInputField.text === ""
+                }
+
+                onEditingFinished: {
+                    textInputRowRoot.valueEdited(text);
+                }
+            }
+        }
+    }
 
     // PrefixRow component for prefix inputs
     component PrefixRow: RowLayout {

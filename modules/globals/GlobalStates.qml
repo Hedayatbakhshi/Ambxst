@@ -287,7 +287,8 @@ Singleton {
         "overview": ["rows", "columns", "scale", "workspaceSpacing"],
         "dock": ["enabled", "theme", "position", "height", "iconSize", "spacing", "margin", "hoverRegionHeight", "pinnedOnStartup", "hoverToReveal", "showRunningIndicators", "showPinButton", "showOverviewButton", "screenList"],
         "lockscreen": ["position"],
-        "desktop": ["enabled", "iconSize", "spacingVertical", "textColor"]
+        "desktop": ["enabled", "iconSize", "spacingVertical", "textColor"],
+        "system": ["idle"]
     }
 
     // Create a deep copy of the current shell config
@@ -301,8 +302,8 @@ Singleton {
             for (var j = 0; j < props.length; j++) {
                 var prop = props[j];
                 var val = Config[section][prop];
-                // Deep copy arrays
-                if (Array.isArray(val)) {
+                // Deep copy arrays or objects
+                if (typeof val === 'object' && val !== null) {
                     snapshot[section][prop] = JSON.parse(JSON.stringify(val));
                 } else {
                     snapshot[section][prop] = val;
@@ -322,8 +323,8 @@ Singleton {
             for (var j = 0; j < props.length; j++) {
                 var prop = props[j];
                 var val = snapshot[section][prop];
-                // Deep copy arrays
-                if (Array.isArray(val)) {
+                // Deep copy arrays or objects
+                if (typeof val === 'object' && val !== null) {
                     Config[section][prop] = JSON.parse(JSON.stringify(val));
                 } else {
                     Config[section][prop] = val;
@@ -343,7 +344,15 @@ Singleton {
 
     function applyShellChanges() {
         if (shellHasChanges) {
-            Config.loader.writeAdapter();
+            Config.saveBar();
+            Config.saveNotch();
+            Config.saveWorkspaces();
+            Config.saveOverview();
+            Config.saveDock();
+            Config.saveLockscreen();
+            Config.saveDesktop();
+            Config.saveSystem();
+            
             shellHasChanges = false;
             shellSnapshot = null;
             Config.pauseAutoSave = false;
