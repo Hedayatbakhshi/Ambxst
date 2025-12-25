@@ -188,7 +188,9 @@ Item {
         bar: root.bar
 
         contentWidth: Math.max(280, mainColumn.implicitWidth + batteryPopup.popupPadding * 2)
-        contentHeight: mainColumn.implicitHeight + batteryPopup.popupPadding * 2
+        // Fixed height calculation to prevent expansion animation on first open
+        // Battery details (60px) + spacing (4px) + Profiles (36px)
+        contentHeight: (Battery.available ? 64 : 0) + 36 + batteryPopup.popupPadding * 2
 
         ColumnLayout {
             id: mainColumn

@@ -69,13 +69,15 @@ PopupWindow {
     visible: false
 
     // Focus grab for click-outside-to-close behavior
+    property bool focusActive: false
+
     HyprlandFocusGrab {
         id: focusGrab
-        active: root.visible
+        active: root.visible && root.focusActive
         windows: [root]
 
         onCleared: {
-            if (root.closeOnFocusLost && root.visible) {
+            if (root.closeOnFocusLost && root.isOpen) {
                 root.isOpen = false;
                 root.closedExternally();
                 root.close();
@@ -152,6 +154,7 @@ PopupWindow {
         Qt.callLater(() => {
             popupOpacity = 1;
             popupScale = 1;
+            focusActive = true;
         });
     }
 
@@ -161,6 +164,7 @@ PopupWindow {
 
         // Set logical state immediately
         isOpen = false;
+        focusActive = false;
 
         // Animate out
         popupOpacity = 0;

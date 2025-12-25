@@ -72,7 +72,9 @@ Item {
         popupPadding: 16
 
         contentWidth: 220
-        contentHeight: slidersColumn.implicitHeight + popupPadding * 2
+        // Fixed height calculation to prevent expansion animation on first open
+        // 3 rows * 36px + 2 gaps * 12px = 132px
+        contentHeight: 132 + popupPadding * 2
 
         ColumnLayout {
             id: slidersColumn
