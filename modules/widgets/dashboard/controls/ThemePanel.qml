@@ -227,8 +227,6 @@ Item {
                         spacing: 8
 
                         SectionButton { text: "General"; sectionId: "general" }
-                        SectionButton { text: "Fonts"; sectionId: "fonts" }
-                        SectionButton { text: "Roundness"; sectionId: "roundness" }
                         SectionButton { text: "Shadow"; sectionId: "shadow" }
                         SectionButton { text: "Colors"; sectionId: "colors" }
                     }
@@ -434,21 +432,8 @@ Item {
                                     Layout.preferredWidth: 50
                                 }
                             }
-                        }
-                    }
 
-                    // Fonts section
-                    Item {
-                        visible: root.currentSection === "fonts"
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: fontsContent.implicitHeight
-
-                        ColumnLayout {
-                            id: fontsContent
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            spacing: 8
+                            Separator { Layout.fillWidth: true }
 
                             Text {
                                 text: "Fonts"
@@ -650,21 +635,8 @@ Item {
                                     color: Colors.overSurfaceVariant
                                 }
                             }
-                        }
-                    }
 
-                    // Roundness section
-                    Item {
-                        visible: root.currentSection === "roundness"
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: roundnessContent.implicitHeight
-
-                        ColumnLayout {
-                            id: roundnessContent
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            spacing: 8
+                            Separator { Layout.fillWidth: true }
 
                             Text {
                                 text: "Roundness"
