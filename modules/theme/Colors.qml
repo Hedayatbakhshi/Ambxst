@@ -30,6 +30,12 @@ FileView {
         property color inverseOnSurface: "#382e2d"
         property color inversePrimary: "#904a46"
         property color inverseSurface: "#f1dedd"
+        property color lightBlue: "#cebdfe"
+        property color lightCyan: "#84d5c4"
+        property color lightGreen: "#b7d085"
+        property color lightMagenta: "#fcb0d5"
+        property color lightRed: "#ffb4ab"
+        property color lightYellow: "#dec56e"
         property color magenta: "#fcb0d5"
         property color magentaContainer: "#6c3353"
         property color magentaSource: "#ff00ff"
@@ -137,6 +143,12 @@ FileView {
     property color inverseOnSurface: adapter.inverseOnSurface
     property color inversePrimary: adapter.inversePrimary
     property color inverseSurface: adapter.inverseSurface
+    property color lightBlue: adapter.lightBlue
+    property color lightCyan: adapter.lightCyan
+    property color lightGreen: adapter.lightGreen
+    property color lightMagenta: adapter.lightMagenta
+    property color lightRed: adapter.lightRed
+    property color lightYellow: adapter.lightYellow
     property color magenta: adapter.magenta
     property color magentaContainer: adapter.magentaContainer
     property color magentaSource: adapter.magentaSource
@@ -226,12 +238,12 @@ FileView {
         "outline", "outlineVariant",
         "inversePrimary", "inverseSurface", "inverseOnSurface",
         "shadow", "scrim",
-        "blue", "blueContainer", "overBlue", "overBlueContainer",
-        "cyan", "cyanContainer", "overCyan", "overCyanContainer",
-        "green", "greenContainer", "overGreen", "overGreenContainer",
-        "magenta", "magentaContainer", "overMagenta", "overMagentaContainer",
-        "red", "redContainer", "overRed", "overRedContainer",
-        "yellow", "yellowContainer", "overYellow", "overYellowContainer",
+        "blue", "blueContainer", "overBlue", "overBlueContainer", "lightBlue",
+        "cyan", "cyanContainer", "overCyan", "overCyanContainer", "lightCyan",
+        "green", "greenContainer", "overGreen", "overGreenContainer", "lightGreen",
+        "magenta", "magentaContainer", "overMagenta", "overMagentaContainer", "lightMagenta",
+        "red", "redContainer", "overRed", "overRedContainer", "lightRed",
+        "yellow", "yellowContainer", "overYellow", "overYellowContainer", "lightYellow",
         "white", "whiteContainer", "overWhite", "overWhiteContainer"
     ]
 }
