@@ -500,7 +500,7 @@ Item {
 
                                     Image {
                                         anchors.fill: parent
-                                        source: "file:///home/adriano/.face.icon"
+                                        source: "file://" + Quickshell.env("HOME") + "/.face.icon"
                                         fillMode: Image.PreserveAspectCrop
                                         // Fallback if image fails loading
                                         onStatusChanged: {

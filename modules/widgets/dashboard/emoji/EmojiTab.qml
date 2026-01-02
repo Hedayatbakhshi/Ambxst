@@ -262,7 +262,7 @@ Rectangle {
     }
 
     function loadEmojiData() {
-        emojiProcess.command = ["bash", "-c", "cat /home/adriano/Repos/Axenide/Ambxst/assets/emojis.json"];
+        emojiProcess.command = ["bash", "-c", "cat " + Qt.resolvedUrl("../../../../assets/emojis.json").toString().replace("file://", "")];
         emojiProcess.running = true;
     }
 

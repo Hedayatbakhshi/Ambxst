@@ -30,7 +30,7 @@ PanelWindow {
     property bool initialLoadCompleted: false
     property bool usingFallback: false
     property string currentMatugenScheme: wallpaperConfig.adapter.matugenScheme
-    property string colorPresetsDir: "/home/adriano/.config/Ambxst/colors"
+    property string colorPresetsDir: Quickshell.env("HOME") + "/.config/Ambxst/colors"
     property string officialColorPresetsDir: Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", "")
     onColorPresetsDirChanged: console.log("Color Presets Directory:", colorPresetsDir)
     property list<string> colorPresets: []
