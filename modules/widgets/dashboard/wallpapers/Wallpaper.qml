@@ -29,6 +29,7 @@ PanelWindow {
     property string currentWallpaper: initialLoadCompleted && wallpaperPaths.length > 0 ? wallpaperPaths[currentIndex] : ""
     property bool initialLoadCompleted: false
     property bool usingFallback: false
+    property bool _wallpaperDirInitialized: false
     property string currentMatugenScheme: wallpaperConfig.adapter.matugenScheme
     property string colorPresetsDir: Quickshell.env("HOME") + "/.config/Ambxst/colors"
     property string officialColorPresetsDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", ""))
@@ -197,6 +198,9 @@ PanelWindow {
 
     // Update directory watcher when wallpaperDir changes
     onWallpaperDirChanged: {
+        // Skip initial spurious changes before config is loaded
+        if (!_wallpaperDirInitialized) return;
+        
         console.log("Wallpaper directory changed to:", wallpaperDir);
         usingFallback = false;
         
@@ -313,19 +317,27 @@ PanelWindow {
         // Verificar si existe wallpapers.json, si no, crear con fallback
         checkWallpapersJson.running = true;
 
-        // Ejecutar script de generación de thumbnails (delayed)
-        delayedThumbnailGen.start();
-
-        // Initial scans
-        // scanWallpapers.running = true; // Handled by onWallpaperDirChanged
-        // scanSubfolders(); // Handled by onWallpaperDirChanged
+        // Initial scans - do these once after config is loaded
         scanColorPresets();
         // Start directory monitoring
+        directoryWatcher.path = wallpaperDir;
         directoryWatcher.reload();
         presetsWatcher.reload();
         officialPresetsWatcher.reload();
         // Load initial wallpaper config
         wallpaperConfig.reload();
+        
+        // Now mark as initialized and trigger the initial scan
+        _wallpaperDirInitialized = true;
+        
+        // Perform initial wallpaper scan
+        var cmd = ["find", wallpaperDir, "-type", "f", "(", "-name", "*.jpg", "-o", "-name", "*.jpeg", "-o", "-name", "*.png", "-o", "-name", "*.webp", "-o", "-name", "*.tif", "-o", "-name", "*.tiff", "-o", "-name", "*.gif", "-o", "-name", "*.mp4", "-o", "-name", "*.webm", "-o", "-name", "*.mov", "-o", "-name", "*.avi", "-o", "-name", "*.mkv", ")"];
+        scanWallpapers.command = cmd;
+        scanWallpapers.running = true;
+        scanSubfolders();
+        
+        // Ejecutar script de generación de thumbnails (delayed)
+        delayedThumbnailGen.start();
         
         // Generate lockscreen frame for initial wallpaper after a short delay
         Qt.callLater(function() {
@@ -366,12 +378,11 @@ PanelWindow {
             }
 
             onCurrentWallChanged: {
-                console.log("DEBUG: currentWall changed to:", currentWall);
-                console.log("DEBUG: current wallpaper is:", wallpaper.currentWallpaper);
-                console.log("DEBUG: initialLoadCompleted:", wallpaper.initialLoadCompleted);
+                // Skip during initial load - scanWallpapers handles this
+                if (!wallpaper._wallpaperDirInitialized) return;
+                
                 // Siempre actualizar si es diferente al actual
                 if (currentWall && currentWall !== wallpaper.currentWallpaper) {
-                    console.log("Loading wallpaper from JSON:", currentWall);
                     // If paths are not loaded yet, wait for scanWallpapers to finish
                     if (wallpaper.wallpaperPaths.length === 0) {
                         return;
@@ -499,7 +510,7 @@ PanelWindow {
 
     Timer {
         id: delayedThumbnailGen
-        interval: 2000 // Delay 2 seconds after startup
+        interval: 5000 // Delay 5 seconds after startup to not block initial load
         repeat: false
         onTriggered: thumbnailGeneratorScript.running = true
     }
@@ -660,7 +671,6 @@ PanelWindow {
                                 if (!wallpaperConfig.adapter.currentWall) {
                                     wallpaperConfig.adapter.currentWall = wallpaperPaths[0];
                                 }
-                                console.log("DEBUG: Setting initialLoadCompleted to true");
                                 initialLoadCompleted = true;
                                 // runMatugenForCurrentWallpaper() will be called by onCurrentWallChanged
                             }

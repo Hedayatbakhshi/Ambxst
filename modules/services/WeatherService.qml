@@ -464,12 +464,15 @@ QtObject {
     property var weatherConfig: Config.weather
     readonly property string configLocation: weatherConfig ? weatherConfig.location : ""
     readonly property string configUnit: weatherConfig ? weatherConfig.unit : "C"
+    property bool _initialized: false
 
     onConfigLocationChanged: {
+        if (!_initialized) return;
         console.log("WeatherService: Location changed to '" + configLocation + "'");
         updateWeather();
     }
     onConfigUnitChanged: {
+        if (!_initialized) return;
         console.log("WeatherService: Unit changed to '" + configUnit + "'");
         updateWeather();
     }
@@ -502,6 +505,7 @@ QtObject {
     Component.onCompleted: {
         var now = new Date();
         currentHour = now.getHours() + now.getMinutes() / 60;
+        _initialized = true;
         updateWeather();
     }
 }

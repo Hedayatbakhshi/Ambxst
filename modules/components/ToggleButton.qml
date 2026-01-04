@@ -29,7 +29,7 @@ Button {
         enableShadow: root.enableShadow && Config.showBackground
         Rectangle {
             anchors.fill: parent
-            color: parent.item
+            color: parent.item || "transparent"
             opacity: root.pressed ? 0.5 : (root.hovered ? 0.25 : 0)
             radius: parent.radius ?? 0
 
@@ -51,7 +51,7 @@ Button {
             textFormat: Text.RichText
             font.family: Icons.font
             font.pixelSize: 18
-            color: root.pressed ? Colors.background : Styling.styledRectItem("overprimary")
+            color: root.pressed ? Colors.background : (Styling.styledRectItem("overprimary") || Colors.foreground)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -73,7 +73,7 @@ Button {
                 brightness: root.iconFullTint ? 1.0 : 0.1
                 contrast: root.iconFullTint ? 0.0 : -0.25
                 colorization: root.iconFullTint ? 1.0 : 0.25
-                colorizationColor: Styling.styledRectItem("overprimary")
+                colorizationColor: Styling.styledRectItem("overprimary") || Colors.foreground
             }
         }
     }
