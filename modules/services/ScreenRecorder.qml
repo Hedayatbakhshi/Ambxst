@@ -79,16 +79,28 @@ QtObject {
         if (isRecording) {
             stopProcess.running = true;
         } else {
-            // Default behavior: Portal, no audio (unless defaults changed)
-            startRecording(false, false);
+            // Default behavior: Portal, no audio
+            startRecording(false, false, "portal", "");
         }
     }
 
-    function startRecording(recordAudioOutput, recordAudioInput) {
+    function startRecording(recordAudioOutput, recordAudioInput, mode, regionStr) {
         if (isRecording) return;
         
         var outputFile = root.videosDir + "/" + new Date().toISOString().replace(/[:.]/g, "-") + ".mp4";
-        var cmd = "gpu-screen-recorder -w portal -q ultra -ac opus -cr full -f 60 -o \"" + outputFile + "\"";
+        var cmd = "gpu-screen-recorder -f 60 -q ultra -ac opus -cr full";
+        
+        // Window mode: -w based on mode
+        if (mode === "portal") {
+            cmd += " -w portal";
+        } else if (mode === "screen") {
+            cmd += " -w screen";
+        } else if (mode === "region") {
+            cmd += " -w region";
+            if (regionStr) {
+                cmd += " -region " + regionStr;
+            }
+        }
         
         // Audio
         var audioSources = [];
@@ -100,6 +112,8 @@ QtObject {
         } else if (audioSources.length > 1) {
             cmd += " -a \"" + audioSources.join("|") + "\"";
         }
+        
+        cmd += " -o \"" + outputFile + "\"";
         
         console.log("[ScreenRecorder] Starting with command: " + cmd);
         startProcess.command = ["bash", "-c", cmd];

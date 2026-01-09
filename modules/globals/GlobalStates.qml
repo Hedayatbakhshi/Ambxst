@@ -169,8 +169,8 @@ Singleton {
     // Screenshot Tool state
     property bool screenshotToolVisible: false
 
-    // Screen Record Tool state (deprecated/removed)
-    // property bool screenRecordToolVisible: false
+    // Screen Record Tool state
+    property bool screenRecordToolVisible: false
 
     // Mirror Tool state
     property bool mirrorWindowVisible: false

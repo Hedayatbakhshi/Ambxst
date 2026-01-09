@@ -12,14 +12,11 @@ ActionGrid {
 
     signal itemSelected
 
-    property bool recordAudioOutput: false
-    property bool recordAudioInput: false
-
     QtObject {
         id: recordAction
         property string icon: ScreenRecorder.isRecording ? Icons.stop : Icons.recordScreen
         property string text: ScreenRecorder.isRecording ? ScreenRecorder.duration : ""
-        property string tooltip: ScreenRecorder.isRecording ? "Stop Recording" : "Start Recording"
+        property string tooltip: ScreenRecorder.isRecording ? "Stop Recording" : "Screen Recorder"
         property string command: ""
         property string variant: ScreenRecorder.isRecording ? "error" : "primary"
         property string type: "button"
@@ -45,18 +42,6 @@ ActionGrid {
             type: "separator"
         },
         recordAction,
-        {
-            icon: root.recordAudioOutput ? Icons.speakerHigh : Icons.speakerSlash,
-            tooltip: "Toggle Audio Output",
-            variant: root.recordAudioOutput ? "primary" : "focus",
-            type: "toggle"
-        },
-        {
-            icon: root.recordAudioInput ? Icons.mic : Icons.micSlash,
-            tooltip: "Toggle Microphone",
-            variant: root.recordAudioInput ? "primary" : "focus",
-            type: "toggle"
-        },
         {
             icon: Icons.recordings,
             tooltip: "Open Recordings",
@@ -111,16 +96,12 @@ ActionGrid {
         if (action.tooltip === "Screenshot") {
             GlobalStates.screenshotToolVisible = true;
             root.itemSelected();
-        } else if (action.tooltip === "Start Recording") {
-            ScreenRecorder.startRecording(root.recordAudioOutput, root.recordAudioInput);
+        } else if (action.tooltip === "Screen Recorder") {
+            GlobalStates.screenRecordToolVisible = true;
             root.itemSelected();
         } else if (action.tooltip === "Stop Recording") {
             ScreenRecorder.toggleRecording();
             root.itemSelected();
-        } else if (action.tooltip === "Toggle Audio Output") {
-            root.recordAudioOutput = !root.recordAudioOutput;
-        } else if (action.tooltip === "Toggle Microphone") {
-            root.recordAudioInput = !root.recordAudioInput;
         } else if (action.tooltip === "Open Screenshots") {
             // Usamos xdg-user-dir en el comando bash para respetar las rutas del sistema
             var cmd = "dir=\"$(xdg-user-dir PICTURES)/Screenshots\"; mkdir -p \"$dir\"; nohup xdg-open \"$dir\" > /dev/null 2>&1 &";
