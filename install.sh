@@ -252,7 +252,7 @@ setup_repo() {
 					echo -e "${YELLOW}⚠  Local changes or custom commits detected on 'main'.${NC}"
 					echo -e "${RED}This update will DISCARD all your local changes to match the remote.${NC}"
 					echo -e "Make sure to save your changes in another branch if needed."
-					read -p "Continue and overwrite local changes? [y/N] " -n 1 -r
+					read -p "Continue and overwrite local changes? [y/N] " -n 1 -r </dev/tty
 					echo ""
 					if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 						log_warn "Update aborted by user to protect local changes."
