@@ -65,9 +65,9 @@ PanelWindow {
         return toplevel.fullscreen === true;
     }
 
-    // Should auto-hide: when bar is vertical (always), unpinned OR when fullscreen
-    // This ensures notch follows bar's auto-hide behavior regardless of position, but always hides if bar is vertical
-    readonly property bool shouldAutoHide: isBarVertical || !barPinned || activeWindowFullscreen
+    // Should auto-hide: when bar is NOT TOP (always), unpinned OR when fullscreen
+    // This ensures notch follows bar's auto-hide behavior regardless of position, but always hides if bar is not at the top
+    readonly property bool shouldAutoHide: barPosition !== "top" || !barPinned || activeWindowFullscreen
 
     // Check if the bar for this screen is vertical
     readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
