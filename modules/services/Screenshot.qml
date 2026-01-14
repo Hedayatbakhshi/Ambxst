@@ -24,6 +24,12 @@ QtObject {
     property string screenshotsDir: ""
     property string finalPath: ""
     
+    // Global selection state for multi-monitor synchronization
+    property int selectionX: 0
+    property int selectionY: 0
+    property int selectionW: 0
+    property int selectionH: 0
+    
     // Internal storage for active workspace IDs
     property var _activeWorkspaceIds: []
     

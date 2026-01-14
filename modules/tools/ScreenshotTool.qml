@@ -11,6 +11,8 @@ import qs.config
 
 PanelWindow {
     id: screenshotPopup
+    required property var screen
+
 
     anchors {
         top: true
@@ -57,7 +59,7 @@ PanelWindow {
         screenshotPopup.currentMode = "region";
 
         screenshotPopup.state = "loading";
-        Screenshot.freezeScreen();
+        // Screenshot.freezeScreen() is now called centrally in shell.qml
     }
 
     function close() {
@@ -70,8 +72,8 @@ PanelWindow {
             screenshotPopup.close();
         } else if (screenshotPopup.currentMode === "region") {
             // Check if rect exists
-            if (selectionRect.width > 0) {
-                Screenshot.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
+            if (Screenshot.selectionW > 0) {
+                Screenshot.processRegion(Screenshot.selectionX, Screenshot.selectionY, Screenshot.selectionW, Screenshot.selectionH);
                 screenshotPopup.close();
             }
         } else if (screenshotPopup.currentMode === "window") {
@@ -87,8 +89,8 @@ PanelWindow {
             previewImage.source = "file://" + path;
             screenshotPopup.state = "active";
             // Reset selection
-            selectionRect.width = 0;
-            selectionRect.height = 0;
+            Screenshot.selectionW = 0;
+            Screenshot.selectionH = 0;
             // Fetch windows if we are in window mode, or pre-fetch
             Screenshot.fetchWindows();
 
@@ -136,11 +138,27 @@ PanelWindow {
         Keys.onEscapePressed: screenshotPopup.close()
 
         // 1. The "Frozen" Image
-        Image {
-            id: previewImage
+        // Wrapper to clip the image to this screen's bounds
+        Item {
             anchors.fill: parent
-            fillMode: Image.Stretch
-            visible: screenshotPopup.state === "active"
+            clip: true
+            
+            Image {
+                id: previewImage
+                // No anchors.fill: parent
+                fillMode: Image.Pad
+                
+                // Scale the image so 1 image pixel = 1 physical screen pixel
+                // On a scale 2 monitor, this means image logical width = sourceWidth / 2
+                width: sourceSize.width / screenshotPopup.screen.scale
+                height: sourceSize.height / screenshotPopup.screen.scale
+                
+                // Position to show the part of the image corresponding to this screen
+                x: -screenshotPopup.screen.x
+                y: -screenshotPopup.screen.y
+                
+                visible: screenshotPopup.state === "active"
+            }
         }
 
         // 2. Dimmer (Dark overlay)
@@ -158,9 +176,11 @@ PanelWindow {
 
             Repeater {
                 model: screenshotPopup.activeWindows
+                // Only show windows relevant to this screen (roughly)
+                // Actually, window coordinates are global, so we shift them by screen offset
                 delegate: Rectangle {
-                    x: modelData.at[0]
-                    y: modelData.at[1]
+                    x: modelData.at[0] - screenshotPopup.screen.x
+                    y: modelData.at[1] - screenshotPopup.screen.y
                     width: modelData.size[0]
                     height: modelData.size[1]
                     color: "transparent"
@@ -179,7 +199,7 @@ PanelWindow {
 
                     TapHandler {
                         onTapped: {
-                            Screenshot.processRegion(parent.x, parent.y, parent.width, parent.height);
+                            Screenshot.processRegion(modelData.at[0], modelData.at[1], modelData.size[0], modelData.size[1]);
                             screenshotPopup.close();
                         }
                     }
@@ -195,7 +215,7 @@ PanelWindow {
             hoverEnabled: true
             cursorShape: screenshotPopup.currentMode === "region" ? Qt.CrossCursor : Qt.ArrowCursor
 
-            property point startPoint: Qt.point(0, 0)
+            property point startPointGlobal: Qt.point(0, 0)
             property bool selecting: false
 
             onPressed: mouse => {
@@ -204,11 +224,15 @@ PanelWindow {
                     return;
                 }
 
-                startPoint = Qt.point(mouse.x, mouse.y);
-                selectionRect.x = mouse.x;
-                selectionRect.y = mouse.y;
-                selectionRect.width = 0;
-                selectionRect.height = 0;
+                // Convert local mouse to global coordinates
+                var globalX = mouse.x + screenshotPopup.screen.x;
+                var globalY = mouse.y + screenshotPopup.screen.y;
+
+                startPointGlobal = Qt.point(globalX, globalY);
+                Screenshot.selectionX = globalX;
+                Screenshot.selectionY = globalY;
+                Screenshot.selectionW = 0;
+                Screenshot.selectionH = 0;
                 selecting = true;
             }
 
@@ -222,27 +246,29 @@ PanelWindow {
             onPositionChanged: mouse => {
                 if (!selecting)
                     return;
-                var x = Math.min(startPoint.x, mouse.x);
-                var y = Math.min(startPoint.y, mouse.y);
-                var w = Math.abs(startPoint.x - mouse.x);
-                var h = Math.abs(startPoint.y - mouse.y);
+                
+                var currentGlobalX = mouse.x + screenshotPopup.screen.x;
+                var currentGlobalY = mouse.y + screenshotPopup.screen.y;
 
-                selectionRect.x = x;
-                selectionRect.y = y;
-                selectionRect.width = w;
-                selectionRect.height = h;
+                var x = Math.min(startPointGlobal.x, currentGlobalX);
+                var y = Math.min(startPointGlobal.y, currentGlobalY);
+                var w = Math.abs(startPointGlobal.x - currentGlobalX);
+                var h = Math.abs(startPointGlobal.y - currentGlobalY);
+
+                Screenshot.selectionX = x;
+                Screenshot.selectionY = y;
+                Screenshot.selectionW = w;
+                Screenshot.selectionH = h;
             }
 
             onReleased: {
                 if (!selecting)
                     // for screen mode click
-
                     return;
                 selecting = false;
-                // Auto capture on release? Or wait for confirm?
-                // Usually region drag ends in capture.
-                if (selectionRect.width > 5 && selectionRect.height > 5) {
-                    Screenshot.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
+                
+                if (Screenshot.selectionW > 5 && Screenshot.selectionH > 5) {
+                    Screenshot.processRegion(Screenshot.selectionX, Screenshot.selectionY, Screenshot.selectionW, Screenshot.selectionH);
                     screenshotPopup.close();
                 }
             }
@@ -252,6 +278,13 @@ PanelWindow {
         Rectangle {
             id: selectionRect
             visible: screenshotPopup.state === "active" && screenshotPopup.currentMode === "region"
+            
+            // Map global selection back to local coordinates
+            x: Screenshot.selectionX - screenshotPopup.screen.x
+            y: Screenshot.selectionY - screenshotPopup.screen.y
+            width: Screenshot.selectionW
+            height: Screenshot.selectionH
+            
             color: "transparent"
             border.color: Styling.srItem("overprimary")
             border.width: 2
