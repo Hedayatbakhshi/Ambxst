@@ -123,10 +123,33 @@ lock)
 		echo "Error: Ambxst is not running"
 		exit 1
 	fi
-	qs ipc --pid "$PID" call lockscreen lock 2>/dev/null || {
+	qs ipc --pid "$PID" call ambxst run lockscreen 2>/dev/null || {
 		echo "Error: Could not activate lockscreen"
 		exit 1
 	}
+	;;
+reload)
+	PID=$(find_ambxst_pid)
+	if [ -n "$PID" ]; then
+		echo "Stopping Ambxst (PID $PID)..."
+		kill "$PID"
+		# Wait for process to exit
+		while kill -0 "$PID" 2>/dev/null; do
+			sleep 0.1
+		done
+	fi
+	echo "Starting Ambxst..."
+	# Relaunch the script in background
+	nohup "$0" >/dev/null 2>&1 &
+	;;
+quit)
+	PID=$(find_ambxst_pid)
+	if [ -n "$PID" ]; then
+		echo "Stopping Ambxst (PID $PID)..."
+		kill "$PID"
+	else
+		echo "Ambxst is not running"
+	fi
 	;;
 screen)
 	SUB="${2:-}"

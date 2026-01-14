@@ -430,13 +430,13 @@ Item {
             }
         }
 
-        // System binds
-        if (ambxst.system) {
-            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens"];
-            for (const key of systemKeys) {
-                if (ambxst.system[key]) {
-                    binds.push({
-                        category: "System",
+            // System binds
+            if (ambxst.system) {
+                const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
+                for (const key of systemKeys) {
+                    if (ambxst.system[key]) {
+                        binds.push({
+                            category: "System",
                         name: key.charAt(0).toUpperCase() + key.slice(1),
                         path: "ambxst.system." + key,
                         bind: ambxst.system[key]

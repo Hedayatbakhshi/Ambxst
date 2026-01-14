@@ -1285,7 +1285,7 @@ Singleton {
             }
 
             // Check system binds
-            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens"];
+            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
             for (const key of systemKeys) {
                 if (!current.ambxst.system[key] && adapter.ambxst.system && adapter.ambxst.system[key]) {
                     console.log("Adding missing system bind:", key);
@@ -1506,6 +1506,20 @@ Singleton {
                         property string argument: "ambxst run lens"
                         property string flags: ""
                     }
+                    property JsonObject reload: JsonObject {
+                        property list<string> modifiers: ["SUPER", "ALT"]
+                        property string key: "B"
+                        property string dispatcher: "exec"
+                        property string argument: "ambxst reload"
+                        property string flags: ""
+                    }
+                    property JsonObject quit: JsonObject {
+                        property list<string> modifiers: ["SUPER", "CTRL", "ALT"]
+                        property string key: "B"
+                        property string dispatcher: "exec"
+                        property string argument: "ambxst quit"
+                        property string flags: ""
+                    }
                 }
             }
             // Functions to get defaults
@@ -1527,7 +1541,9 @@ Singleton {
                     "tools": { "modifiers": ["SUPER"], "key": "S", "dispatcher": "exec", "argument": "ambxst run tools", "flags": "" },
                     "screenshot": { "modifiers": ["SUPER", "SHIFT"], "key": "S", "dispatcher": "exec", "argument": "ambxst run screenshot", "flags": "" },
                     "screenrecord": { "modifiers": ["SUPER", "SHIFT"], "key": "R", "dispatcher": "exec", "argument": "ambxst run screenrecord", "flags": "" },
-                    "lens": { "modifiers": ["SUPER", "SHIFT"], "key": "A", "dispatcher": "exec", "argument": "ambxst run lens", "flags": "" }
+                    "lens": { "modifiers": ["SUPER", "SHIFT"], "key": "A", "dispatcher": "exec", "argument": "ambxst run lens", "flags": "" },
+                    "reload": { "modifiers": ["SUPER", "ALT"], "key": "B", "dispatcher": "exec", "argument": "ambxst reload", "flags": "" },
+                    "quit": { "modifiers": ["SUPER", "CTRL", "ALT"], "key": "B", "dispatcher": "exec", "argument": "ambxst quit", "flags": "" }
                 }
             }
 
