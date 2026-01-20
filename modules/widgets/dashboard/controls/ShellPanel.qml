@@ -1240,6 +1240,18 @@ Item {
                         }
 
                         ToggleRow {
+                            label: "Available on Fullscreen"
+                            checked: Config.dock.availableOnFullscreen ?? false
+                            visible: (Config.dock.theme ?? "default") !== "integrated"
+                            onToggled: value => {
+                                if (value !== Config.dock.availableOnFullscreen) {
+                                    GlobalStates.markShellChanged();
+                                    Config.dock.availableOnFullscreen = value;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
                             label: "Show Running Indicators"
                             checked: Config.dock.showRunningIndicators ?? true
                             visible: (Config.dock.theme ?? "default") !== "integrated"

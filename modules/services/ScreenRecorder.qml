@@ -10,6 +10,18 @@ QtObject {
     property bool isRecording: false
     property string duration: ""
     property string lastError: ""
+    property bool canRecordDirectly: true // Default optimistic
+
+    property Process checkCapabilitiesProcess: Process {
+        id: checkCapabilitiesProcess
+        command: ["bash", "-c", "if [ -f /run/current-system/sw/bin/nixos-version ]; then if [[ \"$(type -p gpu-screen-recorder)\" == *\"/run/wrappers/bin/\"* ]]; then echo true; else echo false; fi; else echo true; fi"]
+        running: true
+        stdout: StdioCollector {
+            onTextChanged: {
+                root.canRecordDirectly = (text.trim() === "true");
+            }
+        }
+    }
 
     property string videosDir: ""
 
@@ -185,6 +197,6 @@ QtObject {
 
     property Process stopProcess: Process {
         id: stopProcess
-        command: ["killall", "-SIGINT", "gpu-screen-recorder"]
+        command: ["pkill", "-SIGINT", "-f", "gpu-screen-recorder"]
     }
 }

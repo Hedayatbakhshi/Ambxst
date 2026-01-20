@@ -26,7 +26,9 @@ FocusScope {
         let limit = actions.length;
         for (let i = 0; i < limit; i++) {
             next = (next + step + limit) % limit;
-            if (!actions[next].type || actions[next].type !== "separator")
+            let action = actions[next];
+            let isEnabled = (action.enabled !== undefined ? action.enabled : true);
+            if ((!action.type || action.type !== "separator") && isEnabled)
                 return next;
         }
         return current;
@@ -230,7 +232,8 @@ FocusScope {
                         id: actionButton
                         anchors.fill: parent
                         visible: !delegateWrapper.isSeparator
-                        enabled: !delegateWrapper.isSeparator
+                        enabled: !delegateWrapper.isSeparator && (modelData.enabled !== undefined ? modelData.enabled : true)
+                        opacity: enabled ? 1.0 : 0.5
 
                         Process {
                             id: commandProcess
@@ -239,6 +242,7 @@ FocusScope {
                         }
 
                         function triggerAction() {
+                            if (!enabled) return;
                             root.actionTriggered(delegateWrapper.actionModel);
                             if (delegateWrapper.actionModel.command) {
                                 commandProcess.running = true;
@@ -302,7 +306,7 @@ FocusScope {
                         onClicked: triggerAction()
 
                         onHoveredChanged: {
-                            if (hovered) {
+                            if (hovered && actionButton.enabled) {
                                 root.currentIndex = index;
                             }
                         }

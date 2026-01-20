@@ -66,7 +66,7 @@ ClippingRectangle {
     Canvas {
         id: linearGradientCanvas
         width: 256
-        height: 1
+        height: 32 // Increase height to avoid interpolation artifacts at non-integer scales
         visible: false
         
         onPaint: {

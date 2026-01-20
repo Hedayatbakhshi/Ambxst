@@ -396,7 +396,14 @@ QtObject {
                             var forecastData = [];
                             var dayCount = Math.min(7, daily.time ? daily.time.length : 0);
                             for (var i = 0; i < dayCount; i++) {
-                                var dayDate = new Date(daily.time[i]);
+                                // Parse date string manually to avoid timezone issues with UTC midnight
+                                // Format is "YYYY-MM-DD"
+                                var dateParts = daily.time[i].split("-");
+                                var year = parseInt(dateParts[0]);
+                                var month = parseInt(dateParts[1]) - 1; // Months are 0-indexed
+                                var day = parseInt(dateParts[2]);
+                                
+                                var dayDate = new Date(year, month, day);
                                 var rawDayName = i === 0 ? "Today" : dayDate.toLocaleDateString(Qt.locale(), "ddd");
                                 var dayName = rawDayName.charAt(0).toUpperCase() + rawDayName.slice(1);
                                 forecastData.push({

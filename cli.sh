@@ -89,6 +89,33 @@ refresh)
 	echo "Refreshing Ambxst profile..."
 	exec nix profile upgrade Ambxst --refresh --impure
 	;;
+run)
+	CMD="${2:-}"
+	PIPE="/tmp/ambxst_ipc.pipe"
+
+	if [ -z "$CMD" ]; then
+		echo "Error: No command specified for run"
+		exit 1
+	fi
+
+	# Fast path: Write directly to pipe if it exists (Zero latency)
+	if [ -p "$PIPE" ]; then
+		echo "$CMD" >"$PIPE" &
+		exit 0
+	fi
+
+	# Fallback path: Use QS IPC (Slow, requires finding PID)
+	PID=$(find_ambxst_pid)
+	if [ -z "$PID" ]; then
+		echo "Error: Ambxst is not running"
+		exit 1
+	fi
+
+	qs ipc --pid "$PID" call ambxst run "$CMD" 2>/dev/null || {
+		echo "Error: Could not run command '$CMD'"
+		exit 1
+	}
+	;;
 lock)
 	# Trigger lockscreen via quickshell-ipc
 	PID=$(find_ambxst_pid)
@@ -96,10 +123,33 @@ lock)
 		echo "Error: Ambxst is not running"
 		exit 1
 	fi
-	qs ipc --pid "$PID" call lockscreen lock 2>/dev/null || {
+	qs ipc --pid "$PID" call ambxst run lockscreen 2>/dev/null || {
 		echo "Error: Could not activate lockscreen"
 		exit 1
 	}
+	;;
+reload)
+	PID=$(find_ambxst_pid)
+	if [ -n "$PID" ]; then
+		echo "Stopping Ambxst (PID $PID)..."
+		kill "$PID"
+		# Wait for process to exit
+		while kill -0 "$PID" 2>/dev/null; do
+			sleep 0.1
+		done
+	fi
+	echo "Starting Ambxst..."
+	# Relaunch the script in background
+	nohup "$0" >/dev/null 2>&1 &
+	;;
+quit)
+	PID=$(find_ambxst_pid)
+	if [ -n "$PID" ]; then
+		echo "Stopping Ambxst (PID $PID)..."
+		kill "$PID"
+	else
+		echo "Ambxst is not running"
+	fi
 	;;
 screen)
 	SUB="${2:-}"

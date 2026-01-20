@@ -233,7 +233,7 @@ Item {
                 {
                     "dispatcher": bindData.dispatcher || "",
                     "argument": bindData.argument || "",
-                    "flags": ""
+                    "flags": bindData.flags || ""
                 }
             ];
         } else {
@@ -319,9 +319,14 @@ Item {
                     modifiers: [],
                     key: ""
                 };
-                adapter.ambxst[section][bindName].modifiers = firstKey.modifiers || [];
-                adapter.ambxst[section][bindName].key = firstKey.key || "";
-                // dispatcher and argument are fixed for ambxst binds
+                
+                // Update all properties including dispatcher/argument/flags to ensure full reset works
+                const bindObj = adapter.ambxst[section][bindName];
+                bindObj.modifiers = firstKey.modifiers || [];
+                bindObj.key = firstKey.key || "";
+                bindObj.dispatcher = root.editActions[0].dispatcher || "";
+                bindObj.argument = root.editActions[0].argument || "";
+                bindObj.flags = root.editActions[0].flags || "";
             }
         } else if (root.isCreatingNew) {
             // Create new custom bind with new format
@@ -425,13 +430,13 @@ Item {
             }
         }
 
-        // System binds
-        if (ambxst.system) {
-            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens"];
-            for (const key of systemKeys) {
-                if (ambxst.system[key]) {
-                    binds.push({
-                        category: "System",
+            // System binds
+            if (ambxst.system) {
+                const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens", "reload", "quit"];
+                for (const key of systemKeys) {
+                    if (ambxst.system[key]) {
+                        binds.push({
+                            category: "System",
                         name: key.charAt(0).toUpperCase() + key.slice(1),
                         path: "ambxst.system." + key,
                         bind: ambxst.system[key]
@@ -915,6 +920,72 @@ Item {
                             }
                         }
 
+                        // Reset button (only for Ambxst binds)
+                        StyledRect {
+                            id: resetButton
+                            visible: root.isEditingAmbxst
+                            variant: resetButtonArea.pressed ? "primary" : (resetButtonArea.containsMouse ? "focus" : "common")
+                            Layout.preferredWidth: resetButtonContent.width + 24
+                            Layout.preferredHeight: 36
+                            radius: Styling.radius(-2)
+
+                            Row {
+                                id: resetButtonContent
+                                anchors.centerIn: parent
+                                spacing: 6
+
+                                Text {
+                                    text: Icons.arrowCounterClockwise
+                                    font.family: Icons.font
+                                    font.pixelSize: 14
+                                    color: Styling.srItem(resetButton.variant)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Text {
+                                    text: "Reset to default"
+                                    font.family: Config.theme.font
+                                    font.pixelSize: Styling.fontSize(0)
+                                    font.weight: Font.Medium
+                                    color: Styling.srItem(resetButton.variant)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                id: resetButtonArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (root.isEditingAmbxst && root.editingBind) {
+                                        const path = root.editingBind.path.split(".");
+                                        // path = ["ambxst", "dashboard"|"system", "bindName"]
+                                        const section = path[1];
+                                        const bindName = path[2];
+                                        
+                                        // Use the new helper in Config.qml to get the default values
+                                        const defaultBind = Config.keybindsLoader.adapter.getAmbxstDefault(section, bindName);
+                                        
+                                        if (defaultBind) {
+                                            root.editKeys = [{
+                                                "modifiers": defaultBind.modifiers || [],
+                                                "key": defaultBind.key || ""
+                                            }];
+                                            root.editActions = [{
+                                                "dispatcher": defaultBind.dispatcher || "",
+                                                "argument": defaultBind.argument || "",
+                                                "flags": defaultBind.flags || ""
+                                            }];
+                                            
+                                            // Auto-save immediately
+                                            root.saveEdit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         // Save button
                         StyledRect {
                             id: saveButton
@@ -998,7 +1069,11 @@ Item {
                                     color: Colors.overBackground
                                     verticalAlignment: Text.AlignVCenter
                                     selectByMouse: true
-                                    onTextChanged: root.editName = text
+                                    onTextChanged: {
+                                        if (root.editName !== text) {
+                                            root.editName = text
+                                        }
+                                    }
 
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
@@ -1269,7 +1344,11 @@ Item {
                                     selectByMouse: true
                                     onTextChanged: {
                                         if (root.editKeys.length > root.currentKeyPage) {
-                                            root.updateCurrentKey(root.editKeys[root.currentKeyPage].modifiers || [], text);
+                                            const currentKey = root.editKeys[root.currentKeyPage];
+                                            const keyVal = currentKey.key || "";
+                                            if (keyVal !== text) {
+                                                root.updateCurrentKey(currentKey.modifiers || [], text);
+                                            }
                                         }
                                     }
 
@@ -1285,12 +1364,12 @@ Item {
                         }
 
                         // =====================
-                        // ACTIONS SECTION (only for custom binds)
+                        // ACTIONS SECTION (custom binds & flags for ambxst)
                         // =====================
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 8
-                            visible: !root.isEditingAmbxst
+                            // visible: !root.isEditingAmbxst - Removed to allow editing flags for Ambxst binds
 
                             // Actions section header with pager controls
                             RowLayout {
@@ -1308,7 +1387,7 @@ Item {
 
                                 // Page indicator
                                 Text {
-                                    visible: root.editActions.length > 1
+                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
                                     text: (root.currentActionPage + 1) + " / " + root.editActions.length
                                     font.family: Config.theme.font
                                     font.pixelSize: Styling.fontSize(-1)
@@ -1318,7 +1397,7 @@ Item {
                                 // Remove action button
                                 StyledRect {
                                     id: removeActionBtn
-                                    visible: root.editActions.length > 1
+                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
                                     variant: removeActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1349,7 +1428,7 @@ Item {
                                 // Previous action button
                                 StyledRect {
                                     id: prevActionBtn
-                                    visible: root.editActions.length > 1
+                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
                                     variant: prevActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1380,7 +1459,7 @@ Item {
                                 // Next action button
                                 StyledRect {
                                     id: nextActionBtn
-                                    visible: root.editActions.length > 1
+                                    visible: root.editActions.length > 1 && !root.isEditingAmbxst
                                     variant: nextActionBtnArea.containsMouse ? "focus" : "common"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1411,6 +1490,7 @@ Item {
                                 // Add action button
                                 StyledRect {
                                     id: addActionBtn
+                                    visible: !root.isEditingAmbxst
                                     variant: addActionBtnArea.containsMouse ? "primaryfocus" : "primary"
                                     Layout.preferredWidth: 28
                                     Layout.preferredHeight: 28
@@ -1445,6 +1525,7 @@ Item {
                                 Layout.preferredHeight: 44
                                 variant: dispatcherInput.activeFocus ? "focus" : "common"
                                 radius: Styling.radius(-2)
+                                opacity: root.isEditingAmbxst ? 0.6 : 1.0
 
                                 TextInput {
                                     id: dispatcherInput
@@ -1456,13 +1537,16 @@ Item {
                                     color: Colors.overBackground
                                     verticalAlignment: Text.AlignVCenter
                                     selectByMouse: true
+                                    readOnly: root.isEditingAmbxst
                                     onTextChanged: {
                                         if (root.editActions.length > root.currentActionPage) {
                                             const currentAction = root.editActions[root.currentActionPage];
-                                            root.updateCurrentAction(text, currentAction.argument || "", currentAction.flags || "", currentAction.compositor || {
-                                                "type": "hyprland",
-                                                "layouts": []
-                                            });
+                                            if (currentAction.dispatcher !== text) {
+                                                root.updateCurrentAction(text, currentAction.argument || "", currentAction.flags || "", currentAction.compositor || {
+                                                    "type": "hyprland",
+                                                    "layouts": []
+                                                });
+                                            }
                                         }
                                     }
 
@@ -1491,6 +1575,7 @@ Item {
                                 Layout.preferredHeight: 44
                                 variant: argumentInput.activeFocus ? "focus" : "common"
                                 radius: Styling.radius(-2)
+                                opacity: root.isEditingAmbxst ? 0.6 : 1.0
 
                                 TextInput {
                                     id: argumentInput
@@ -1502,13 +1587,16 @@ Item {
                                     color: Colors.overBackground
                                     verticalAlignment: Text.AlignVCenter
                                     selectByMouse: true
+                                    readOnly: root.isEditingAmbxst
                                     onTextChanged: {
                                         if (root.editActions.length > root.currentActionPage) {
                                             const currentAction = root.editActions[root.currentActionPage];
-                                            root.updateCurrentAction(currentAction.dispatcher || "", text, currentAction.flags || "", currentAction.compositor || {
-                                                "type": "hyprland",
-                                                "layouts": []
-                                            });
+                                            if (currentAction.argument !== text) {
+                                                root.updateCurrentAction(currentAction.dispatcher || "", text, currentAction.flags || "", currentAction.compositor || {
+                                                    "type": "hyprland",
+                                                    "layouts": []
+                                                });
+                                            }
                                         }
                                     }
 
@@ -1551,10 +1639,12 @@ Item {
                                     onTextChanged: {
                                         if (root.editActions.length > root.currentActionPage) {
                                             const currentAction = root.editActions[root.currentActionPage];
-                                            root.updateCurrentAction(currentAction.dispatcher || "", currentAction.argument || "", text, currentAction.compositor || {
-                                                "type": "hyprland",
-                                                "layouts": []
-                                            });
+                                            if (currentAction.flags !== text) {
+                                                root.updateCurrentAction(currentAction.dispatcher || "", currentAction.argument || "", text, currentAction.compositor || {
+                                                    "type": "hyprland",
+                                                    "layouts": []
+                                                });
+                                            }
                                         }
                                     }
 

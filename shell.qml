@@ -22,6 +22,7 @@ import qs.modules.lockscreen
 import qs.modules.dock
 import qs.modules.globals
 import qs.config
+import "modules/tools"
 
 ShellRoot {
     id: root
@@ -69,7 +70,25 @@ ShellRoot {
 
         Loader {
             id: barLoader
-            active: true
+            
+            // Force reload when position changes to prevent artifacts
+            property bool _active: true
+            active: _active
+
+            Connections {
+                target: Config.bar
+                function onPositionChanged() {
+                    barLoader._active = false;
+                    barReloadTimer.restart();
+                }
+            }
+
+            Timer {
+                id: barReloadTimer
+                interval: 100
+                onTriggered: barLoader._active = true
+            }
+
             required property ShellScreen modelData
             sourceComponent: Bar {
                 screen: barLoader.modelData
@@ -184,34 +203,33 @@ ShellRoot {
     }
 
     // Screenshot Tool
-    Loader {
-        id: screenshotLoader
-        active: true
-        source: "modules/tools/ScreenshotTool.qml"
-        
-        Connections {
-            target: GlobalStates
-            function onScreenshotToolVisibleChanged() {
-                if (screenshotLoader.status === Loader.Ready) {
-                    if (GlobalStates.screenshotToolVisible) {
-                        screenshotLoader.item.open();
-                    } else {
-                        screenshotLoader.item.close();
-                    }
-                }
-            }
-        }
-        
-        Connections {
-            target: screenshotLoader.item
-            ignoreUnknownSignals: true
-            function onVisibleChanged() {
-                if (!screenshotLoader.item.visible && GlobalStates.screenshotToolVisible) {
-                    GlobalStates.screenshotToolVisible = false;
-                }
+    Variants {
+        model: Quickshell.screens
+
+        Loader {
+            id: screenshotLoader
+            active: GlobalStates.screenshotToolVisible
+            required property ShellScreen modelData
+            sourceComponent: ScreenshotTool {
+                targetScreen: screenshotLoader.modelData
             }
         }
     }
+
+    // Screenshot Overlay (Preview)
+    Variants {
+        model: Quickshell.screens
+
+        Loader {
+            id: screenshotOverlayLoader
+            active: true
+            required property ShellScreen modelData
+            sourceComponent: ScreenshotOverlay {
+                targetScreen: screenshotOverlayLoader.modelData
+            }
+        }
+    }
+
 
     // Screen Record Tool
     Loader {

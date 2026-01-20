@@ -11,6 +11,7 @@ var data = {
     "hoverRegionHeight": 16,
     "pinnedOnStartup": false,
     "hoverToReveal": true,
+    "availableOnFullscreen": false,
     "showRunningIndicators": true,
     "showPinButton": true,
     "showOverviewButton": true,

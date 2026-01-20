@@ -168,7 +168,14 @@ Singleton {
 
     // Screenshot Tool state
     property bool screenshotToolVisible: false
-    property string screenshotToolMode: "normal" // "normal" or "lens"
+    // property string screenshotToolMode: "normal" // DEPRECATED
+    property string screenshotCaptureMode: "region" // region, window, screen
+    
+    // Global selection state for synchronization
+    property int screenshotSelectionX: 0
+    property int screenshotSelectionY: 0
+    property int screenshotSelectionW: 0
+    property int screenshotSelectionH: 0
 
     // Screen Record Tool state
     property bool screenRecordToolVisible: false
@@ -338,7 +345,7 @@ Singleton {
         "notch": ["theme", "hoverRegionHeight"],
         "workspaces": ["shown", "showAppIcons", "alwaysShowNumbers", "showNumbers", "dynamic"],
         "overview": ["rows", "columns", "scale", "workspaceSpacing"],
-        "dock": ["enabled", "theme", "position", "height", "iconSize", "spacing", "margin", "hoverRegionHeight", "pinnedOnStartup", "hoverToReveal", "showRunningIndicators", "showPinButton", "showOverviewButton", "screenList"],
+        "dock": ["enabled", "theme", "position", "height", "iconSize", "spacing", "margin", "hoverRegionHeight", "pinnedOnStartup", "hoverToReveal", "availableOnFullscreen", "showRunningIndicators", "showPinButton", "showOverviewButton", "screenList"],
         "lockscreen": ["position"],
         "desktop": ["enabled", "iconSize", "spacingVertical", "textColor"],
         "system": ["idle", "ocr"]
@@ -390,6 +397,14 @@ Singleton {
                     }
                     if (val.listeners) {
                         Config.system.idle.listeners = JSON.parse(JSON.stringify(val.listeners));
+                    }
+                }
+                // Special handling for system.ocr (JsonObject)
+                else if (section === "system" && prop === "ocr" && val) {
+                    var keys = Object.keys(val);
+                    for (var k = 0; k < keys.length; k++) {
+                        var key = keys[k];
+                        Config.system.ocr[key] = val[key];
                     }
                 }
                 // Deep copy arrays or objects
@@ -457,7 +472,10 @@ Singleton {
         "blurEnabled", "blurSize", "blurPasses", "blurXray",
         "blurNewOptimizations", "blurIgnoreOpacity",
         "blurNoise", "blurContrast", "blurBrightness", "blurVibrancy",
-        "quickshellIgnoreAlpha"
+        "blurVibrancyDarkness", "blurSpecial", "blurPopups", "blurPopupsIgnorealpha",
+        "blurInputMethods", "blurInputMethodsIgnorealpha",
+        "blurExplicitIgnoreAlpha", "blurIgnoreAlphaValue",
+        "shadowOffset", "shadowColorInactive"
     ]
 
     // Create a deep copy of the current compositor config
@@ -504,7 +522,7 @@ Singleton {
 
     function applyCompositorChanges() {
         if (compositorHasChanges) {
-            Config.loader.writeAdapter();
+            Config.saveHyprland();
             compositorHasChanges = false;
             compositorSnapshot = null;
             Config.pauseAutoSave = false;

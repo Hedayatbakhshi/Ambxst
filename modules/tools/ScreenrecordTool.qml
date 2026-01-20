@@ -56,17 +56,20 @@ PanelWindow {
             {
                 name: "region",
                 icon: Icons.regionScreenshot,
-                tooltip: "Region"
+                tooltip: ScreenRecorder.canRecordDirectly ? "Region" : "Region (Unavailable on NixOS without config)",
+                enabled: ScreenRecorder.canRecordDirectly
             },
             {
                 name: "window",
                 icon: Icons.windowScreenshot,
-                tooltip: "Window"
+                tooltip: ScreenRecorder.canRecordDirectly ? "Window" : "Window (Unavailable on NixOS without config)",
+                enabled: ScreenRecorder.canRecordDirectly
             },
             {
                 name: "screen",
                 icon: Icons.fullScreenshot,
-                tooltip: "Screen"
+                tooltip: ScreenRecorder.canRecordDirectly ? "Screen" : "Screen (Unavailable on NixOS without config)",
+                enabled: ScreenRecorder.canRecordDirectly
             },
             {
                 name: "portal",
@@ -78,8 +81,8 @@ PanelWindow {
 
     function open() {
         if (modeGrid)
-            modeGrid.currentIndex = 3; // Default to region (index 3 after toggles and separator)
-        screenrecordPopup.currentMode = "region";
+            modeGrid.currentIndex = ScreenRecorder.canRecordDirectly ? 3 : 6; // Default to region (3) or portal (6)
+        screenrecordPopup.currentMode = ScreenRecorder.canRecordDirectly ? "region" : "portal";
         screenrecordPopup.recordAudioOutput = false;
         screenrecordPopup.recordAudioInput = false;
         

@@ -75,7 +75,9 @@ QtObject {
                 tools: cloneKeybind(ambxst.system.tools),
                 screenshot: cloneKeybind(ambxst.system.screenshot),
                 screenrecord: cloneKeybind(ambxst.system.screenrecord),
-                lens: cloneKeybind(ambxst.system.lens)
+                lens: cloneKeybind(ambxst.system.lens),
+                reload: ambxst.system.reload ? cloneKeybind(ambxst.system.reload) : null,
+                quit: ambxst.system.quit ? cloneKeybind(ambxst.system.quit) : null
             }
         };
 
@@ -196,6 +198,8 @@ QtObject {
                 unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.screenshot));
                 unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.screenrecord));
                 unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.lens));
+                if (previousAmbxstBinds.system.reload) unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.reload));
+                if (previousAmbxstBinds.system.quit) unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.quit));
             }
 
             // Unbind previous custom keybinds
@@ -224,13 +228,13 @@ QtObject {
         unbindCommands.push(createUnbindCommand(dashboard.assistant));
         unbindCommands.push(createUnbindCommand(dashboard.notes));
 
-        batchCommands.push(createBindCommand(dashboard.widgets));
-        batchCommands.push(createBindCommand(dashboard.clipboard));
-        batchCommands.push(createBindCommand(dashboard.emoji));
-        batchCommands.push(createBindCommand(dashboard.tmux));
-        batchCommands.push(createBindCommand(dashboard.wallpapers));
-        batchCommands.push(createBindCommand(dashboard.assistant));
-        batchCommands.push(createBindCommand(dashboard.notes));
+        batchCommands.push(createBindCommand(dashboard.widgets, dashboard.widgets.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.clipboard, dashboard.clipboard.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.emoji, dashboard.emoji.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.tmux, dashboard.tmux.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.wallpapers, dashboard.wallpapers.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.assistant, dashboard.assistant.flags || ""));
+        batchCommands.push(createBindCommand(dashboard.notes, dashboard.notes.flags || ""));
 
         // System keybinds
         const system = ambxst.system;
@@ -242,15 +246,19 @@ QtObject {
         unbindCommands.push(createUnbindCommand(system.screenshot));
         unbindCommands.push(createUnbindCommand(system.screenrecord));
         unbindCommands.push(createUnbindCommand(system.lens));
+        if (system.reload) unbindCommands.push(createUnbindCommand(system.reload));
+        if (system.quit) unbindCommands.push(createUnbindCommand(system.quit));
 
-        batchCommands.push(createBindCommand(system.overview));
-        batchCommands.push(createBindCommand(system.powermenu));
-        batchCommands.push(createBindCommand(system.config));
-        batchCommands.push(createBindCommand(system.lockscreen));
-        batchCommands.push(createBindCommand(system.tools));
-        batchCommands.push(createBindCommand(system.screenshot));
-        batchCommands.push(createBindCommand(system.screenrecord));
-        batchCommands.push(createBindCommand(system.lens));
+        batchCommands.push(createBindCommand(system.overview, system.overview.flags || ""));
+        batchCommands.push(createBindCommand(system.powermenu, system.powermenu.flags || ""));
+        batchCommands.push(createBindCommand(system.config, system.config.flags || ""));
+        batchCommands.push(createBindCommand(system.lockscreen, system.lockscreen.flags || ""));
+        batchCommands.push(createBindCommand(system.tools, system.tools.flags || ""));
+        batchCommands.push(createBindCommand(system.screenshot, system.screenshot.flags || ""));
+        batchCommands.push(createBindCommand(system.screenrecord, system.screenrecord.flags || ""));
+        batchCommands.push(createBindCommand(system.lens, system.lens.flags || ""));
+        if (system.reload) batchCommands.push(createBindCommand(system.reload, system.reload.flags || ""));
+        if (system.quit) batchCommands.push(createBindCommand(system.quit, system.quit.flags || ""));
 
         // Procesar custom keybinds (new format with keys[] and actions[])
         const customBinds = Config.keybindsLoader.adapter.custom;

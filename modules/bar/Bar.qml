@@ -136,6 +136,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.layer: WlrLayer.Overlay
 
+
     // Reserve space only when revealed and pinned (not in auto-hide mode or fullscreen)
     exclusiveZone: (reveal && pinned && !activeWindowFullscreen) ? (Config.showBackground ? 44 : 40) : 0
     exclusionMode: ExclusionMode.Ignore

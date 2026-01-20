@@ -147,6 +147,7 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
+
     mask: Region {
         item: notchPanel.reveal ? notchRegionContainer : notchHoverRegion
     }

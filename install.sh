@@ -114,7 +114,7 @@ install_dependencies() {
 			# Tools
 			brightnessctl ddcutil fontconfig grim slurp ImageMagick jq sqlite upower
 			wl-clipboard wlsunset wtype zbar glib2 pipx zenity power-profiles-daemon
-			python3.12
+			python3.12 libnotify flatpak
 
 			# Tesseract (Fedora uses langpack naming)
 			tesseract tesseract-langpack-eng tesseract-langpack-spa tesseract-langpack-jpn
@@ -136,6 +136,11 @@ install_dependencies() {
 		)
 
 		sudo dnf install -y "${PKGS[@]}"
+
+		# Gradia (Flatpak)
+		log_info "Installing Gradia (Flatpak)..."
+		flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+		flatpak install -y flathub be.alexandervanhee.gradia
 
 		# Manual install of Phosphor Icons
 		log_info "Installing Phosphor Icons..."
@@ -205,7 +210,7 @@ install_dependencies() {
 			# Tools
 			brightnessctl ddcutil fontconfig grim slurp imagemagick jq sqlite upower
 			wl-clipboard wlsunset wtype zbar glib2 python-pipx zenity inetutils power-profiles-daemon
-			python312
+			python312 libnotify
 
 			# Tesseract
 			tesseract tesseract-data-eng tesseract-data-spa tesseract-data-jpn tesseract-data-chi_sim tesseract-data-chi_tra tesseract-data-kor tesseract-data-lat
@@ -215,7 +220,7 @@ install_dependencies() {
 			ttf-nerd-fonts-symbols
 
 			# Special Packages
-			matugen gpu-screen-recorder wl-clip-persist mpvpaper
+			matugen gpu-screen-recorder wl-clip-persist mpvpaper gradia
 			quickshell-git ttf-phosphor-icons ttf-league-gothic adw-gtk-theme
 		)
 

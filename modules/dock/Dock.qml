@@ -95,8 +95,25 @@ Scope {
                 return true; // Default to true if not found, to maintain original behavior
             }
 
+            // Fullscreen detection - check if active toplevel is fullscreen on this screen
+            readonly property bool activeWindowFullscreen: {
+                const toplevel = ToplevelManager.activeToplevel;
+                if (!toplevel || !toplevel.activated)
+                    return false;
+                // Check if the toplevel is fullscreen
+                return toplevel.fullscreen === true;
+            }
+
             // Reveal logic: pinned, hover, no active window
-            property bool reveal: root.pinned || (Config.dock?.hoverToReveal && dockMouseArea.containsMouse) || !ToplevelManager.activeToplevel?.activated
+            property bool reveal: {
+                // Fullscreen behavior: Force auto-hide if allowed, otherwise hide
+                if (activeWindowFullscreen) {
+                    return (Config.dock?.availableOnFullscreen ?? false) && (Config.dock?.hoverToReveal && dockMouseArea.containsMouse);
+                }
+
+                // Normal behavior
+                return root.pinned || (Config.dock?.hoverToReveal && dockMouseArea.containsMouse) || !ToplevelManager.activeToplevel?.activated
+            }
 
             anchors {
                 bottom: root.isBottom
@@ -111,7 +128,7 @@ Scope {
 
             // Reserve space when pinned, but ONLY if bar is also pinned (to avoid displacement issues)
             // If bar is unpinned (auto-hide), dock becomes overlay-only (0 zone)
-            exclusiveZone: (root.pinned && barPinned) ? dockSize + totalMargin : 0
+            exclusiveZone: (root.pinned && barPinned && !activeWindowFullscreen) ? dockSize + totalMargin : 0
 
             implicitWidth: root.isVertical ? dockSize + totalMargin + shadowSpace * 2 : dockContent.implicitWidth + shadowSpace * 2
             implicitHeight: root.isVertical ? dockContent.implicitHeight + shadowSpace * 2 : dockSize + totalMargin + shadowSpace * 2
