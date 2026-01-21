@@ -107,10 +107,21 @@ ShellRoot {
 
         Loader {
             id: notchLoader
-            active: true
+            // Delay notch creation to ensure it renders above the bar
+            // Both use WlrLayer.Overlay, so we need the notch to be created last
+            active: notchDelayTimer.triggered
             required property ShellScreen modelData
             sourceComponent: NotchWindow {
                 screen: notchLoader.modelData
+            }
+
+            property bool _triggered: false
+            Timer {
+                id: notchDelayTimer
+                property bool triggered: false
+                interval: 50
+                running: true
+                onTriggered: triggered = true
             }
         }
     }
