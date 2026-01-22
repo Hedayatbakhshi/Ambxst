@@ -47,7 +47,7 @@ Item {
             case "overview": toggleSimpleModule("overview"); break;
             case "powermenu": toggleSimpleModule("powermenu"); break;
             case "tools": toggleSimpleModule("tools"); break;
-            case "config": GlobalStates.settingsVisible = !GlobalStates.settingsVisible; break;
+            case "config": toggleDashboardTab(4); break;
             case "screenshot": GlobalStates.screenshotToolVisible = true; break;
             case "screenrecord": GlobalStates.screenRecordToolVisible = true; break;
             case "lens": 

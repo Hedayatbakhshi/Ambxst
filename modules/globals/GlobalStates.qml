@@ -163,9 +163,6 @@ Singleton {
     // Lockscreen state
     property bool lockscreenVisible: false
 
-    // Ambxst Settings state
-    property bool settingsVisible: false
-
     // Screenshot Tool state
     property bool screenshotToolVisible: false
     // property string screenshotToolMode: "normal" // DEPRECATED
@@ -210,11 +207,6 @@ Singleton {
         "halftoneDotMin", "halftoneDotMax", "halftoneStart", "halftoneEnd",
         "halftoneDotColor", "halftoneBackgroundColor", "itemColor", "opacity"
     ]
-
-    function openSettings() {
-        settingsVisible = false;
-        settingsVisible = true;
-    }
 
     // Deep copy a single SR variant
     function _copySrVariant(src) {

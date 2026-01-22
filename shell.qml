@@ -10,7 +10,7 @@ import qs.modules.bar
 import qs.modules.bar.workspaces
 import qs.modules.notifications
 import qs.modules.widgets.dashboard.wallpapers
-import qs.modules.widgets.settings
+
 import qs.modules.notch
 import qs.modules.widgets.overview
 import qs.modules.widgets.presets
@@ -208,10 +208,7 @@ ShellRoot {
         id: hyprlandKeybinds
     }
 
-    // Ambxst Settings floating window
-    Settings {
-        id: settingsWindow
-    }
+
 
     // Screenshot Tool
     Variants {
