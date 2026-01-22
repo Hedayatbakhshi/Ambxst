@@ -103,11 +103,12 @@ Item {
             }
 
             MultiEffect {
-                anchors.fill: parent
+                anchors.fill: backgroundArt
                 source: backgroundArt
                 blurEnabled: true
                 blurMax: 32
                 blur: 0.75
+                autoPaddingEnabled: false
                 opacity: hasArtwork ? 1.0 : 0.0
                 Behavior on opacity {
                     enabled: Config.animDuration > 0
