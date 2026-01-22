@@ -6,6 +6,7 @@ var data = {
     "launcherIconTint": true,
     "launcherIconFullTint": true,
     "launcherIconSize": 18,
+    "pillStyle": "default",
     "screenList": [],
     "enableFirefoxPlayer": false,
     "barColor": [["surface", 0.0]],
