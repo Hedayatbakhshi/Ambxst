@@ -122,14 +122,6 @@ ShellRoot {
                 running: true
                 onTriggered: triggered = true
             }
-
-            Connections {
-                target: Config.bar
-                function onPositionChanged() {
-                    notchDelayTimer.triggered = false;
-                    notchDelayTimer.restart();
-                }
-            }
         }
     }
 
@@ -198,14 +190,6 @@ ShellRoot {
             running: true
             repeat: false
             onTriggered: dockLoader._ready = true
-        }
-
-        Connections {
-            target: Config.bar
-            function onPositionChanged() {
-                dockLoader._ready = false;
-                dockDelayTimer.restart();
-            }
         }
 
         active: _ready && (Config.dock?.enabled ?? false) && (Config.dock?.theme ?? "default") !== "integrated"

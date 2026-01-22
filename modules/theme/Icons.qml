@@ -249,4 +249,15 @@ QtObject {
     readonly property string aperture: ""
     readonly property string magicWand: ""
     readonly property string google: ""
+
+    // Aliases for missing icons
+    readonly property string palette: paintBrush
+    readonly property string cornersOut: arrowsOut
+    readonly property string drop: sparkle
+    readonly property string arrowsOutSimple: arrowsOut
+    readonly property string squaresFour: layout
+    readonly property string mapPin: globe
+    readonly property string thermometer: temperature
+    readonly property string windowsLogo: terminalWindow
+    readonly property string frameCorners: crop
 }
