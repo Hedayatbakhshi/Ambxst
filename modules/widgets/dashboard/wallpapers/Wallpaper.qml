@@ -992,13 +992,43 @@ PanelWindow {
             property string sourceFile: parent.source
         }
 
-    Component {
+        Component {
         id: staticImageComponent
         Item {
             width: parent.width
             height: parent.height
             property string sourceFile: parent.sourceFile
             property bool tint: wallpaper.tintEnabled
+
+            // Palette generation for the shader
+            Item {
+                id: paletteSourceItem
+                visible: false
+                width: Colors.availableColorNames.length
+                height: 1
+                layer.enabled: true
+                
+                Row {
+                    anchors.fill: parent
+                    Repeater {
+                        model: Colors.availableColorNames
+                        Rectangle {
+                            width: 1
+                            height: 1
+                            color: Colors[modelData]
+                        }
+                    }
+                }
+            }
+
+            ShaderEffectSource {
+                id: paletteTextureSource
+                sourceItem: paletteSourceItem
+                hideSource: true
+                visible: false
+                smooth: false
+                recursive: false
+            }
 
             Image {
                 id: rawImage
@@ -1009,12 +1039,10 @@ PanelWindow {
                 smooth: true
                 layer.enabled: parent.tint
                 layer.effect: ShaderEffect {
-                    property color c1: Colors.background
-                    property color c2: Colors.surface
-                    property color c3: Colors.primary
-                    property color c4: Colors.secondary
-                    property color c5: Colors.tertiary
-                    property color c6: Colors.surfaceContainer
+                    property var paletteTexture: paletteTextureSource
+                    property real paletteSize: Colors.availableColorNames.length
+                    property real texWidth: rawImage.width
+                    property real texHeight: rawImage.height
 
                     fragmentShader: "palette.frag.qsb"
                 }
