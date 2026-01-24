@@ -44,6 +44,10 @@ FileView {
         id: kittyGenerator
     }
 
+    property NvChadGenerator nvChadGenerator: NvChadGenerator {
+        id: nvChadGenerator
+    }
+
     property Timer generationTimer: Timer {
         id: generationTimer
         interval: 100
@@ -53,6 +57,7 @@ FileView {
             gtkGenerator.generate(colors)
             pywalGenerator.generate(colors)
             kittyGenerator.generate(colors)
+            nvChadGenerator.generate(colors)
         }
     }
 
