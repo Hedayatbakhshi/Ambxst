@@ -729,6 +729,17 @@ Item {
                         }
 
                         ToggleRow {
+                            label: "Use 12h Format"
+                            checked: Config.bar.use12hFormat ?? false
+                            onToggled: value => {
+                                if (value !== Config.bar.use12hFormat) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.use12hFormat = value;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
                             label: "Enable Firefox Player"
                             checked: Config.bar.enableFirefoxPlayer ?? false
                             onToggled: value => {

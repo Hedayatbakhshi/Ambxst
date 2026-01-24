@@ -170,6 +170,8 @@ WlSessionLockSurface {
         height: hoursText.height + (hoursText.height * 0.5)
         z: 10
 
+        property date currentTime: new Date()
+
         Row {
             id: clockRow
             spacing: 0
@@ -177,7 +179,7 @@ WlSessionLockSurface {
 
             Text {
                 id: hoursText
-                text: Qt.formatTime(new Date(), "hh")
+                text: Config.bar.use12hFormat ? (clockContainer.currentTime.getHours() % 12 || 12).toString() : Qt.formatTime(clockContainer.currentTime, "hh")
                 font.family: "League Gothic"
                 font.pixelSize: 240
                 color: Colors.primaryFixed
@@ -212,7 +214,7 @@ WlSessionLockSurface {
 
             Text {
                 id: minutesText
-                text: Qt.formatTime(new Date(), "mm")
+                text: Qt.formatTime(clockContainer.currentTime, "mm")
                 font.family: "League Gothic"
                 font.pixelSize: 240
                 color: Colors.primaryFixedDim
@@ -247,16 +249,51 @@ WlSessionLockSurface {
                     }
                 }
             }
+
+            Text {
+                id: amPmText
+                text: Config.bar.use12hFormat ? Qt.formatTime(clockContainer.currentTime, "ap").toLowerCase() : ""
+                font.family: "League Gothic"
+                font.pixelSize: 100
+                color: hoursText.color
+                antialiasing: true
+                anchors.top: hoursText.top
+                anchors.topMargin: hoursText.height * 0.35 
+                visible: Config.bar.use12hFormat
+                opacity: startAnim ? 1 : 0
+
+                property real slideOffset: startAnim ? 0 : -150
+
+                transform: Translate {
+                    y: amPmText.slideOffset
+                }
+
+                layer.enabled: true
+                layer.effect: BgShadow {}
+
+                Behavior on opacity {
+                    enabled: Config.animDuration > 0
+                    NumberAnimation {
+                        duration: Config.animDuration * 2
+                        easing.type: Easing.OutExpo
+                    }
+                }
+
+                Behavior on slideOffset {
+                    enabled: Config.animDuration > 0
+                    NumberAnimation {
+                        duration: Config.animDuration * 2
+                        easing.type: Easing.OutExpo
+                    }
+                }
+            }
         }
 
         Timer {
             interval: 1000
             running: true
             repeat: true
-            onTriggered: {
-                hoursText.text = Qt.formatTime(new Date(), "hh");
-                minutesText.text = Qt.formatTime(new Date(), "mm");
-            }
+            onTriggered: clockContainer.currentTime = new Date()
         }
     }
 

@@ -599,6 +599,7 @@ Singleton {
             property int hoverRegionHeight: 8
             property bool showPinButton: true
             property bool availableOnFullscreen: false
+            property bool use12hFormat: false
         }
     }
 

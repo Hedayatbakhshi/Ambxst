@@ -626,7 +626,8 @@ Item {
         repeat: true
         onTriggered: {
             var now = new Date();
-            var formatted = Qt.formatDateTime(now, "hh:mm");
+            var format = Config.bar.use12hFormat ? "h:mm ap" : "hh:mm";
+            var formatted = Qt.formatDateTime(now, format);
             var parts = formatted.split(":");
             root.currentTime = formatted;
             root.currentHours = parts[0];
@@ -643,7 +644,8 @@ Item {
 
     Component.onCompleted: {
         var now = new Date();
-        var formatted = Qt.formatDateTime(now, "hh:mm");
+        var format = Config.bar.use12hFormat ? "h:mm ap" : "hh:mm";
+        var formatted = Qt.formatDateTime(now, format);
         var parts = formatted.split(":");
         root.currentTime = formatted;
         root.currentHours = parts[0];
