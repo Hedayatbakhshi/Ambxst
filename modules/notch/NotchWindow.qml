@@ -428,7 +428,11 @@ PanelWindow {
         function onLauncherChanged() {
             if (screenVisibilities.launcher) {
                 notchContainer.stackView.push(launcherViewComponent);
-                Qt.callLater(() => notchContainer.forceActiveFocus());
+                Qt.callLater(() => {
+                    if (notchContainer.stackView.currentItem) {
+                        notchContainer.stackView.currentItem.forceActiveFocus();
+                    }
+                });
             } else {
                 if (notchContainer.stackView.depth > 1) {
                     notchContainer.stackView.pop();
@@ -441,7 +445,11 @@ PanelWindow {
         function onDashboardChanged() {
             if (screenVisibilities.dashboard) {
                 notchContainer.stackView.push(dashboardViewComponent);
-                Qt.callLater(() => notchContainer.forceActiveFocus());
+                Qt.callLater(() => {
+                    if (notchContainer.stackView.currentItem) {
+                        notchContainer.stackView.currentItem.forceActiveFocus();
+                    }
+                });
             } else {
                 if (notchContainer.stackView.depth > 1) {
                     notchContainer.stackView.pop();
@@ -454,7 +462,11 @@ PanelWindow {
         function onPowermenuChanged() {
             if (screenVisibilities.powermenu) {
                 notchContainer.stackView.push(powermenuViewComponent);
-                Qt.callLater(() => notchContainer.forceActiveFocus());
+                Qt.callLater(() => {
+                    if (notchContainer.stackView.currentItem) {
+                        notchContainer.stackView.currentItem.forceActiveFocus();
+                    }
+                });
             } else {
                 if (notchContainer.stackView.depth > 1) {
                     notchContainer.stackView.pop();
@@ -467,7 +479,11 @@ PanelWindow {
         function onToolsChanged() {
             if (screenVisibilities.tools) {
                 notchContainer.stackView.push(toolsMenuViewComponent);
-                Qt.callLater(() => notchContainer.forceActiveFocus());
+                Qt.callLater(() => {
+                    if (notchContainer.stackView.currentItem) {
+                        notchContainer.stackView.currentItem.forceActiveFocus();
+                    }
+                });
             } else {
                 if (notchContainer.stackView.depth > 1) {
                     notchContainer.stackView.pop();

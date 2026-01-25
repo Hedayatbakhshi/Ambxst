@@ -20,6 +20,7 @@ Rectangle {
     color: "transparent"
     implicitWidth: 664
     implicitHeight: 430
+    focus: true
 
     property int leftPanelWidth: 380
     property int currentTab: GlobalStates.widgetsTabCurrentIndex  // 0=launcher, 1=clip, 2=emoji, 3=tmux, 4=notes
@@ -28,6 +29,7 @@ Rectangle {
     // Sync with GlobalStates
     onCurrentTabChanged: {
         GlobalStates.widgetsTabCurrentIndex = currentTab;
+        focusSearchInput();
     }
 
     onActiveFocusChanged: {
@@ -36,24 +38,45 @@ Rectangle {
         }
     }
 
-    // Function to focus app search when tab becomes active
-    function focusAppSearch() {
-        Qt.callLater(() => {
+    // Force focus on start and tab change
+    Timer {
+        id: focusRetryTimer
+        interval: 50
+        repeat: true
+        running: false
+        property int retries: 0
+        onTriggered: {
+            if (retries > 10) {
+                running = false;
+                return;
+            }
+            
+            let focused = false;
             if (currentTab === 0) {
                 appLauncher.focusSearchInput();
+                focused = true; // Apps launcher is usually always ready
             } else {
-                // Access the Loader from StackLayout and call focusSearchInput on the loaded item
                 let loader = internalStack.itemAt(currentTab - 1);
                 if (loader && loader.item && loader.item.focusSearchInput) {
                     loader.item.focusSearchInput();
+                    focused = true;
                 }
             }
-        });
+            
+            if (focused) {
+                running = false;
+            }
+            retries++;
+        }
     }
 
-    // Expose this for external compatibility
     function focusSearchInput() {
-        focusAppSearch();
+        focusRetryTimer.retries = 0;
+        focusRetryTimer.start();
+    }
+
+    Component.onCompleted: {
+        focusSearchInput();
     }
 
     // Handle prefix detection in launcher
@@ -233,7 +256,9 @@ Rectangle {
             onTriggered: {
                 appLauncher.updateFilteredApps();
                 appLauncher.updateAppsModel();
-                appLauncher.focusSearchInput();
+                if (currentTab === 0) {
+                    appLauncher.focusSearchInput();
+                }
             }
         }
 
@@ -289,9 +314,7 @@ Rectangle {
                                 targetItem.searchText = remainingText;
                             }
                             // Focus the search input
-                            if (targetItem.focusSearchInput) {
-                                targetItem.focusSearchInput();
-                            }
+                            root.focusSearchInput();
                         }
                     // Otherwise, the onLoaded handler will take care of focusing
                     });
@@ -1084,7 +1107,7 @@ Rectangle {
                         prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = Config.prefix.clipboard + " ";
-                        appLauncher.focusSearchInput();
+                        root.focusSearchInput();
                     }
                     onRequestOpenItem: (itemId, items, currentContent, filePathGetter, urlChecker) => {
                         console.log("DEBUG: Received requestOpenItem signal for:", itemId);
@@ -1094,7 +1117,7 @@ Rectangle {
             }
             onLoaded: {
                 if (currentTab === 1 && item && item.focusSearchInput) {
-                    Qt.callLater(() => item.focusSearchInput());
+                    root.focusSearchInput();
                 }
             }
         }
@@ -1114,13 +1137,13 @@ Rectangle {
                         prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = Config.prefix.emoji + " ";
-                        appLauncher.focusSearchInput();
+                        root.focusSearchInput();
                     }
                 }
             }
             onLoaded: {
                 if (currentTab === 2 && item && item.focusSearchInput) {
-                    Qt.callLater(() => item.focusSearchInput());
+                    root.focusSearchInput();
                 }
             }
         }
@@ -1139,13 +1162,13 @@ Rectangle {
                         prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = Config.prefix.tmux + " ";
-                        appLauncher.focusSearchInput();
+                        root.focusSearchInput();
                     }
                 }
             }
             onLoaded: {
                 if (currentTab === 3 && item && item.focusSearchInput) {
-                    Qt.callLater(() => item.focusSearchInput());
+                    root.focusSearchInput();
                 }
             }
         }
@@ -1165,13 +1188,13 @@ Rectangle {
                         prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = Config.prefix.notes + " ";
-                        appLauncher.focusSearchInput();
+                        root.focusSearchInput();
                     }
                 }
             }
             onLoaded: {
                 if (currentTab === 4 && item && item.focusSearchInput) {
-                    Qt.callLater(() => item.focusSearchInput());
+                    root.focusSearchInput();
                 }
             }
         }
