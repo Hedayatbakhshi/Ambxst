@@ -592,6 +592,8 @@ Singleton {
             property list<string> screenList: []
             property bool enableFirefoxPlayer: false
             property list<var> barColor: [["surface", 0.0]]
+            property bool frameEnabled: false
+            property int frameThickness: 6
             // Auto-hide properties
             property bool pinnedOnStartup: true
             property bool hoverToReveal: true

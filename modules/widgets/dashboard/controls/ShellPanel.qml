@@ -580,6 +580,10 @@ Item {
                             sectionId: "bar"
                         }
                         SectionButton {
+                            text: "Frame"
+                            sectionId: "frame"
+                        }
+                        SectionButton {
                             text: "Notch"
                             sectionId: "notch"
                         }
@@ -795,6 +799,49 @@ Item {
                             onScreensChanged: newList => {
                                 GlobalStates.markShellChanged();
                                 Config.bar.screenList = newList;
+                            }
+                        }
+                    }
+
+                    // ═══════════════════════════════════════════════════════════════
+                    // FRAME SECTION
+                    // ═══════════════════════════════════════════════════════════════
+                    ColumnLayout {
+                        visible: root.currentSection === "frame"
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "Frame"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(-1)
+                            font.weight: Font.Medium
+                            color: Colors.overSurfaceVariant
+                            Layout.bottomMargin: -4
+                        }
+
+                        ToggleRow {
+                            label: "Enabled"
+                            checked: Config.bar.frameEnabled ?? false
+                            onToggled: value => {
+                                if (value !== Config.bar.frameEnabled) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.frameEnabled = value;
+                                }
+                            }
+                        }
+
+                        NumberInputRow {
+                            label: "Thickness"
+                            value: Config.bar.frameThickness ?? 6
+                            minValue: 1
+                            maxValue: 40
+                            suffix: "px"
+                            onValueEdited: newValue => {
+                                if (newValue !== Config.bar.frameThickness) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.frameThickness = newValue;
+                                }
                             }
                         }
                     }

@@ -16,6 +16,7 @@ import qs.modules.widgets.overview
 import qs.modules.widgets.presets
 import qs.modules.services
 import qs.modules.corners
+import qs.modules.frame
 import qs.modules.components
 import qs.modules.desktop
 import qs.modules.lockscreen
@@ -175,6 +176,19 @@ ShellRoot {
             required property ShellScreen modelData
             sourceComponent: ScreenCorners {
                 screen: cornersLoader.modelData
+            }
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        Loader {
+            id: frameLoader
+            active: Config.bar?.frameEnabled ?? false
+            required property ShellScreen modelData
+            sourceComponent: ScreenFrame {
+                targetScreen: frameLoader.modelData
             }
         }
     }

@@ -9,6 +9,8 @@ var data = {
     "screenList": [],
     "enableFirefoxPlayer": false,
     "barColor": [["surface", 0.0]],
+    "frameEnabled": false,
+    "frameThickness": 6,
     "pinnedOnStartup": true,
     "hoverToReveal": true,
     "hoverRegionHeight": 8,
