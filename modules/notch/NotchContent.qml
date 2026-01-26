@@ -165,9 +165,8 @@ Item {
         width: notchRegionContainer.width + 20
         height: root.reveal ? notchRegionContainer.height : Math.max(Config.notch?.hoverRegionHeight ?? 8, 8)
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: root.notchPosition === "top" ? parent.top : null
-        anchors.bottom: root.notchPosition === "bottom" ? parent.bottom : null
+        x: (parent.width - width) / 2
+        y: root.notchPosition === "top" ? 0 : parent.height - height
 
         Behavior on height {
             enabled: Config.animDuration > 0 && root.shouldAutoHide
@@ -186,12 +185,12 @@ Item {
 
     Item {
         id: notchRegionContainer
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: root.notchPosition === "top" ? parent.top : null
-        anchors.bottom: root.notchPosition === "bottom" ? parent.bottom : null
         
         width: Math.max(notchAnimationContainer.width, notificationPopupContainer.visible ? notificationPopupContainer.width : 0)
         height: notchAnimationContainer.height + (notificationPopupContainer.visible ? notificationPopupContainer.height + notificationPopupContainer.anchors.topMargin : 0)
+
+        x: (parent.width - width) / 2
+        y: root.notchPosition === "top" ? 0 : parent.height - height
 
         // HoverHandler to detect when mouse is over the revealed notch
         HoverHandler {

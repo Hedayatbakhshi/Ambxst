@@ -32,10 +32,10 @@ PanelWindow {
     
     // Compatibility properties for Visibilities and other components
     readonly property alias barPosition: barContent.barPosition
-    readonly property alias pinned: barContent.pinned
-    readonly property alias hoverActive: barContent.hoverActive
+    readonly property alias barPinned: barContent.pinned
+    readonly property alias barHoverActive: barContent.hoverActive
     readonly property alias barFullscreen: barContent.activeWindowFullscreen
-    readonly property alias reveal: barContent.reveal // Use bar's reveal as general panel reveal for some logic
+    readonly property alias barReveal: barContent.reveal
 
     readonly property alias dockPosition: dockContent.position
     readonly property alias dockPinned: dockContent.pinned
@@ -44,6 +44,13 @@ PanelWindow {
 
     readonly property alias notchHoverActive: notchContent.hoverActive
     readonly property alias notchOpen: notchContent.screenNotchOpen
+    readonly property alias notchReveal: notchContent.reveal
+
+    // Generic names for external compatibility (Visibilities expects these on the panel object)
+    readonly property alias pinned: barContent.pinned
+    readonly property alias reveal: barContent.reveal
+    readonly property alias hoverActive: barContent.hoverActive // Default hoverActive points to bar
+    readonly property alias notch_hoverActive: notchContent.hoverActive // Used by bar to check notch
 
     // Proxy properties for Bar/Notch synchronization
     // Note: BarContent and NotchContent already handle their internal sync using Visibilities.
@@ -63,44 +70,21 @@ PanelWindow {
     }
 
     // Mask Region Logic
+    // We use nested regions to define non-contiguous hit areas for each component.
+    // This allows clicking through the empty space between the Bar, Notch, and Dock.
     mask: Region {
-        item: maskUnionContainer
-    }
-
-    Item {
-        id: maskUnionContainer
-        anchors.fill: parent
-        visible: false // Must be false so it doesn't draw, but children are used for Region
-
-        // Hitbox from Bar
-        Item {
-            id: barHitbox
-            x: barContent.barHitbox.x
-            y: barContent.barHitbox.y
-            width: barContent.barHitbox.width
-            height: barContent.barHitbox.height
-            visible: barContent.visible && barContent.barHitbox.visible
-        }
-
-        // Hitbox from Notch
-        Item {
-            id: notchHitbox
-            x: notchContent.notchHitbox.x
-            y: notchContent.notchHitbox.y
-            width: notchContent.notchHitbox.width
-            height: notchContent.notchHitbox.height
-            visible: notchContent.visible && notchContent.notchHitbox.visible
-        }
-
-        // Hitbox from Dock
-        Item {
-            id: dockHitbox
-            x: dockContent.dockHitbox.x
-            y: dockContent.dockHitbox.y
-            width: dockContent.dockHitbox.width
-            height: dockContent.dockHitbox.height
-            visible: dockContent.visible && dockContent.dockHitbox.visible
-        }
+        regions: [
+            Region {
+                item: barContent.barHitbox
+            },
+            Region {
+                item: notchContent.notchHitbox
+            },
+            Region {
+                // Only include the dock hitbox if the dock is actually enabled and visible on this screen.
+                item: dockContent.visible ? dockContent.dockHitbox : null
+            }
+        ]
     }
 
     // Focus Grab for Notch

@@ -43,6 +43,13 @@ Item {
     // Whether auto-hide should be active (not pinned, or fullscreen forces it)
     readonly property bool shouldAutoHide: !pinned || activeWindowFullscreen
 
+    onShouldAutoHideChanged: {
+        if (!shouldAutoHide) {
+            hoverActive = false;
+            hideDelayTimer.stop();
+        }
+    }
+
     // Hover state with delay to prevent flickering
     property bool hoverActive: false
 
@@ -54,9 +61,9 @@ Item {
     readonly property bool notchHoverActive: {
         if (barPosition !== "top")
             return false;
-        // Access the notch panel's hoverActive property if available
-        if (notchPanelRef && typeof notchPanelRef.hoverActive !== 'undefined') {
-            return notchPanelRef.hoverActive;
+        // Access the notch's specific hover property from the unified panel
+        if (notchPanelRef && typeof notchPanelRef.notch_hoverActive !== 'undefined') {
+            return notchPanelRef.notch_hoverActive;
         }
         return false;
     }
@@ -70,6 +77,7 @@ Item {
     readonly property real innerRadius: (Config.bar.pillStyle === "squished") ? Styling.radius(0) / 2 : Styling.radius(0)
     readonly property bool pinButtonVisible: Config.bar?.showPinButton ?? true
 
+    // Reveal logic
     readonly property bool reveal: {
         // If not auto-hiding, always reveal
         if (!shouldAutoHide)
@@ -80,8 +88,8 @@ Item {
             return false;
         }
 
-        // Show if: hovering, notch hovering (when at top), notch open, or no active window
-        return isMouseOverBar || hoverActive || notchHoverActive || notchOpen || !ToplevelManager.activeToplevel?.activated;
+        // Show if: hovering, notch hovering (when at top), notch open
+        return isMouseOverBar || hoverActive || notchHoverActive || notchOpen;
     }
 
     // Timer to delay hiding the bar after mouse leaves
@@ -144,59 +152,34 @@ Item {
         id: barMouseArea
         hoverEnabled: true
 
-        anchors {
-            top: barPosition !== "bottom" ? parent.top : null
-            bottom: barPosition !== "top" ? parent.bottom : null
-            left: barPosition !== "right" ? parent.left : null
-            right: barPosition !== "left" ? parent.right : null
-            
-            // Margins are only for when revealed. 
-            // When hidden, we want the MouseArea to stay at the edge for hover.
-            topMargin: 0
-            bottomMargin: 0
-            leftMargin: 0
-            rightMargin: 0
+        // Size
+        width: root.orientation === "horizontal" ? root.width : (root.reveal ? bar.width + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset)
+        height: root.orientation === "vertical" ? root.height : (root.reveal ? bar.height + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset)
+
+        // Position using x/y
+        x: {
+            if (root.barPosition === "right") return parent.width - width;
+            return 0;
+        }
+        y: {
+            if (root.barPosition === "bottom") return parent.height - height;
+            return 0;
         }
 
-        // Position and size based on bar position
-        states: [
-            State {
-                name: "top"
-                when: root.barPosition === "top"
-                PropertyChanges {
-                    target: barMouseArea
-                    width: root.width
-                    height: root.reveal ? bar.height + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset
-                }
-            },
-            State {
-                name: "bottom"
-                when: root.barPosition === "bottom"
-                PropertyChanges {
-                    target: barMouseArea
-                    width: root.width
-                    height: root.reveal ? bar.height + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset
-                }
-            },
-            State {
-                name: "left"
-                when: root.barPosition === "left"
-                PropertyChanges {
-                    target: barMouseArea
-                    width: root.reveal ? bar.width + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset
-                    height: root.height
-                }
-            },
-            State {
-                name: "right"
-                when: root.barPosition === "right"
-                PropertyChanges {
-                    target: barMouseArea
-                    width: root.reveal ? bar.width + root.frameOffset : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4) + root.frameOffset
-                    height: root.height
-                }
+        Behavior on x {
+            enabled: Config.animDuration > 0 && root.orientation === "vertical"
+            NumberAnimation {
+                duration: Config.animDuration / 4
+                easing.type: Easing.OutCubic
             }
-        ]
+        }
+        Behavior on y {
+            enabled: Config.animDuration > 0 && root.orientation === "horizontal"
+            NumberAnimation {
+                duration: Config.animDuration / 4
+                easing.type: Easing.OutCubic
+            }
+        }
 
         Behavior on width {
             enabled: Config.animDuration > 0 && root.shouldAutoHide && root.orientation === "vertical"
