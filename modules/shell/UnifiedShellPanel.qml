@@ -10,6 +10,7 @@ import qs.modules.frame
 import qs.modules.corners
 import qs.modules.services
 import qs.modules.globals
+import qs.modules.components
 import qs.config
 
 PanelWindow {
@@ -104,62 +105,72 @@ PanelWindow {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // VISUAL CONTENT (Z-Order: Frame -> Bar -> Dock -> Notch -> Corners)
+    // VISUAL CONTENT (Unified Shadow Wrapper)
     // ═══════════════════════════════════════════════════════════════
 
-    ScreenFrameContent {
-        id: frameContent
+    Item {
+        id: visualContainer
         anchors.fill: parent
-        targetScreen: unifiedPanel.targetScreen
-        z: 1
-    }
-
-    BarContent {
-        id: barContent
-        anchors.fill: parent
-        screen: unifiedPanel.targetScreen
-        z: 2
-
+        
+        // Apply a single unified shadow to the composite of all components
         layer.enabled: true
-        layer.effect: MultiEffect {
-            maskEnabled: true
-            maskInverted: true
-            maskThresholdMin: 0.3
-            maskSpreadAtMin: 0.5
-            maskSource: ShaderEffectSource {
-                sourceItem: notchContent
-                hideSource: false
+        layer.effect: Shadow {}
+
+        ScreenFrameContent {
+            id: frameContent
+            anchors.fill: parent
+            targetScreen: unifiedPanel.targetScreen
+            z: 1
+        }
+
+        BarContent {
+            id: barContent
+            anchors.fill: parent
+            screen: unifiedPanel.targetScreen
+            z: 2
+
+            // Keep the masking logic to cut out the notch area from the bar
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                maskEnabled: true
+                maskInverted: true
+                maskThresholdMin: 0.3
+                maskSpreadAtMin: 0.5
+                maskSource: ShaderEffectSource {
+                    sourceItem: notchContent
+                    hideSource: false
+                }
             }
         }
-    }
 
-    DockContent {
-        id: dockContent
-        anchors.fill: parent
-        screen: unifiedPanel.targetScreen
-        z: 3
-        visible: {
-            if (!(Config.dock?.enabled ?? false) || (Config.dock?.theme ?? "default") === "integrated")
-                return false;
-            
-            const list = Config.dock?.screenList ?? [];
-            if (!list || list.length === 0)
-                return true;
-            return list.includes(screen.name);
+        DockContent {
+            id: dockContent
+            anchors.fill: parent
+            screen: unifiedPanel.targetScreen
+            z: 3
+            visible: {
+                if (!(Config.dock?.enabled ?? false) || (Config.dock?.theme ?? "default") === "integrated")
+                    return false;
+                
+                const list = Config.dock?.screenList ?? [];
+                if (!list || list.length === 0)
+                    return true;
+                return list.includes(screen.name);
+            }
         }
-    }
 
-    NotchContent {
-        id: notchContent
-        anchors.fill: parent
-        screen: unifiedPanel.targetScreen
-        z: 4
-    }
+        NotchContent {
+            id: notchContent
+            anchors.fill: parent
+            screen: unifiedPanel.targetScreen
+            z: 4
+        }
 
-    ScreenCornersContent {
-        id: cornersContent
-        anchors.fill: parent
-        z: 5
-        visible: Config.theme.enableCorners && Config.roundness > 0
+        ScreenCornersContent {
+            id: cornersContent
+            anchors.fill: parent
+            z: 5
+            visible: Config.theme.enableCorners && Config.roundness > 0
+        }
     }
 }

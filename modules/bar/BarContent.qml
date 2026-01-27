@@ -213,8 +213,8 @@ Item {
             }
 
 
-            layer.enabled: true
-            layer.effect: Shadow {}
+            // layer.enabled: true
+            // layer.effect: Shadow {}
 
             // Opacity animation
             opacity: root.reveal ? 1 : 0

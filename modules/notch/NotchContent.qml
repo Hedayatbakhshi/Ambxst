@@ -248,8 +248,8 @@ Item {
                 anchors.topMargin: (root.notchPosition === "top" ? (Config.notchTheme === "default" ? 0 : (Config.notchTheme === "island" ? 4 : 0)) : 0) + (root.notchPosition === "top" ? frameOffset : 0)
                 anchors.bottomMargin: (root.notchPosition === "bottom" ? (Config.notchTheme === "default" ? 0 : (Config.notchTheme === "island" ? 4 : 0)) : 0) + (root.notchPosition === "bottom" ? frameOffset : 0)
 
-                layer.enabled: true
-                layer.effect: Shadow {}
+                // layer.enabled: true
+                // layer.effect: Shadow {}
 
                 defaultViewComponent: defaultViewComponent
                 launcherViewComponent: launcherViewComponent

@@ -260,7 +260,7 @@ Item {
                     anchors.fill: parent
 
                     variant: "bg"
-                    enableShadow: true
+                    // enableShadow: true
                     enableBorder: false
 
                     readonly property int fullRadius: Styling.radius(4)
@@ -372,7 +372,7 @@ Item {
                 visible: root.isFloating
                 anchors.fill: parent
                 variant: "bg"
-                enableShadow: true
+                // enableShadow: true
                 radius: Styling.radius(4)
             }
 
