@@ -59,17 +59,19 @@ PanelWindow {
     readonly property bool hasFullscreenWindow: {
         if (!hyprlandMonitor) return false;
         
+        const activeWorkspaceId = hyprlandMonitor.activeWorkspace.id;
+        const monId = hyprlandMonitor.id;
+        
         // Check active toplevel first (fast path)
         const toplevel = ToplevelManager.activeToplevel;
-        if (toplevel && toplevel.fullscreen && Hyprland.focusedMonitor.id === hyprlandMonitor.id) {
+        if (toplevel && toplevel.fullscreen && Hyprland.focusedMonitor.id === monId) {
              return true;
         }
 
         // Check all windows on this monitor (robust path)
         const wins = HyprlandData.windowList;
-        const monId = hyprlandMonitor.id;
         for (let i = 0; i < wins.length; i++) {
-            if (wins[i].monitor === monId && wins[i].fullscreen) {
+            if (wins[i].monitor === monId && wins[i].fullscreen && wins[i].workspace.id === activeWorkspaceId) {
                 return true;
             }
         }

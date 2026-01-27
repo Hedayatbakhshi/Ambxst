@@ -1,17 +1,35 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.config
+import qs.modules.bar.workspaces // For HyprlandData
 
 PanelWindow {
     id: screenCorners
 
-    // Fullscreen detection - check if active toplevel is fullscreen
+    // Fullscreen detection
     readonly property bool activeWindowFullscreen: {
+        const monitor = Hyprland.monitorFor(screen);
+        if (!monitor) return false;
+        
+        const activeWorkspaceId = monitor.activeWorkspace.id;
+        const monId = monitor.id;
+
+        // Check active toplevel first (fast path)
         const toplevel = ToplevelManager.activeToplevel;
-        if (!toplevel || !toplevel.activated)
-            return false;
-        return toplevel.fullscreen === true;
+        if (toplevel && toplevel.fullscreen && Hyprland.focusedMonitor.id === monId) {
+             return true;
+        }
+
+        // Check all windows on this monitor (robust path)
+        const wins = HyprlandData.windowList;
+        for (let i = 0; i < wins.length; i++) {
+            if (wins[i].monitor === monId && wins[i].fullscreen && wins[i].workspace.id === activeWorkspaceId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     visible: Config.theme.enableCorners && Config.roundness > 0 && !activeWindowFullscreen
