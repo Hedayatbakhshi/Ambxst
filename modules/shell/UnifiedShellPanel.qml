@@ -171,6 +171,7 @@ PanelWindow {
             anchors.fill: parent
             targetScreen: unifiedPanel.targetScreen
             hasFullscreenWindow: unifiedPanel.hasFullscreenWindow
+            barReveal: unifiedPanel.barReveal
             z: 1
         }
 

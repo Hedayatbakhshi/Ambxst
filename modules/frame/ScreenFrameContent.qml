@@ -46,9 +46,20 @@ Item {
     readonly property bool containBar: Config.bar?.containBar ?? false
     readonly property string barPos: Config.bar?.position ?? "top"
 
+    property bool barReveal: true
+
+    property real _barAnimProgress: barReveal ? 1.0 : 0.0
+    Behavior on _barAnimProgress {
+        enabled: Config.animDuration > 0
+        NumberAnimation {
+            duration: Config.animDuration / 2
+            easing.type: Easing.OutCubic
+        }
+    }
+
     // This must match ScreenFrame.qml logic EXACTLY
     // ScreenFrame: barExpansion = 44 + thickness
-    readonly property int barExpansion: 44 + thickness
+    readonly property int barExpansion: Math.round((44 + thickness) * _barAnimProgress)
 
     readonly property int topThickness: thickness + ((containBar && barPos === "top") ? barExpansion : 0)
     readonly property int bottomThickness: thickness + ((containBar && barPos === "bottom") ? barExpansion : 0)
