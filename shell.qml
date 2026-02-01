@@ -107,6 +107,7 @@ ShellRoot {
                 dockFullscreen: unifiedPanel.dockFullscreen
                 
                 frameEnabled: Config.bar?.frameEnabled ?? false
+                frameThickness: Config.bar?.frameThickness ?? 6
             }
         }
     }

@@ -91,6 +91,7 @@ Item {
         layer.effect: MultiEffect {
             maskEnabled: true
             maskSource: frameMask
+            maskInverted: true
             maskThresholdMin: 0.5
             maskSpreadAtMin: 1.0
         }
@@ -102,75 +103,15 @@ Item {
         visible: false
         layer.enabled: true
 
-        Canvas {
-            id: frameCanvas
-            anchors.fill: parent
-            antialiasing: true
-
-            onPaint: {
-                const ctx = getContext("2d");
-                const w = width;
-                const h = height;
-                const t = root.thickness;
-                // Use innerRadius for the cutout
-                const r = Math.min(root.innerRadius, Math.min(w, h) / 2);
-
-                ctx.clearRect(0, 0, w, h);
-                if (w <= 0 || h <= 0 || t <= 0)
-                    return;
-
-                // Draw outer rectangle (opaque)
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, w, h);
-
-                // Cut out the inner rectangle
-                const innerX = root.leftThickness;
-                const innerY = root.topThickness;
-                const innerW = w - (root.leftThickness + root.rightThickness);
-                const innerH = h - (root.topThickness + root.bottomThickness);
-                if (innerW <= 0 || innerH <= 0)
-                    return;
-
-                ctx.globalCompositeOperation = "destination-out";
-
-                // Draw rounded rect path for cutout
-                const rr = Math.min(r, innerW / 2, innerH / 2);
-                ctx.beginPath();
-                ctx.moveTo(innerX + rr, innerY);
-                ctx.arcTo(innerX + innerW, innerY, innerX + innerW, innerY + innerH, rr);
-                ctx.arcTo(innerX + innerW, innerY + innerH, innerX, innerY + innerH, rr);
-                ctx.arcTo(innerX, innerY + innerH, innerX, innerY, rr);
-                ctx.arcTo(innerX, innerY, innerX + innerW, innerY, rr);
-                ctx.closePath();
-                ctx.fill();
-
-                ctx.globalCompositeOperation = "source-over";
-            }
+        Rectangle {
+            id: maskRect
+            x: root.leftThickness
+            y: root.topThickness
+            width: parent.width - (root.leftThickness + root.rightThickness)
+            height: parent.height - (root.topThickness + root.bottomThickness)
+            radius: root.innerRadius
+            color: "white"
+            visible: width > 0 && height > 0
         }
     }
-
-    Connections {
-        target: root
-        function onThicknessChanged() {
-            frameCanvas.requestPaint();
-        }
-        function onInnerRadiusChanged() {
-            frameCanvas.requestPaint();
-        }
-        function onTopThicknessChanged() {
-            frameCanvas.requestPaint();
-        }
-        function onBottomThicknessChanged() {
-            frameCanvas.requestPaint();
-        }
-        function onLeftThicknessChanged() {
-            frameCanvas.requestPaint();
-        }
-        function onRightThicknessChanged() {
-            frameCanvas.requestPaint();
-        }
-    }
-
-    onWidthChanged: frameCanvas.requestPaint()
-    onHeightChanged: frameCanvas.requestPaint()
 }

@@ -26,6 +26,8 @@ Item {
     onBarSizeChanged: updateAllZones();
     onBarOuterMarginChanged: updateAllZones();
     onContainBarChanged: updateAllZones();
+    onFrameEnabledChanged: updateAllZones();
+    onFrameThicknessChanged: updateAllZones();
 
     // Reference the full border array first (helps QML detect changes)
     readonly property var borderData: Config.theme.srBg.border
@@ -41,6 +43,13 @@ Item {
     property bool dockFullscreen: false
     property int dockHeight: (Config.dock?.height ?? 56) + (Config.dock?.margin ?? 8) + (isDefaultDock ? 0 : (Config.dock?.margin ?? 8))
     property bool isDefaultDock: (Config.dock?.theme ?? "default") === "default"
+
+    onDockEnabledChanged: updateAllZones();
+    onDockPositionChanged: updateAllZones();
+    onDockPinnedChanged: updateAllZones();
+    onDockRevealChanged: updateAllZones();
+    onDockFullscreenChanged: updateAllZones();
+    onDockHeightChanged: updateAllZones();
 
     property bool frameEnabled: Config.bar?.frameEnabled ?? false
     property int frameThickness: {
