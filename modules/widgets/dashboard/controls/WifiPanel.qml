@@ -23,7 +23,7 @@ Item {
 
     Timer {
         id: initialScanTimer
-        interval: 10
+        interval: 300
         repeat: false
         onTriggered: NetworkService.rescanWifi()
     }

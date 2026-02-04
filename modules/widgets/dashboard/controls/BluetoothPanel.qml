@@ -27,7 +27,7 @@ Item {
 
     Timer {
         id: initialUpdateTimer
-        interval: 10
+        interval: 300
         repeat: false
         onTriggered: BluetoothService.updateDevices()
     }

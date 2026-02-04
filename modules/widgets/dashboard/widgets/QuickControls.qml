@@ -146,16 +146,24 @@ StyledRect {
                 Item {
                     id: panelStack
                     anchors.fill: parent
+                    anchors.margins: 8 // Extra margin for content
                     
                     Loader {
                         id: wifiLoader
                         anchors.fill: parent
-                        active: root.expandedPanel === 0 || (opacity > 0.01)
-                        sourceComponent: wifiComponent
+                        active: root.expandedPanel === 0
+                        source: "../controls/WifiPanel.qml"
+                        asynchronous: true
                         
                         opacity: root.expandedPanel === 0 ? 1 : 0
                         x: root.expandedPanel === 0 ? 0 : (root.expandedPanel === 1 ? -width : width)
                         
+                        onLoaded: {
+                            if (item) {
+                                item.maxContentWidth = width;
+                            }
+                        }
+
                         Behavior on opacity { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
                         Behavior on x { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
                     }
@@ -163,12 +171,19 @@ StyledRect {
                     Loader {
                         id: bluetoothLoader
                         anchors.fill: parent
-                        active: root.expandedPanel === 1 || (opacity > 0.01)
-                        sourceComponent: bluetoothComponent
+                        active: root.expandedPanel === 1
+                        source: "../controls/BluetoothPanel.qml"
+                        asynchronous: true
                         
                         opacity: root.expandedPanel === 1 ? 1 : 0
                         x: root.expandedPanel === 1 ? 0 : (root.expandedPanel === 0 ? width : -width)
                         
+                        onLoaded: {
+                            if (item) {
+                                item.maxContentWidth = width;
+                            }
+                        }
+
                         Behavior on opacity { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
                         Behavior on x { enabled: Config.animDuration > 0; NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart } }
                     }
@@ -184,7 +199,4 @@ StyledRect {
             root.expandedPanel = index;
         }
     }
-
-    Component { id: wifiComponent; WifiPanel {} }
-    Component { id: bluetoothComponent; BluetoothPanel {} }
 }
