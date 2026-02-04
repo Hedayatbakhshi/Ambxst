@@ -251,6 +251,22 @@ migrate_old_paths() {
 		log_info "Migrating state: $OLD_STATE -> $NEW_STATE"
 		mv "$OLD_STATE" "$NEW_STATE"
 	fi
+
+	# Cache migration (Wallpapers & Thumbnails)
+	local NEW_CACHE="$HOME/.cache/ambxst"
+	if [[ -d "$OLD_SHARE" ]]; then
+		mkdir -p "$NEW_CACHE"
+
+		if [[ -f "$OLD_SHARE/wallpapers.json" && ! -f "$NEW_CACHE/wallpapers.json" ]]; then
+			log_info "Migrating wallpapers.json to cache..."
+			cp "$OLD_SHARE/wallpapers.json" "$NEW_CACHE/wallpapers.json"
+		fi
+
+		if [[ -d "$OLD_SHARE/thumbnails" && ! -d "$NEW_CACHE/thumbnails" ]]; then
+			log_info "Migrating thumbnails to cache..."
+			cp -r "$OLD_SHARE/thumbnails" "$NEW_CACHE/thumbnails"
+		fi
+	fi
 }
 
 # === Repository Setup ===
@@ -259,6 +275,7 @@ setup_repo() {
 
 	if [[ ! -d "$INSTALL_PATH" ]]; then
 		log_info "Cloning Ambxst to $INSTALL_PATH..."
+		mkdir -p "$(dirname "$INSTALL_PATH")"
 		git clone "$REPO_URL" "$INSTALL_PATH"
 		return
 	fi
