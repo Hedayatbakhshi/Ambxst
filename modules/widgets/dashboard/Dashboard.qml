@@ -332,7 +332,7 @@ NotchAnimationBehavior {
                     }
                 }
 
-                onClicked: GlobalStates.settingsWindowVisible = !GlobalStates.settingsWindowVisible
+                onClicked: GlobalShortcuts.toggleSettings()
             }
         }
 

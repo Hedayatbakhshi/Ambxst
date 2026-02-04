@@ -48,13 +48,13 @@ QtObject {
             case "dashboard-wallpapers": toggleDashboardTab(1); break;
             case "dashboard-kanban": toggleDashboardTab(2); break;
             case "dashboard-assistant": toggleDashboardTab(3); break;
-            case "dashboard-controls": GlobalStates.settingsWindowVisible = !GlobalStates.settingsWindowVisible; break;
+            case "dashboard-controls": toggleSettings(); break;
 
             // System
             case "overview": toggleSimpleModule("overview"); break;
             case "powermenu": toggleSimpleModule("powermenu"); break;
             case "tools": toggleSimpleModule("tools"); break;
-            case "config": GlobalStates.settingsWindowVisible = !GlobalStates.settingsWindowVisible; break;
+            case "config": toggleSettings(); break;
             case "screenshot": GlobalStates.screenshotToolVisible = true; break;
             case "screenrecord": GlobalStates.screenRecordToolVisible = true; break;
             case "lens": 
@@ -81,6 +81,13 @@ QtObject {
 
         function run(command: string) {
             root.run(command);
+        }
+    }
+
+    function toggleSettings() {
+        GlobalStates.settingsWindowVisible = !GlobalStates.settingsWindowVisible;
+        if (GlobalStates.settingsWindowVisible) {
+            Visibilities.setActiveModule("");
         }
     }
 
@@ -299,7 +306,7 @@ QtObject {
         appid: root.appId
         name: "dashboard-controls"
         description: "Open dashboard controls tab"
-        onPressed: GlobalStates.settingsWindowVisible = !GlobalStates.settingsWindowVisible
+        onPressed: toggleSettings()
     }
 
     // Media player shortcuts
