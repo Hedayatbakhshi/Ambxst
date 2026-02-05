@@ -211,6 +211,8 @@ QtObject {
     readonly property string arrowsOutCardinal: ""
     readonly property string dotsThree: ""
     readonly property string dotsNine: ""
+    readonly property string heart: "\ue2a8"
+    readonly property string arrowSquareOut: "\ue5de"
     readonly property string circleHalf: ""
 
     readonly property string circle: ""

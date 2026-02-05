@@ -53,6 +53,7 @@ Singleton {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
+            if (!Config.system.updateServiceEnabled) return;
             const now = Date.now();
             if (now >= root.nextCheckTime) {
                 checkUpdates();

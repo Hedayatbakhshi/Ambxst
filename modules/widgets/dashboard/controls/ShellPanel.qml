@@ -92,6 +92,59 @@ Item {
         }
     }
 
+    component ActionButton: StyledRect {
+        id: actionBtn
+        required property string text
+        property string icon: ""
+        signal clicked()
+
+        property bool isHovered: false
+
+        variant: isHovered ? "focus" : "pane"
+        Layout.fillWidth: true
+        Layout.preferredHeight: 56
+        radius: Styling.radius(0)
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 16
+
+            Text {
+                text: actionBtn.icon
+                font.family: Icons.font
+                font.pixelSize: 20
+                color: Colors.overSurfaceVariant
+                visible: actionBtn.icon !== ""
+            }
+
+            Text {
+                text: actionBtn.text
+                font.family: Config.theme.font
+                font.pixelSize: Styling.fontSize(0)
+                font.bold: true
+                color: Colors.overBackground
+                Layout.fillWidth: true
+            }
+
+            Text {
+                text: Icons.arrowSquareOut
+                font.family: Icons.font
+                font.pixelSize: 18
+                color: Colors.overSurfaceVariant
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onEntered: actionBtn.isHovered = true
+            onExited: actionBtn.isHovered = false
+            onClicked: actionBtn.clicked()
+        }
+    }
+
     // Inline component for toggle rows
     component ToggleRow: RowLayout {
         id: toggleRowRoot
@@ -1233,15 +1286,44 @@ Item {
                         }
 
                         SelectorRow {
-                            label: ""
+                            label: "Position"
+                            options: [
+                                {
+                                    label: "Top",
+                                    value: "top",
+                                    icon: Icons.arrowUp
+                                },
+                                {
+                                    label: "Bottom",
+                                    value: "bottom",
+                                    icon: Icons.arrowDown
+                                },
+                                {
+                                    label: "Left",
+                                    value: "left",
+                                    icon: Icons.arrowLeft
+                                },
+                                {
+                                    label: "Right",
+                                    value: "right",
+                                    icon: Icons.arrowRight
+                                }
+                            ]
+                            value: Config.dock.position ?? "bottom"
+                            onValueSelected: newValue => {
+                                if (newValue !== Config.dock.position) {
+                                    GlobalStates.markShellChanged();
+                                    Config.dock.position = newValue;
+                                }
+                            }
+                        }
+
+                        SelectorRow {
+                            label: "Theme"
                             options: [
                                 {
                                     label: "Default",
                                     value: "default"
-                                },
-                                {
-                                    label: "Floating",
-                                    value: "floating"
                                 },
                                 {
                                     label: "Integrated",
@@ -1257,59 +1339,12 @@ Item {
                             }
                         }
 
-                        SelectorRow {
-                            label: ""
-                            options: {
-                                const isIntegrated = (Config.dock.theme ?? "default") === "integrated";
-                                return [
-                                    {
-                                        label: isIntegrated ? "Start" : "Left",
-                                        value: "left",
-                                        icon: isIntegrated ? Icons.alignLeft : Icons.arrowLeft
-                                    },
-                                    {
-                                        label: isIntegrated ? "Center" : "Bottom",
-                                        value: "bottom",
-                                        icon: isIntegrated ? Icons.alignCenter : Icons.arrowDown
-                                    },
-                                    {
-                                        label: isIntegrated ? "End" : "Right",
-                                        value: "right",
-                                        icon: isIntegrated ? Icons.alignRight : Icons.arrowRight
-                                    }
-                                ];
-                            }
-                            value: Config.dock.position ?? "bottom"
-                            onValueSelected: newValue => {
-                                if (newValue !== Config.dock.position) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.position = newValue;
-                                }
-                            }
-                        }
-
-                        NumberInputRow {
-                            label: "Height"
-                            value: Config.dock.height ?? 56
-                            minValue: 32
-                            maxValue: 128
-                            suffix: "px"
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
-                            onValueEdited: newValue => {
-                                if (newValue !== Config.dock.height) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.height = newValue;
-                                }
-                            }
-                        }
-
                         NumberInputRow {
                             label: "Icon Size"
                             value: Config.dock.iconSize ?? 40
-                            minValue: 16
+                            minValue: 24
                             maxValue: 96
                             suffix: "px"
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
                             onValueEdited: newValue => {
                                 if (newValue !== Config.dock.iconSize) {
                                     GlobalStates.markShellChanged();
@@ -1320,11 +1355,10 @@ Item {
 
                         NumberInputRow {
                             label: "Spacing"
-                            value: Config.dock.spacing ?? 4
+                            value: Config.dock.spacing ?? 10
                             minValue: 0
-                            maxValue: 24
+                            maxValue: 32
                             suffix: "px"
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
                             onValueEdited: newValue => {
                                 if (newValue !== Config.dock.spacing) {
                                     GlobalStates.markShellChanged();
@@ -1334,39 +1368,47 @@ Item {
                         }
 
                         NumberInputRow {
-                            label: "Margin"
-                            value: Config.dock.margin ?? 8
+                            label: "Padding"
+                            value: Config.dock.padding ?? 8
                             minValue: 0
                             maxValue: 32
                             suffix: "px"
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
                             onValueEdited: newValue => {
-                                if (newValue !== Config.dock.margin) {
+                                if (newValue !== Config.dock.padding) {
                                     GlobalStates.markShellChanged();
-                                    Config.dock.margin = newValue;
+                                    Config.dock.padding = newValue;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
+                            label: "Hover to Reveal"
+                            checked: Config.dock.hoverToReveal ?? true
+                            onToggled: value => {
+                                if (value !== Config.dock.hoverToReveal) {
+                                    GlobalStates.markShellChanged();
+                                    Config.dock.hoverToReveal = value;
                                 }
                             }
                         }
 
                         NumberInputRow {
-                            label: "Hover Region Height"
-                            value: Config.dock.hoverRegionHeight ?? 4
+                            label: "Hover Region"
+                            value: Config.dock.hoverRegionSize ?? 8
                             minValue: 0
                             maxValue: 32
                             suffix: "px"
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
                             onValueEdited: newValue => {
-                                if (newValue !== Config.dock.hoverRegionHeight) {
+                                if (newValue !== Config.dock.hoverRegionSize) {
                                     GlobalStates.markShellChanged();
-                                    Config.dock.hoverRegionHeight = newValue;
+                                    Config.dock.hoverRegionSize = newValue;
                                 }
                             }
                         }
 
                         ToggleRow {
                             label: "Pinned on Startup"
-                            checked: Config.dock.pinnedOnStartup ?? false
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
+                            checked: Config.dock.pinnedOnStartup ?? true
                             onToggled: value => {
                                 if (value !== Config.dock.pinnedOnStartup) {
                                     GlobalStates.markShellChanged();
@@ -1376,57 +1418,8 @@ Item {
                         }
 
                         ToggleRow {
-                            label: "Hover to Reveal"
-                            checked: Config.dock.hoverToReveal ?? true
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
-                            onToggled: value => {
-                                if (value !== Config.dock.hoverToReveal) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.hoverToReveal = value;
-                                }
-                            }
-                        }
-
-                        ToggleRow {
-                            label: "Keep Hidden"
-                            checked: Config.dock.keepHidden ?? false
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
-                            onToggled: value => {
-                                if (value !== Config.dock.keepHidden) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.keepHidden = value;
-                                }
-                            }
-                        }
-
-                        ToggleRow {
-                            label: "Available on Fullscreen"
-                            checked: Config.dock.availableOnFullscreen ?? false
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
-                            onToggled: value => {
-                                if (value !== Config.dock.availableOnFullscreen) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.availableOnFullscreen = value;
-                                }
-                            }
-                        }
-
-                        ToggleRow {
-                            label: "Show Running Indicators"
-                            checked: Config.dock.showRunningIndicators ?? true
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
-                            onToggled: value => {
-                                if (value !== Config.dock.showRunningIndicators) {
-                                    GlobalStates.markShellChanged();
-                                    Config.dock.showRunningIndicators = value;
-                                }
-                            }
-                        }
-
-                        ToggleRow {
                             label: "Show Pin Button"
                             checked: Config.dock.showPinButton ?? true
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
                             onToggled: value => {
                                 if (value !== Config.dock.showPinButton) {
                                     GlobalStates.markShellChanged();
@@ -1436,13 +1429,12 @@ Item {
                         }
 
                         ToggleRow {
-                            label: "Show Overview Button"
-                            checked: Config.dock.showOverviewButton ?? true
-                            visible: (Config.dock.theme ?? "default") !== "integrated"
+                            label: "Available on Fullscreen"
+                            checked: Config.dock.availableOnFullscreen ?? false
                             onToggled: value => {
-                                if (value !== Config.dock.showOverviewButton) {
+                                if (value !== Config.dock.availableOnFullscreen) {
                                     GlobalStates.markShellChanged();
-                                    Config.dock.showOverviewButton = value;
+                                    Config.dock.availableOnFullscreen = value;
                                 }
                             }
                         }
@@ -1596,113 +1588,136 @@ Item {
                                     });
                                 }
                             }
+                        }
+                    }
 
-                            Separator {
-                                Layout.fillWidth: true
-                                visible: false
+                    Separator {
+                        Layout.fillWidth: true
+                        visible: false
+                    }
+
+                    // ═══════════════════════════════════════════════════════════════
+                    // SYSTEM SECTION
+                    // ═══════════════════════════════════════════════════════════════
+                    ColumnLayout {
+                        visible: root.currentSection === "system"
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            text: "System"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(-1)
+                            font.weight: Font.Medium
+                            color: Colors.overSurfaceVariant
+                            Layout.bottomMargin: -4
+                        }
+
+                        ToggleRow {
+                            label: "Update Service"
+                            checked: Config.system.updateServiceEnabled ?? true
+                            onToggled: value => {
+                                if (value !== Config.system.updateServiceEnabled) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.updateServiceEnabled = value;
+                                }
                             }
+                        }
 
-                            // ═══════════════════════════════════════════════════════════════
-                            // SYSTEM SECTION
-                            // ═══════════════════════════════════════════════════════════════
-                            ColumnLayout {
-                                visible: root.currentSection === "system"
-                                Layout.fillWidth: true
-                                spacing: 8
+                        ActionButton {
+                            text: "About Ambxst"
+                            icon: Icons.info
+                            onClicked: Quickshell.execDetached(["xdg-open", "https://axeni.de/ambxst"])
+                        }
 
-                                Text {
-                                    text: "System"
-                                    font.family: Config.theme.font
-                                    font.pixelSize: Styling.fontSize(-1)
-                                    font.weight: Font.Medium
-                                    color: Colors.overSurfaceVariant
-                                    Layout.bottomMargin: -4
+                        ActionButton {
+                            text: "Donate ❤️"
+                            icon: Icons.heart
+                            onClicked: Quickshell.execDetached(["xdg-open", "https://axeni.de/donate"])
+                        }
+
+                        Text {
+                            text: "OCR Languages"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(-2)
+                            color: Styling.srItem("overprimary")
+                            font.bold: true
+                            Layout.topMargin: 8
+                        }
+
+                        ToggleRow {
+                            label: "English"
+                            checked: Config.system.ocr.eng ?? true
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.eng) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.eng = value;
                                 }
+                            }
+                        }
 
-                                Text {
-                                    text: "OCR Languages"
-                                    font.family: Config.theme.font
-                                    font.pixelSize: Styling.fontSize(-2)
-                                    color: Styling.srItem("overprimary")
-                                    font.bold: true
-                                    Layout.topMargin: 8
+                        ToggleRow {
+                            label: "Spanish"
+                            checked: Config.system.ocr.spa ?? true
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.spa) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.spa = value;
                                 }
+                            }
+                        }
 
-                                ToggleRow {
-                                    label: "English"
-                                    checked: Config.system.ocr.eng ?? true
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.eng) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.eng = value;
-                                        }
-                                    }
+                        ToggleRow {
+                            label: "Latin"
+                            checked: Config.system.ocr.lat ?? false
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.lat) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.lat = value;
                                 }
+                            }
+                        }
 
-                                ToggleRow {
-                                    label: "Spanish"
-                                    checked: Config.system.ocr.spa ?? true
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.spa) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.spa = value;
-                                        }
-                                    }
+                        ToggleRow {
+                            label: "Japanese"
+                            checked: Config.system.ocr.jpn ?? false
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.jpn) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.jpn = value;
                                 }
+                            }
+                        }
 
-                                ToggleRow {
-                                    label: "Latin"
-                                    checked: Config.system.ocr.lat ?? false
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.lat) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.lat = value;
-                                        }
-                                    }
+                        ToggleRow {
+                            label: "Chinese (Simplified)"
+                            checked: Config.system.ocr.chi_sim ?? false
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.chi_sim) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.chi_sim = value;
                                 }
+                            }
+                        }
 
-                                ToggleRow {
-                                    label: "Japanese"
-                                    checked: Config.system.ocr.jpn ?? false
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.jpn) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.jpn = value;
-                                        }
-                                    }
+                        ToggleRow {
+                            label: "Chinese (Traditional)"
+                            checked: Config.system.ocr.chi_tra ?? false
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.chi_tra) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.chi_tra = value;
                                 }
+                            }
+                        }
 
-                                ToggleRow {
-                                    label: "Chinese (Simplified)"
-                                    checked: Config.system.ocr.chi_sim ?? false
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.chi_sim) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.chi_sim = value;
-                                        }
-                                    }
-                                }
-
-                                ToggleRow {
-                                    label: "Chinese (Traditional)"
-                                    checked: Config.system.ocr.chi_tra ?? false
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.chi_tra) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.chi_tra = value;
-                                        }
-                                    }
-                                }
-
-                                ToggleRow {
-                                    label: "Korean"
-                                    checked: Config.system.ocr.kor ?? false
-                                    onToggled: value => {
-                                        if (value !== Config.system.ocr.kor) {
-                                            GlobalStates.markShellChanged();
-                                            Config.system.ocr.kor = value;
-                                        }
-                                    }
+                        ToggleRow {
+                            label: "Korean"
+                            checked: Config.system.ocr.kor ?? false
+                            onToggled: value => {
+                                if (value !== Config.system.ocr.kor) {
+                                    GlobalStates.markShellChanged();
+                                    Config.system.ocr.kor = value;
                                 }
                             }
                         }

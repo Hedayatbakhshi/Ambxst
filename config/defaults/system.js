@@ -2,6 +2,7 @@
 
 var data = {
     "disks": ["/"],
+    "updateServiceEnabled": true,
     "idle": {
         "general": {
             "lock_cmd": "ambxst lock",

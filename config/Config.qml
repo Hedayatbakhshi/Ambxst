@@ -1038,6 +1038,7 @@ Singleton {
 
         adapter: JsonAdapter {
             property list<string> disks: ["/"]
+            property bool updateServiceEnabled: true
             property JsonObject idle: JsonObject {
                 property JsonObject general: JsonObject {
                     property string lock_cmd: "ambxst lock"
