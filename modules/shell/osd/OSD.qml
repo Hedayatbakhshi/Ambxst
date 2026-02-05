@@ -70,6 +70,19 @@ PanelWindow {
                     font.pixelSize: 22
                     color: Colors.overBackground
                     Layout.alignment: Qt.AlignVCenter
+
+                    rotation: GlobalStates.osdIndicator === "brightness" ? (root.osdValue * 180) : 0
+                    scale: GlobalStates.osdIndicator === "brightness" ? (0.8 + (root.osdValue * 0.2)) : 1
+
+                    Behavior on rotation {
+                        enabled: Config.animDuration > 0
+                        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+                    }
+
+                    Behavior on scale {
+                        enabled: Config.animDuration > 0
+                        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
+                    }
                 }
 
                 ColumnLayout {
