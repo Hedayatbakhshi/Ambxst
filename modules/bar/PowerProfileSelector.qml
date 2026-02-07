@@ -141,7 +141,7 @@ StyledRect {
                         text: PowerProfile.getProfileIcon(modelData)
                         color: PowerProfile.currentProfile === modelData ? Styling.srItem("primary") : Colors.overBackground
                         font.family: Icons.font
-                        font.pixelSize: 18
+                        font.pixelSize: 15
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
 
