@@ -42,9 +42,9 @@ Commands:
 Examples:
     ambxst brightness 75              Set all monitors to 75%
     ambxst brightness 50 HDMI-A-1     Set HDMI-A-1 to 50%
-    ambxst brightness +10             Increase brightness by 10%
+    ambxst brightness +5             Increase brightness by 5%
     ambxst brightness -5 HDMI-A-1     Decrease HDMI-A-1 brightness by 5%
-    ambxst brightness 10 -s           Save current, then set all to 10%
+    ambxst brightness  5 -s           Save current, then set all to 5%
     ambxst brightness -s HDMI-A-1     Save current brightness of HDMI-A-1
     ambxst brightness -r              Restore saved brightness
 
